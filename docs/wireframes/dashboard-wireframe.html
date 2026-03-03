@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Serverraum-Überwachung - Dashboard</title>
+  <script src="chart.min.js"></script>
+  <link rel="stylesheet" href="tailwind-built.css">
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-slate-800 border-b border-slate-700 px-6 py-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <svg class="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        </svg>
+        <h1 class="text-xl font-bold">Serverraum-Überwachung</h1>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2 text-sm text-slate-400">
+          <span class="flex items-center gap-1">
+            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+            ESP32-001
+          </span>
+        </div>
+        <button class="p-2 hover:bg-slate-700 rounded-lg transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="px-6 pt-6">
+    <div class="flex gap-2 bg-slate-800 p-1 rounded-lg w-fit">
+      <button onclick="showTab('dashboard')" id="tab-dashboard" class="px-4 py-2 rounded-md bg-cyan-600 text-white font-medium transition-colors">Dashboard</button>
+      <button onclick="showTab('history')" id="tab-history" class="px-4 py-2 rounded-md text-slate-400 hover:text-white transition-colors">Verlauf</button>
+      <button onclick="showTab('alarms')" id="tab-alarms" class="px-4 py-2 rounded-md text-slate-400 hover:text-white transition-colors">Alarme</button>
+      <button onclick="showTab('settings')" id="tab-settings" class="px-4 py-2 rounded-md text-slate-400 hover:text-white transition-colors">Einstellungen</button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="p-6">
+
+    <!-- Dashboard Tab -->
+    <div id="content-dashboard">
+      <!-- Sensor Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+
+        <!-- Temperature Card -->
+        <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 hover:border-cyan-500/50 transition-colors">
+          <div class="flex items-center justify-between mb-3">
+            <div class="p-2 bg-green-500/20 rounded-lg">
+              <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+            </div>
+            <span class="px-2 py-1 text-xs font-medium bg-green-500/20 text-green-400 rounded-full">Normal</span>
+          </div>
+          <div class="text-3xl font-bold text-slate-100">22.5°C</div>
+          <div class="text-sm text-slate-400 mt-1">Temperatur</div>
+        </div>
+
+        <!-- Humidity Card -->
+        <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 hover:border-cyan-500/50 transition-colors">
+          <div class="flex items-center justify-between mb-3">
+            <div class="p-2 bg-blue-500/20 rounded-lg">
+              <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+              </svg>
+            </div>
+            <span class="px-2 py-1 text-xs font-medium bg-green-500/20 text-green-400 rounded-full">Normal</span>
+          </div>
+          <div class="text-3xl font-bold text-slate-100">45%</div>
+          <div class="text-sm text-slate-400 mt-1">Luftfeuchtigkeit</div>
+        </div>
+
+        <!-- Smoke Gas Card -->
+        <div class="bg-slate-800 border border-yellow-700/50 rounded-xl p-5 hover:border-yellow-500/50 transition-colors">
+          <div class="flex items-center justify-between mb-3">
+            <div class="p-2 bg-yellow-500/20 rounded-lg">
+              <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+            </div>
+            <span class="px-2 py-1 text-xs font-medium bg-yellow-500/20 text-yellow-400 rounded-full">Warnung</span>
+          </div>
+          <div class="text-3xl font-bold text-slate-100">150 ppm</div>
+          <div class="text-sm text-slate-400 mt-1">Rauchgas</div>
+        </div>
+
+        <!-- Motion Card -->
+        <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 hover:border-cyan-500/50 transition-colors">
+          <div class="flex items-center justify-between mb-3">
+            <div class="p-2 bg-green-500/20 rounded-lg">
+              <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <span class="px-2 py-1 text-xs font-medium bg-green-500/20 text-green-400 rounded-full">Normal</span>
+          </div>
+          <div class="text-3xl font-bold text-slate-100">Keine</div>
+          <div class="text-sm text-slate-400 mt-1">Bewegung</div>
+        </div>
+      </div>
+
+      <!-- Status Bar -->
+      <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-6">
+        <div class="flex items-center justify-between text-sm">
+          <div class="flex items-center gap-2 text-slate-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Letzte Aktualisierung: 15:30:00</span>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 text-slate-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
+              </svg>
+              <span>WLAN: -45 dBm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Alarm Banner -->
+      <div class="bg-yellow-900/20 border border-yellow-700/50 rounded-xl p-5">
+        <div class="flex items-center gap-2 text-yellow-500 mb-4">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          <h2 class="font-semibold">Aktive Alarme</h2>
+        </div>
+        <div class="flex items-center justify-between p-4 bg-yellow-900/30 rounded-lg">
+          <div>
+            <div class="font-medium">Rauchgas überschritten (150 ppm)</div>
+            <div class="text-sm text-slate-400">Sensor: MQ-2 | Zeit: 15:28:00</div>
+          </div>
+          <button class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg text-sm font-medium transition-colors">Quittieren</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Tab -->
+    <div id="content-history" class="hidden">
+      <div class="bg-slate-800 border border-slate-700 rounded-xl p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-lg font-semibold">Verlauf - Temperatur</h2>
+          <div class="flex gap-2">
+            <select class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100">
+              <option>24 Stunden</option>
+              <option>7 Tage</option>
+              <option>30 Tage</option>
+            </select>
+          </div>
+        </div>
+        <div class="h-80">
+          <canvas id="tempChart"></canvas>
+        </div>
+        <div class="mt-6 grid grid-cols-3 gap-4">
+          <div class="bg-slate-700/50 rounded-lg p-4 text-center">
+            <div class="text-2xl font-bold text-cyan-400">22.3°C</div>
+            <div class="text-sm text-slate-400">Durchschnitt</div>
+          </div>
+          <div class="bg-slate-700/50 rounded-lg p-4 text-center">
+            <div class="text-2xl font-bold text-blue-400">18.5°C</div>
+            <div class="text-sm text-slate-400">Minimum</div>
+          </div>
+          <div class="bg-slate-700/50 rounded-lg p-4 text-center">
+            <div class="text-2xl font-bold text-red-400">28.7°C</div>
+            <div class="text-sm text-slate-400">Maximum</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alarms Tab -->
+    <div id="content-alarms" class="hidden">
+      <div class="bg-slate-800 border border-slate-700 rounded-xl p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-lg font-semibold">Alarme</h2>
+          <select class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100">
+            <option>Alle</option>
+            <option>Aktiv</option>
+            <option>Quittiert</option>
+            <option>Gelöst</option>
+          </select>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-slate-700">
+                <th class="text-left py-3 px-4 text-slate-300 font-medium">Status</th>
+                <th class="text-left py-3 px-4 text-slate-300 font-medium">Sensor</th>
+                <th class="text-left py-3 px-4 text-slate-300 font-medium">Typ</th>
+                <th class="text-left py-3 px-4 text-slate-300 font-medium">Wert</th>
+                <th class="text-left py-3 px-4 text-slate-300 font-medium">Zeit</th>
+                <th class="text-left py-3 px-4 text-slate-300 font-medium">Aktion</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                <td class="py-3 px-4"><span class="px-2 py-1 text-xs font-medium bg-red-500/20 text-red-400 rounded-full">Aktiv</span></td>
+                <td class="py-3 px-4 text-slate-300">MQ-2</td>
+                <td class="py-3 px-4 text-slate-300">Rauchgas</td>
+                <td class="py-3 px-4 text-slate-300">150 ppm</td>
+                <td class="py-3 px-4 text-slate-300">15:28:00</td>
+                <td class="py-3 px-4"><button class="px-3 py-1.5 border border-slate-600 hover:bg-slate-700 rounded-lg text-sm transition-colors">Quittieren</button></td>
+              </tr>
+              <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                <td class="py-3 px-4"><span class="px-2 py-1 text-xs font-medium bg-slate-600 text-slate-300 rounded-full">Quittiert</span></td>
+                <td class="py-3 px-4 text-slate-300">DHT22</td>
+                <td class="py-3 px-4 text-slate-300">Temperatur</td>
+                <td class="py-3 px-4 text-slate-300">31.2°C</td>
+                <td class="py-3 px-4 text-slate-300">14:15:00</td>
+                <td class="py-3 px-4"></td>
+              </tr>
+              <tr class="hover:bg-slate-700/30">
+                <td class="py-3 px-4"><span class="px-2 py-1 text-xs font-medium bg-slate-700 text-slate-400 rounded-full">Gelöst</span></td>
+                <td class="py-3 px-4 text-slate-300">PIR</td>
+                <td class="py-3 px-4 text-slate-300">Bewegung</td>
+                <td class="py-3 px-4 text-slate-300">true</td>
+                <td class="py-3 px-4 text-slate-300">10:30:00</td>
+                <td class="py-3 px-4"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Tab -->
+    <div id="content-settings" class="hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <!-- Sidebar -->
+        <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 lg:col-span-1">
+          <h2 class="text-lg font-semibold mb-4">Konfiguration</h2>
+          <nav class="space-y-1">
+            <button class="w-full px-3 py-2 text-left text-slate-300 hover:bg-slate-700 rounded-lg transition-colors flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              Sensoren
+            </button>
+            <button class="w-full px-3 py-2 text-left text-slate-300 hover:bg-slate-700 rounded-lg transition-colors flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              </svg>
+              Alarmierung
+            </button>
+            <button class="w-full px-3 py-2 text-left text-slate-300 hover:bg-slate-700 rounded-lg transition-colors flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
+              </svg>
+              MQTT
+            </button>
+            <button class="w-full px-3 py-2 text-left text-slate-300 hover:bg-slate-700 rounded-lg transition-colors flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+              E-Mail
+            </button>
+            <button class="w-full px-3 py-2 text-left text-slate-300 hover:bg-slate-700 rounded-lg transition-colors flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              System
+            </button>
+          </nav>
+        </div>
+
+        <!-- Form -->
+        <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 lg:col-span-3">
+          <h2 class="text-lg font-semibold mb-6">Sensor: DHT22 (Temperatur & Feuchte)</h2>
+          <div class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="text-sm text-slate-400 block mb-2">Name</label>
+                <input type="text" value="Temperatur & Feuchte" class="w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:outline-none focus:border-cyan-500 transition-colors">
+              </div>
+              <div>
+                <label class="text-sm text-slate-400 block mb-2">GPIO-Pin</label>
+                <input type="number" value="5" class="w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:outline-none focus:border-cyan-500 transition-colors">
+              </div>
+            </div>
+            <div>
+              <label class="text-sm text-slate-400 block mb-2">Einheit</label>
+              <input type="text" value="°C/%" class="w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:outline-none focus:border-cyan-500 transition-colors">
+            </div>
+            <div class="flex items-center gap-3">
+              <input type="checkbox" id="active" checked class="w-4 h-4 rounded bg-slate-700 border-slate-600 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-slate-800">
+              <label for="active" class="text-sm text-slate-300">Sensor aktiv</label>
+            </div>
+
+            <div class="border-t border-slate-700 pt-6">
+              <h3 class="font-medium mb-4">Schwellwerte</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="text-sm text-slate-400 block mb-2">Minimum (°C)</label>
+                  <input type="number" value="15.0" step="0.1" class="w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:outline-none focus:border-cyan-500 transition-colors">
+                </div>
+                <div>
+                  <label class="text-sm text-slate-400 block mb-2">Maximum (°C)</label>
+                  <input type="number" value="30.0" step="0.1" class="w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:outline-none focus:border-cyan-500 transition-colors">
+                </div>
+              </div>
+            </div>
+
+            <div class="border-t border-slate-700 pt-6">
+              <h3 class="font-medium mb-4">Alarmierung</h3>
+              <div class="grid grid-cols-2 gap-3">
+                <label class="flex items-center gap-3 p-3 bg-slate-700/50 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors">
+                  <input type="checkbox" checked class="w-4 h-4 rounded bg-slate-700 border-slate-600 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-slate-800">
+                  <span class="text-sm text-slate-300">E-Mail</span>
+                </label>
+                <label class="flex items-center gap-3 p-3 bg-slate-700/50 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors">
+                  <input type="checkbox" checked class="w-4 h-4 rounded bg-slate-700 border-slate-600 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-slate-800">
+                  <span class="text-sm text-slate-300">LED</span>
+                </label>
+                <label class="flex items-center gap-3 p-3 bg-slate-700/50 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors">
+                  <input type="checkbox" class="w-4 h-4 rounded bg-slate-700 border-slate-600 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-slate-800">
+                  <span class="text-sm text-slate-300">Buzzer</span>
+                </label>
+                <label class="flex items-center gap-3 p-3 bg-slate-700/50 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors">
+                  <input type="checkbox" checked class="w-4 h-4 rounded bg-slate-700 border-slate-600 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-slate-800">
+                  <span class="text-sm text-slate-300">Dashboard</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="flex gap-3 pt-4">
+              <button class="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium transition-colors">Speichern</button>
+              <button class="px-5 py-2.5 border border-slate-600 hover:bg-slate-700 rounded-lg transition-colors">Abbrechen</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Tab Navigation
+    function showTab(tabName) {
+      const contents = ['dashboard', 'history', 'alarms', 'settings'];
+      contents.forEach(c => {
+        document.getElementById('content-' + c).classList.add('hidden');
+      });
+      document.getElementById('content-' + tabName).classList.remove('hidden');
+
+      const tabs = ['dashboard', 'history', 'alarms', 'settings'];
+      tabs.forEach(tab => {
+        const btn = document.getElementById('tab-' + tab);
+        if (tab === tabName) {
+          btn.className = 'px-4 py-2 rounded-md bg-cyan-600 text-white font-medium transition-colors';
+        } else {
+          btn.className = 'px-4 py-2 rounded-md text-slate-400 hover:text-white transition-colors';
+        }
+      });
+    }
+
+    // Initialize Chart.js
+    const ctx = document.getElementById('tempChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+        datasets: [{
+          label: 'Temperatur (°C)',
+          data: [18.5, 17.2, 19.8, 24.5, 26.3, 23.1, 21.0],
+          borderColor: '#06b6d4',
+          backgroundColor: 'rgba(6, 182, 212, 0.1)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: { color: '#94a3b8' }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: '#94a3b8' },
+            grid: { color: '#334155' }
+          },
+          y: {
+            ticks: { color: '#94a3b8' },
+            grid: { color: '#334155' }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
