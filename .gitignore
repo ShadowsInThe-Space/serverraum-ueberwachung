@@ -1,0 +1,38 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# PlatformIO
+.pio/
+.vscode/.pio/
+
+# Node.js / Frontend
+node_modules/
+serverraum-dashboard/node_modules/
+serverraum-dashboard/dist/
+serverraum-dashboard/.vite/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# System
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# AGENTS.md und .github behalten (wichtig für das Projekt)
+# AGENTS.md
