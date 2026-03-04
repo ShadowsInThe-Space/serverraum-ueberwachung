@@ -1,0 +1,24 @@
+# Serverraum-Überwachung Backend
+# Python Abhängigkeiten
+
+# Web Framework
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+
+# MQTT
+paho-mqtt>=1.6.1
+
+# Datenbank
+mysql-connector-python>=8.2.0
+
+# Konfiguration
+pydantic>=2.5.0
+
+# CORS (wenn nötig)
+python-multipart>=0.0.6
+
+# Logging
+python-dotenv>=1.0.0
+
+# GPIO (nur für Raspberry Pi)
+# RPi.GPIO>=0.7.1
