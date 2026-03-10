@@ -94,55 +94,60 @@ public:
      */
     bool init() override
     {
-        // Starte 1-Wire Bibliothek
-        oneWireSensor->reset_search();
+        Serial.printf("[DS18B20] Init an GPIO %d\n", konfiguration.gpioPin);
 
-        // Suche nach Sensoren am Bus
-        // Jeder DS18B20 hat eindeutige 64-Bit Seriennummer
-        if (!oneWireSensor->search(sensorAdresse))
+        // Alte Instanzen freigeben und neu aufbauen
+        delete dallasSensor;
+        delete oneWireSensor;
+        oneWireSensor = new OneWire(konfiguration.gpioPin);
+        dallasSensor  = new DallasTemperature(oneWireSensor);
+
+        // Bus stabilisieren lassen
+        delay(100);
+
+        // DallasTemperature sucht intern alle Geräte (korrekte Methode für ESP32)
+        dallasSensor->begin();
+        int anzahl = dallasSensor->getDeviceCount();
+        Serial.printf("[DS18B20] %d Geraet(e) gefunden an GPIO %d\n", anzahl, konfiguration.gpioPin);
+
+        if (anzahl == 0)
         {
-            // Kein Sensor gefunden!
-            Serial.println("[DS18B20] Fehler: Kein Sensor gefunden an GPIO " + String(konfiguration.gpioPin));
+            Serial.printf("[DS18B20] Kein Sensor! Prüfe: GPIO=%d, Pullup 4.7kΩ an 3.3V, VCC, GND\n",
+                          konfiguration.gpioPin);
             messwert.status = SensorStatus::NICHT_VERFUEGBAR;
             return false;
         }
 
-        // Prüfe CRC der Adresse (Fehlererkennung)
-        if (OneWire::crc8(sensorAdresse, 7) != sensorAdresse[7])
+        // Adresse des ersten DS18B20 auslesen
+        if (!dallasSensor->getAddress(sensorAdresse, 0))
         {
-            Serial.println("[DS18B20] Fehler: CRC-Prüfung fehlgeschlagen!");
+            Serial.println("[DS18B20] Fehler: Adresse konnte nicht gelesen werden!");
             messwert.status = SensorStatus::FEHLER;
             return false;
         }
 
-        // Prüfe ob es wirklich ein DS18B20 ist
-        // Das erste Byte der Adresse sollte 0x28 sein
+        // Family-Code prüfen: DS18B20 = 0x28
         if (sensorAdresse[0] != 0x28)
         {
-            Serial.println("[DS18B20] Fehler: Kein DS18B20 gefunden!");
+            Serial.printf("[DS18B20] Unbekannter Sensor-Typ: Family=0x%02X\n", sensorAdresse[0]);
             messwert.status = SensorStatus::FEHLER;
             return false;
         }
 
-        // Setze Auflösung auf 12 Bit (höchste Genauigkeit)
+        // Adresse ausgeben
+        Serial.print("[DS18B20] Sensor-Adresse: ");
+        for (uint8_t i = 0; i < 8; i++)
+            Serial.printf("%02X ", sensorAdresse[i]);
+        Serial.println();
+
+        // 12-Bit Auflösung (0.0625°C Genauigkeit, ~750ms Wandlungszeit)
         dallasSensor->setResolution(sensorAdresse, 12);
 
-        // Starte erste Messung (asynchron - wird in messen() abgerufen)
+        // Erste Messung anstoßen (Ergebnis in messen() abrufen)
         dallasSensor->requestTemperatures();
 
         messwert.status = SensorStatus::OK;
-
-        // Gebe Sensor-Adresse aus (zur Kontrolle)
-        Serial.print("[DS18B20] Initialisiert: GPIO ");
-        Serial.println(konfiguration.gpioPin);
-        Serial.print("[DS18B20] Sensor-Adresse: ");
-        for (uint8_t i = 0; i < 8; i++)
-        {
-            Serial.print(" ");
-            Serial.print(sensorAdresse[i], HEX);
-        }
-        Serial.println();
-
+        Serial.printf("[DS18B20] Bereit! GPIO=%d, 12-Bit Auflösung\n", konfiguration.gpioPin);
         return true;
     }
 
@@ -163,11 +168,23 @@ public:
             return false;
         }
 
-        // Prüfe ob Sensor initialisiert wurde
+        // Wenn Sensor nicht initialisiert: automatischer Re-Init alle 10 Sekunden
         if (sensorAdresse[0] == 0)
         {
-            Serial.println("[DS18B20] Fehler: Sensor nicht initialisiert!");
-            return false;
+            unsigned long jetzt = millis();
+            if (jetzt - letzterReinitVersuch >= 10000)
+            {
+                letzterReinitVersuch = jetzt;
+                Serial.printf("[DS18B20] Kein Sensor an GPIO %d - versuche Re-Init...\n", konfiguration.gpioPin);
+                if (!init())
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
         }
 
         // Lese Temperatur vom Sensor
@@ -241,6 +258,9 @@ private:
 
     /** @brief 64-Bit Adresse des Sensors (eindeutige Seriennummer) */
     uint8_t sensorAdresse[8];
+
+    /** @brief Zeitstempel des letzten Re-Init-Versuchs (für Cooldown) */
+    unsigned long letzterReinitVersuch = 0;
 };
 
 #endif // DS18B20_SENSOR_H

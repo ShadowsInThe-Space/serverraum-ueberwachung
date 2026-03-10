@@ -9,7 +9,7 @@
  * @version 1.0
  *
  * Hardware: ESP32-S3-DevKitC-1
- * Sensoren: DHT22, MQ-2, MQ-135, PIR
+ * Sensoren: BME280 (T/Feuchte/Druck), DS18B20, MQ-2, MQ-135, PIR
  * Display: ST7789 170x320
  *
  * Projekt: Serverraum-Überwachung (IHK-Abschlussprojekt)
@@ -36,7 +36,7 @@
 // Eigene Includes
 #include "sensors/Sensor.h"
 #include "sensors/SensorData.h"
-#include "sensors/DHT22Sensor.h"
+#include "sensors/BME280Sensor.h"
 #include "sensors/DS18B20Sensor.h"
 #include "sensors/MQ2Sensor.h"
 #include "sensors/MQ135Sensor.h"
@@ -52,14 +52,15 @@
 // WLAN: In include/config.h konfigurieren
 // MQTT: In include/config.h konfigurieren
 
-// GPIO-Pin Belegung (laut Tech-Specs!)
-const int PIN_DHT22 = 5;       // GPIO 5: DHT22 (Temperatur/Feuchte)
-const int PIN_MQ2 = 4;         // GPIO 4: MQ-2 (Rauchgas) - ADC1 Kanal 3
-                               // WICHTIG: GPIO 1 NICHT verwenden -> TFT_RST Hardware-Konflikt!
-const int PIN_MQ135 = 2;       // GPIO 2: MQ-135 (Luftqualität) - ADC1 Kanal 1
-const int PIN_PIR = 6;         // GPIO 6: PIR (Bewegung)
-const int PIN_LED = 7;         // GPIO 7: Warn-LED
-const int PIN_BUZZER = 8;      // GPIO 8: Buzzer
+// GPIO-Pin Belegung (neu - kollisionsfrei)
+// BME280: I2C (SDA=21, SCL=47) - s.u. in BME280Sensor.h
+// DS18B20: GPIO 18 (1-Wire Bus)
+const int PIN_DS18B20 = 18;   // GPIO 18: DS18B20 (1-Wire Temperatursensor)
+const int PIN_MQ2 = 15;        // GPIO 15: MQ-2 (Rauchgas) - ADC
+const int PIN_MQ135 = 16;      // GPIO 16: MQ-135 (Luftqualität) - ADC
+const int PIN_PIR = 17;        // GPIO 17: PIR (Bewegung)
+const int PIN_LED = 45;        // GPIO 45: Warn-LED
+const int PIN_BUZZER = 21;     // GPIO 21: Buzzer
 
 // Timing
 const unsigned long HEARTBEAT_INTERVAL = 60000;  // Heartbeat alle 60 Sekunden
@@ -80,13 +81,12 @@ SensorManager* sensorManager = nullptr;
 // Display Manager - verwaltet das TFT Display!
 DisplayManager* displayManager = nullptr;
 
-// Direkter Zeiger auf DHT22 für Display-Aktualisierung
-DHT22Sensor* dht22Sensor   = nullptr;
-
-// Zeiger auf alle weiteren Sensoren fuer das Dashboard
-MQ2Sensor*   mq2Sensor    = nullptr;
-MQ135Sensor* mq135Sensor  = nullptr;
-PIRSensor*   pirSensor    = nullptr;
+// Direkter Zeiger auf Sensoren für Display-Aktualisierung
+BME280Sensor* bme280Sensor = nullptr;
+DS18B20Sensor* ds18b20Sensor = nullptr;
+MQ2Sensor* mq2Sensor = nullptr;
+MQ135Sensor* mq135Sensor = nullptr;
+PIRSensor* pirSensor = nullptr;
 
 // Timer für Heartbeat
 unsigned long letzterHeartbeat = 0;
@@ -111,25 +111,17 @@ void verbindeWLAN()
     WiFi.mode(WIFI_STA);
     WiFi.begin(WIFI_SSID, WIFI_PASS);
 
-    // Warte max. 10 Sekunden auf Verbindung (kein endloser Loop!)
-    int versuche = 0;
-    while (WiFi.status() != WL_CONNECTED && versuche < 20)
+    // Warte auf Verbindung
+    while (WiFi.status() != WL_CONNECTED)
     {
         delay(500);
         Serial.print(".");
-        versuche++;
     }
 
-    if (WiFi.status() == WL_CONNECTED)
-    {
-        Serial.println("\nWLAN verbunden!");
-        Serial.printf("IP-Adresse: %s\n", WiFi.localIP().toString().c_str());
-        Serial.printf("Signalstärke: %d dBm\n", WiFi.RSSI());
-    }
-    else
-    {
-        Serial.println("\nWLAN: Kein Netz erreichbar - System laeuft im Offline-Modus!");
-    }
+    // Verbindung erfolgreich
+    Serial.println("\nWLAN verbunden!");
+    Serial.printf("IP-Adresse: %s\n", WiFi.localIP().toString().c_str());
+    Serial.printf("Signalstärke: %d dBm\n", WiFi.RSSI());
 }
 
 /**
@@ -147,30 +139,29 @@ void verbindeMQTT()
 {
     Serial.println("\n=== MQTT Verbindung ===");
 
-    // Nur verbinden wenn WLAN verfügbar
-    if (WiFi.status() != WL_CONNECTED)
-    {
-        Serial.println("MQTT: Kein WLAN - uebersprungen.");
-        return;
-    }
-
     // Setze MQTT Server (mit Config-Werten)
     mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
 
-    // Einzelner Verbindungsversuch (max. 5 Sekunden)
-    Serial.print("Verbinde mit MQTT Broker " + String(MQTT_BROKER) + "...");
-    mqttClient.connect(MQTT_CLIENT_ID);
-    delay(1000);
+    // Verbindungsversuch
+    while (!mqttClient.connected())
+    {
+        Serial.print("Verbinde mit MQTT Broker " + String(MQTT_BROKER) + "...");
 
-    if (mqttClient.connected())
-    {
-        Serial.println(" OK!");
+        if (mqttClient.connect(MQTT_CLIENT_ID))
+        {
+            Serial.println(" OK!");
+        }
+        else
+        {
+            Serial.printf(" Fehler (rc=%d), versuche erneut in 5 Sekunden...\n",
+                         mqttClient.state());
+            delay(5000);
+        }
     }
-    else
-    {
-        Serial.printf(" Fehler (rc=%d) - System laeuft ohne MQTT weiter!\n",
-                     mqttClient.state());
-    }
+
+    // Subscribe auf Topics falls nötig
+    // z.B. für Steuerbefehle vom Backend
+    // mqttClient.subscribe("serverraum/steuerung/#");
 }
 
 /**
@@ -214,34 +205,39 @@ void initialisiereSensoren()
     // Erstelle Sensor Manager
     sensorManager = new SensorManager(mqttClient, MQTT_TOPIC_BASE);
 
-    // --- DHT22 Sensor (Temperatur + Feuchte) ---
-    // Misst Temperatur und Luftfeuchtigkeit
-    // Pin: GPIO 5 (laut Tech-Specs)
-    auto dht22 = new DHT22Sensor(PIN_DHT22, "temp_serverraum", 5000);
-    dht22Sensor = dht22;  // Globalen Zeiger speichern für Display-Zugriff
-    sensorManager->sensorHinzufuegen(dht22);
+    // --- BME280 Sensor (Temperatur + Feuchte + Druck) ---
+    // I2C: SDA=GPIO 8, SCL=GPIO 9, Adresse=0x76
+    auto bme280 = new BME280Sensor(8, "temp_serverraum", 5000);
+    bme280Sensor = bme280;  // Globalen Zeiger speichern für Display-Zugriff
+    sensorManager->sensorHinzufuegen(bme280);
+
+    // --- DS18B20 Sensor (Temperatursensor 1-Wire) ---
+    // Pin: GPIO 18 (1-Wire Bus)
+    auto ds18b20 = new DS18B20Sensor(PIN_DS18B20, "temp_ds18b20", 2000);
+    ds18b20Sensor = ds18b20;  // Globalen Zeiger speichern für Display-Zugriff
+    sensorManager->sensorHinzufuegen(ds18b20);
 
     // --- MQ-2 Sensor (Rauchgas) ---
     // Analog-Sensor für Rauch und brennbare Gase
-    // Pin: GPIO 1 (ADC1 Kanal 0)
+    // Pin: GPIO 15 (ADC)
     auto mq2 = new MQ2Sensor(PIN_MQ2, "rauchgas", 5000);
     mq2->setzeSchwellwert(200.0f);  // Alarm bei 200 ppm
-    mq2Sensor = mq2;                // Globalen Zeiger setzen fuer Dashboard-Zugriff
+    mq2Sensor = mq2;
     sensorManager->sensorHinzufuegen(mq2);
 
     // --- MQ-135 Sensor (Luftqualität) ---
     // Analog-Sensor für CO2-Äquivalent und Luftschadstoffe
-    // Pin: GPIO 2 (ADC1 Kanal 1)
+    // Pin: GPIO 16 (ADC)
     auto mq135 = new MQ135Sensor(PIN_MQ135, "luftqualitaet", 5000);
     mq135->setzeSchwellwert(800.0f);  // Alarm bei 800 ppm
-    mq135Sensor = mq135;               // Globalen Zeiger setzen
+    mq135Sensor = mq135;
     sensorManager->sensorHinzufuegen(mq135);
 
     // --- PIR Sensor (Bewegung) ---
     // Digitaler Bewegungsmelder
-    // Pin: GPIO 6
+    // Pin: GPIO 17
     auto pir = new PIRSensor(PIN_PIR, "bewegung", 1000);
-    pirSensor = pir;  // Globalen Zeiger setzen
+    pirSensor = pir;
     sensorManager->sensorHinzufuegen(pir);
 
     // Initialisiere alle Sensoren (polymorph!)
@@ -291,7 +287,7 @@ void setup()
 {
     // Serielle Kommunikation starten (für Debug-Ausgabe)
     Serial.begin(115200);
-    delay(2000);  // Laengere Pause damit Spannung stabil und Serial bereit ist
+    delay(1000);
 
     // Willkommensnachricht
     Serial.println("\n\n");
@@ -301,48 +297,27 @@ void setup()
     Serial.println("╚═══════════════════════════════════════════════════════╝\n");
 
     // Display initialisieren (VOR WLAN - wichtig für Stabilität!)
-    displayManager = new DisplayManager();
-    displayManager->init();
-    displayManager->aktualisiereTemperatur(0.0f, 30.0f);
-    displayManager->aktualisiereStatus("Starte...");
+    // Display deaktiviert wegen LVGL/TFT_eSPI Crash - muss separat debuggt werden
+    displayManager = nullptr;
+    Serial.println("=== Display deaktiviert (Crash-Gefahr) ===");
 
-    // Kurze Pause damit Display/TFT bereit ist
+    // Kurze Pause
     delay(500);
+
+    // === Sensoren INITIALISIEREN (VOR WLAN - für Debug-Ausgabe) ===
+    initialisiereSensoren();
 
     // WLAN Event Handler registrieren
     WiFi.onEvent(wifiEventCallback);
 
-    // Display-Status vor WLAN zeigen
-    displayManager->aktualisiereStatus("Verbinde WLAN...");
-
-    // Verbinde mit WLAN (max. 10 Sekunden)
+    // Verbinde mit WLAN
     verbindeWLAN();
-
-    // WICHTIG: Display nach WiFi-Init neu starten!
-    // WiFi-Funk kann GPIO1 kurz stören -> Display-Reset nötig
-    displayManager->neuStarten();
-    displayManager->aktualisiereStatus("Verbinde MQTT...");
 
     // Verbinde mit MQTT Broker
     verbindeMQTT();
 
     // Setze MQTT Callback für empfangene Nachrichten
     mqttClient.setCallback(mqttCallback);
-
-    // Display-Status aktualisieren
-    displayManager->aktualisiereStatus("Starte Sensoren...");
-
-    // Initialisiere Sensoren
-    initialisiereSensoren();
-
-    // DisplayManager mit SensorManager verbinden (fuer Alarm-Visualisierung)
-    // Polymorphie in Aktion: SensorManager kennt nur DisplayManager-Interface,
-    // egal welcher Sensortyp den Alarm ausloest -> Display wird aktualisiert
-    if (sensorManager != nullptr && displayManager != nullptr)
-    {
-        sensorManager->setzeDisplayManager(displayManager);
-        Serial.println("[Setup] DisplayManager mit SensorManager verbunden");
-    }
 
     // LED und Buzzer als Ausgang konfigurieren
     pinMode(PIN_LED, OUTPUT);
@@ -366,32 +341,22 @@ void setup()
  */
 void loop()
 {
-    // Prüfe WLAN-Verbindung (nur alle 30 Sekunden erneut versuchen)
-    static unsigned long letzterWlanVersuch = 0;
-    if (WiFi.status() != WL_CONNECTED && millis() - letzterWlanVersuch > 30000)
+    // Prüfe WLAN-Verbindung
+    if (WiFi.status() != WL_CONNECTED)
     {
-        Serial.println("[WLAN] Verbindung verloren - versuche neu...");
+        Serial.println("[WLAN] Verbindung verloren!");
         verbindeWLAN();
-        letzterWlanVersuch = millis();
     }
 
-    // Prüfe MQTT-Verbindung (nur wenn WLAN aktiv)
-    if (WiFi.status() == WL_CONNECTED && !mqttClient.connected())
+    // Prüfe MQTT-Verbindung
+    if (!mqttClient.connected())
     {
-        static unsigned long letzterMqttVersuch = 0;
-        if (millis() - letzterMqttVersuch > 10000)
-        {
-            Serial.println("[MQTT] Verbindung verloren - versuche neu...");
-            verbindeMQTT();
-            letzterMqttVersuch = millis();
-        }
+        Serial.println("[MQTT] Verbindung verloren!");
+        verbindeMQTT();
     }
 
-    // Bearbeite MQTT (keep-alive, callbacks) - nur wenn verbunden
-    if (mqttClient.connected())
-    {
-        mqttClient.loop();
-    }
+    // Bearbeite MQTT (keep-alive, callbacks)
+    mqttClient.loop();
 
     // Sensoren abfragen und Daten senden
     // Diese Methode prüft intern ob Zeit für neue Messung
@@ -399,41 +364,80 @@ void loop()
     {
         sensorManager->loop();
 
-        // Display alle 2 Sekunden mit ALLEN Sensorwerten aktualisieren
+        // Display aktualisieren (alle 2 Sekunden)
         if (millis() - letzterDisplayUpdate >= 2000)
         {
             if (displayManager != nullptr)
             {
-                // Alle Sensorwerte lesen (0.0 wenn Sensor nicht angeschlossen)
-                float temp    = (dht22Sensor  && dht22Sensor->getMesswert().status  == SensorStatus::OK)
-                                ? dht22Sensor->getMesswert().wert   : 0.0f;
-
-                // Feuchte separat vom DHT22 lesen und aktualisieren
-                float feuchte = 0.0f;
-                if (dht22Sensor && dht22Sensor->getMesswert().status == SensorStatus::OK)
+                // DS18B20 Messwert holen (priorisiert)
+                float temperatur = 0.0f;
+                if (ds18b20Sensor != nullptr)
                 {
-                    dht22Sensor->messenFeuchte();  // Feuchtemessung durchfuehren
-                    feuchte = dht22Sensor->getFeuchte();
+                    SensorMesswert ds18b20Messwert = ds18b20Sensor->getMesswert();
+                    if (ds18b20Messwert.status == SensorStatus::OK)
+                    {
+                        temperatur = ds18b20Messwert.wert;
+                    }
                 }
 
-                float rauch   = (mq2Sensor    && mq2Sensor->getMesswert().status    == SensorStatus::OK)
-                                ? mq2Sensor->getMesswert().wert     : 0.0f;
-                float luft    = (mq135Sensor  && mq135Sensor->getMesswert().status  == SensorStatus::OK)
-                                ? mq135Sensor->getMesswert().wert   : 0.0f;
-                bool  pir     = (pirSensor    && pirSensor->getMesswert().status    == SensorStatus::OK)
-                                ? (pirSensor->getMesswert().wert > 0.5f) : false;
+                // Fallback auf BME280 wenn DS18B20 nicht verfügbar
+                if (temperatur == 0.0f && bme280Sensor != nullptr)
+                {
+                    SensorMesswert bmeMesswert = bme280Sensor->getMesswert();
+                    if (bmeMesswert.status == SensorStatus::OK)
+                    {
+                        temperatur = bmeMesswert.wert;
+                    }
+                }
 
-                // Alle Kacheln gleichzeitig aktualisieren
-                displayManager->aktualisiereAlleWerte(temp, feuchte, rauch, luft, pir);
+                // Feuchtigkeit von BME280
+                float feuchte = 0.0f;
+                if (bme280Sensor != nullptr)
+                {
+                    feuchte = bme280Sensor->getFeuchtigkeit();
+                }
+
+                // MQ2, MQ135 und PIR Werte holen
+                float rauch = mq2Sensor ? mq2Sensor->getMesswert().wert : 0.0f;
+                float luft = mq135Sensor ? mq135Sensor->getMesswert().wert : 0.0f;
+                bool pir = pirSensor ? (pirSensor->getMesswert().wert > 0.5f) : false;
+
+                // Sensor-Status prüfen
+                bool sensorOk = (temperatur > 0.0f) || (feuchte > 0.0f);
+
+                // Alle Sensorwerte an DisplayManager übergeben
+                if (displayManager != nullptr) {
+                    displayManager->aktualisiereAlleWerte(
+                        temperatur,    // Temperatur (DS18B20 oder BME280)
+                        feuchte,       // Feuchtigkeit (BME280)
+                        rauch,        // Rauch (MQ2)
+                        luft,         // Luftqualität (MQ135)
+                        pir            // Bewegung (PIR)
+                    );
+                }
+
+                // MQTT-Status in der Statusleiste
+                String statusText;
+                if (sensorOk)
+                {
+                    statusText = String(temperatur, 1) + "C | " + String(feuchte, 0) + "% | OK";
+                }
+                else
+                {
+                    statusText = "Sensor liest...";
+                }
+                if (displayManager != nullptr) {
+                    displayManager->aktualisiereStatus(statusText.c_str());
+                }
             }
             letzterDisplayUpdate = millis();
         }
     }
 
-    // LVGL Timer und Auto-Szenen-Wechsel (wichtig fuer Display!)
+    // LVGL Timer callback (wichtig für Display!)
     if (displayManager != nullptr)
     {
-        displayManager->lvglUpdate();
+        displayManager->timerCallback();
     }
 
     // Heartbeat senden (alle 60 Sekunden)
