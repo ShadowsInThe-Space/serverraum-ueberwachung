@@ -34,8 +34,8 @@ class DatabaseConfig:
     host: str = "localhost"
     port: int = 3306
     benutzer: str = "serverraum"
-    passwort: str = "passwort"
-    datenbank: str = "serverraum_db"
+    passwort: str = ""  # Muss über DB_PASS Umgebungsvariable gesetzt werden
+    datenbank: str = "serverraum_ueberwachung"
 
 
 @dataclass
@@ -46,7 +46,7 @@ class AlarmConfig:
     email_smtp_server: str = "smtp.gmail.com"
     email_smtp_port: int = 587
     email_absender: str = "serverraum@example.com"
-    email_passwort: str = "app_password"
+    email_passwort: str = ""  # Muss über EMAIL_PASS Umgebungsvariable gesetzt werden
     email_empfaenger: str = "admin@example.com"
 
     # Warn-LED (GPIO Pin am Raspberry Pi)
@@ -121,6 +121,7 @@ def lade_konfiguration_aus_env():
 
     # API
     config.api.port = int(os.getenv("API_PORT", str(config.api.port)))
+    config.api.debug = os.getenv("DEBUG", "false").lower() == "true"
 
 
 if __name__ == "__main__":

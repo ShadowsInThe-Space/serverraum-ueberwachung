@@ -238,14 +238,14 @@ public:
         switch (messwert.sensorTyp)
         {
             case SensorTyp::DS18B20:
-                // Temperatur-Alarm
-                if (messwert.wert > 30.0f)
+                // Temperatur-Alarm (ab 28°C kritisch mit Buzzer)
+                if (messwert.wert >= 28.0f)
                 {
-                    sendeAlarm("Temperatur zu hoch!", messwert);
+                    sendeAlarm("Temperatur kritisch! " + String(messwert.wert, 1) + "°C", messwert);
                 }
-                else if (messwert.wert < 15.0f)
+                else if (messwert.wert >= 22.1f)
                 {
-                    sendeAlarm("Temperatur zu niedrig!", messwert);
+                    sendeAlarm("Temperatur erhöht: " + String(messwert.wert, 1) + "°C", messwert);
                 }
                 break;
 

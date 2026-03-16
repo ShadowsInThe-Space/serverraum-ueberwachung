@@ -232,27 +232,27 @@ void initialisiereSensoren()
 
     // --- DS18B20 Sensor (Temperatur) ---
     // Pin: GPIO 5 (1-Wire Bus)
-    // Messintervall: 1000ms (mindestens 750ms für 12-Bit Auflösung)
-    ds18b20Sensor = new DS18B20Sensor(PIN_DS18B20, "temp_serverraum", 1000);
+    // Messintervall: 10000ms (10 Sekunden)
+    ds18b20Sensor = new DS18B20Sensor(PIN_DS18B20, "temp_serverraum", 10000);
     sensorManager->sensorHinzufuegen(ds18b20Sensor);
 
     // --- PIR Sensor (Bewegung) ---
     // Pin: GPIO 21
-    // Messintervall: 500ms (poll alle 500ms)
-    auto pirSensor = new PIRSensor(PIN_PIR, "bewegung", 500);
+    // Messintervall: 10000ms (10 Sekunden)
+    auto pirSensor = new PIRSensor(PIN_PIR, "bewegung", 10000);
     sensorManager->sensorHinzufuegen(pirSensor);
 
     // --- MQ-2 Sensor (Rauchgas) ---
     // Pin: GPIO 1 (ADC1 Kanal 0)
-    // Messintervall: 1000ms
-    auto mq2Sensor = new MQ2Sensor(PIN_MQ2, "rauchgas", 1000);
+    // Messintervall: 10000ms (10 Sekunden)
+    auto mq2Sensor = new MQ2Sensor(PIN_MQ2, "rauchgas", 10000);
     mq2Sensor->setzeSchwellwert(200.0f);  // Alarm bei 200 ppm
     sensorManager->sensorHinzufuegen(mq2Sensor);
 
     // --- SHT31 Sensor (Temperatur + Feuchtigkeit) ---
     // Pins: GPIO 8 (SCL), GPIO 9 (SDA)
-    // Messintervall: 1000ms
-    sht31Sensor = new SHT31Sensor(PIN_SHT31_SCL, PIN_SHT31_SDA, "temp_sht31", 1000);
+    // Messintervall: 10000ms (10 Sekunden)
+    sht31Sensor = new SHT31Sensor(PIN_SHT31_SCL, PIN_SHT31_SDA, "temp_sht31", 10000);
     sensorManager->sensorHinzufuegen(sht31Sensor);
 
     // Alle Sensoren initialisieren
@@ -392,20 +392,23 @@ void loop()
                 Serial.println("[ALARM] Kein DS18B20 Sensor!");
             }
 
-            // Alarm-Status setzen
-            if (letzteTemperatur >= 30.0f)
+            // Alarm-Status setzen (neue Schwellwerte)
+            // < 22°C: Grün (OK)
+            // 22.1 - 27.9°C: Gelb (Warnung)
+            // >= 28°C: Rot + Buzzer (Kritisch)
+            if (letzteTemperatur >= 28.0f)
             {
                 // Kritisch: Rot + Buzzer
                 zeigeAlarmStatus(3);
                 Serial.printf("[ALARM] Kritisch: %.1f°C\n", letzteTemperatur);
             }
-            else if (letzteTemperatur >= 25.0f)
+            else if (letzteTemperatur >= 22.1f)
             {
                 // Warnung: Gelb
                 zeigeAlarmStatus(2);
                 Serial.printf("[ALARM] Warnung: %.1f°C\n", letzteTemperatur);
             }
-            else if (letzteTemperatur > 0)
+            else if (letzteTemperatur > 0 && letzteTemperatur < 22.1f)
             {
                 // OK: Grün
                 zeigeAlarmStatus(4);
