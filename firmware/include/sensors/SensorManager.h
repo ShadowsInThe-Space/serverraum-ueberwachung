@@ -22,7 +22,6 @@
 #include <ArduinoJson.h>
 #include "Sensor.h"
 #include "SensorData.h"
-#include "DHT22Sensor.h"
 #include "DS18B20Sensor.h"
 #include "MQ2Sensor.h"
 #include "MQ135Sensor.h"
@@ -173,7 +172,7 @@ public:
      * JSON-Payload:
      * {
      *   "sensor_id": "temp_serverraum",
-     *   "sensor_typ": "DHT22",
+     *   "sensor_typ": "DS18B20",
      *   "wert": 22.5,
      *   "status": "OK",
      *   "timestamp": 1234567890
@@ -238,7 +237,6 @@ public:
 
         switch (messwert.sensorTyp)
         {
-            case SensorTyp::DHT22:
             case SensorTyp::DS18B20:
                 // Temperatur-Alarm
                 if (messwert.wert > 30.0f)
@@ -323,7 +321,6 @@ private:
     {
         switch (typ)
         {
-            case SensorTyp::DHT22: return "DHT22";
             case SensorTyp::DS18B20: return "DS18B20";
             case SensorTyp::MQ2: return "MQ2";
             case SensorTyp::MQ135: return "MQ135";

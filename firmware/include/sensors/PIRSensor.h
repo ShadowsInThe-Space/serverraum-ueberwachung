@@ -73,14 +73,12 @@ public:
      */
     bool init() override
     {
-        // Digitalen Pin als Eingang konfigurieren
+        // Digitalen Pin als Eingang MIT PullDown konfigurieren
         // WICHTIG: PIR gibt 5V aus! ESP32 verträgt aber nur 3.3V!
         // -> Muss mit Spannungsteiler oder Level-Shifter auf 3.3V reduziert werden
         // -> Oder: HC-SR501 auf 3.3V modifizieren (siehe Bastelprojekte)
-        pinMode(konfiguration.gpioPin, INPUT);
-
-        // Interne PullDown aktivieren (keine externe Beschaltung nötig)
-        digitalWrite(konfiguration.gpioPin, LOW);
+        // ESP32: INPUT_PULLDOWN aktiviert internen 100kΩ Pull-Down Widerstand
+        pinMode(konfiguration.gpioPin, INPUT_PULLDOWN);
 
         // Wartezeit auf Sensor-Stabilisierung (warm-up)
         // In dieser Zeit kann der Sensor noch "falsch" messen!
