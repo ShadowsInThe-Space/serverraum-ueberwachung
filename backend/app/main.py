@@ -105,10 +105,12 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS erlauben (für Frontend Zugriff)
+# CORS - in Produktion auf spezifische Origins einschränken
+import os
+allowed_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In Produktion einschränken!
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -238,7 +240,11 @@ async def sensoren_liste():
 
     except Exception as e:
         logger.error(f"Fehler beim Abrufen der Sensoren: {e}")
-        raise HTTPException(status_code=500, detail="Datenbankfehler")
+        # Im Development-Modus werden Details zurückgegeben, im Produktionsmodus nur eine generische Meldung
+        if config.api.debug:
+            raise HTTPException(status_code=500, detail=f"Datenbankfehler: {str(e)}")
+        else:
+            raise HTTPException(status_code=500, detail="Datenbankfehler")
 
 
 @app.get("/sensoren/{sensor_id}/messungen", response_model=List[MessungResponse], tags=["Sensoren"])
@@ -266,7 +272,10 @@ async def messungen_liste(
 
     except Exception as e:
         logger.error(f"Fehler beim Abrufen der Messungen: {e}")
-        raise HTTPException(status_code=500, detail="Datenbankfehler")
+        if config.api.debug:
+            raise HTTPException(status_code=500, detail=f"Datenbankfehler: {str(e)}")
+        else:
+            raise HTTPException(status_code=500, detail="Datenbankfehler")
 
 
 @app.get("/sensoren/{sensor_id}/statistik", response_model=StatistikResponse, tags=["Sensoren"])
@@ -293,7 +302,10 @@ async def statistik(
 
     except Exception as e:
         logger.error(f"Fehler beim Abrufen der Statistik: {e}")
-        raise HTTPException(status_code=500, detail="Datenbankfehler")
+        if config.api.debug:
+            raise HTTPException(status_code=500, detail=f"Datenbankfehler: {str(e)}")
+        else:
+            raise HTTPException(status_code=500, detail="Datenbankfehler")
 
 
 @app.get("/alarme", response_model=List[AlarmResponse], tags=["Alarme"])
