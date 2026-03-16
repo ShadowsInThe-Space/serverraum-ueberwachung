@@ -97,6 +97,9 @@ public:
         // Starte 1-Wire Bibliothek
         oneWireSensor->reset_search();
 
+        // Initialisiere DallasTemperature-Bibliothek (KRITISCH!)
+        dallasSensor->begin();
+
         // Suche nach Sensoren am Bus
         // Jeder DS18B20 hat eindeutige 64-Bit Seriennummer
         if (!oneWireSensor->search(sensorAdresse))

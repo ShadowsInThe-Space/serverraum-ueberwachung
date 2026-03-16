@@ -23,8 +23,8 @@
  */
 enum class SensorTyp
 {
-    DHT22,       ///< Digitaler Sensor für Temperatur und Luftfeuchtigkeit
     DS18B20,     ///< Digitaler 1-Wire Temperatursensor
+    SHT31,       ///< I2C Temperatursensor und Feuchtigkeitssensor
     MQ2,         ///< Analoger Sensor für Rauchgas und brennbare Gase
     MQ135,       ///< Analoger Sensor für Luftqualität (CO2, Ammoniak, Benzol)
     PIR          ///< Passiver Infrarot-Bewegungsmelder
