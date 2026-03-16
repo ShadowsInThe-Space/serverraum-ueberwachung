@@ -9,7 +9,7 @@
  */
 
 // Basis-URL für API (kann in Einstellungen geändert werden)
-let apiBaseUrl = 'http://localhost:8000';
+let apiBaseUrl = 'http://192.168.178.48:8000';
 
 /**
  * Setzt die API-Basis-URL
@@ -111,7 +111,7 @@ async function getAlarme(status = 'alle', limit = 100) {
  * @param {number} alarmId - Alarm-ID
  * @returns {Promise}
  */
-async function quiesiereAlarm(alarmId) {
+async function quittiereAlarm(alarmId) {
     return await apiRequest(`/alarme/${alarmId}/quittieren`, 'POST');
 }
 
@@ -136,7 +136,7 @@ window.api = {
     getMessungen,
     getStatistik,
     getAlarme,
-    quiesiereAlarm,
+    quittiereAlarm,
     checkApiConnection,
     get baseUrl() { return apiBaseUrl; }
 };

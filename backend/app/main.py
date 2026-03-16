@@ -105,6 +105,13 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Static files für Frontend
+from fastapi.staticfiles import StaticFiles
+import os
+static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
 # CORS - in Produktion auf spezifische Origins einschränken
 import os
 allowed_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
@@ -174,7 +181,13 @@ class SystemStatusResponse(BaseModel):
 
 @app.get("/", tags=["System"])
 async def root():
-    """Willkommensnachricht"""
+    """Frontend HTML"""
+    import os
+    static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
+    index_path = os.path.join(static_dir, "index.html")
+    if os.path.exists(index_path):
+        from fastapi.responses import FileResponse
+        return FileResponse(index_path)
     return {
         "name": "Serverraum-Überwachung API",
         "version": "1.0.0",
