@@ -254,7 +254,7 @@ class Datenbank:
             cursor = conn.cursor(dictionary=True)
             sql = """
                 SELECT a.id, a.alarm_typ, a.nachricht, a.wert, a.schwellwert,
-                       a.created_at, s.sensor_id
+                       a.status, a.created_at, s.sensor_id
                 FROM alarme a
                 JOIN sensoren s ON a.sensor_id = s.id
                 WHERE a.status = 'aktiv'

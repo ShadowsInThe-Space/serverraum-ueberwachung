@@ -1,0 +1,99 @@
+[      73ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[     248ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/status:0
+[     248ms] [ERROR] API Fehler: /status TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.checkApiConnection (http://192.168.178.48:8000/static/js/api.js:124:15)
+    at initDashboard (http://192.168.178.48:8000/static/js/dashboard.js:23:16)
+    at HTMLDocument.<anonymous> (http://192.168.178.48:8000/:324:13) @ http://192.168.178.48:8000/static/js/api.js:53
+[     248ms] [ERROR] API nicht erreichbar @ http://192.168.178.48:8000/static/js/dashboard.js:31
+[    5476ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[    5476ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[    5476ms] [ERROR] Fehler beim Laden der Alarme: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   10391ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   10392ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[   10392ms] [ERROR] Fehler beim Laden der Alarme: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   20247ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/sensoren:0
+[   20247ms] [ERROR] API Fehler: /sensoren Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[   20248ms] [ERROR] Fehler beim Laden der Sensoren: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   25244ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/sensoren:0
+[   25244ms] [ERROR] API Fehler: /sensoren Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[   25244ms] [ERROR] Fehler beim Laden der Sensoren: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   30245ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/sensoren:0
+[   30245ms] [ERROR] API Fehler: /sensoren Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[   30245ms] [ERROR] Fehler beim Laden der Sensoren: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   35246ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/sensoren:0
+[   35247ms] [ERROR] API Fehler: /sensoren Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[   35247ms] [ERROR] Fehler beim Laden der Sensoren: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   40243ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/sensoren:0
+[   40243ms] [ERROR] API Fehler: /sensoren Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[   40243ms] [ERROR] Fehler beim Laden der Sensoren: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:68

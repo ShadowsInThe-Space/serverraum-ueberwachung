@@ -1,0 +1,633 @@
+[    1343ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[    2115ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[    2115ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24) @ http://192.168.178.48:8000/static/js/api.js:53
+[    2115ms] [ERROR] Fehler beim Laden der Alarme: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[    2116ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://192.168.178.48:8000/favicon.ico:0
+[    6867ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[    6867ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[    6868ms] [ERROR] Fehler beim Laden der Alarme: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[    6925ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[    6925ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[    6925ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[    6929ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[    6929ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[    6929ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   11677ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[   11677ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9) @ http://192.168.178.48:8000/static/js/api.js:53
+[   11677ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9) @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   11677ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   11677ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9) @ http://192.168.178.48:8000/static/js/api.js:53
+[   11677ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   11860ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[   11860ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   11860ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   11860ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   11860ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   11860ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   16696ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/sensoren:0
+[   16696ms] [ERROR] API Fehler: /sensoren Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[   16696ms] [ERROR] Fehler beim Laden der Sensoren: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   16710ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   16710ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[   16710ms] [ERROR] Fehler beim Laden der Alarme: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   17216ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[   17216ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   17216ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   17216ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   17216ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   17216ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   21677ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[   21677ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9) @ http://192.168.178.48:8000/static/js/api.js:53
+[   21678ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9) @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   21679ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   21679ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9) @ http://192.168.178.48:8000/static/js/api.js:53
+[   21680ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   21867ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[   21867ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   21868ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   21868ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   21868ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   21868ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   26826ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   26826ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[   26827ms] [ERROR] Fehler beim Laden der Alarme: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   26989ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[   26989ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   26989ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   26990ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   26990ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   26990ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   31678ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[   31678ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9) @ http://192.168.178.48:8000/static/js/api.js:53
+[   31678ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9) @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   31678ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   31679ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9) @ http://192.168.178.48:8000/static/js/api.js:53
+[   31679ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   31861ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[   31861ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   31862ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   31862ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   31862ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   31862ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   36862ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/sensoren:0
+[   36862ms] [ERROR] API Fehler: /sensoren Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[   36863ms] [ERROR] Fehler beim Laden der Sensoren: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   41683ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/sensoren:0
+[   41683ms] [ERROR] API Fehler: /sensoren Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[   41684ms] [ERROR] Fehler beim Laden der Sensoren: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   41863ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/sensoren:0
+[   41863ms] [ERROR] API Fehler: /sensoren Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[   41863ms] [ERROR] Fehler beim Laden der Sensoren: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   46682ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/sensoren:0
+[   46683ms] [ERROR] API Fehler: /sensoren Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[   46683ms] [ERROR] Fehler beim Laden der Sensoren: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   46865ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/sensoren:0
+[   46865ms] [ERROR] API Fehler: /sensoren Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[   46866ms] [ERROR] Fehler beim Laden der Sensoren: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:12)
+    at async ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:26)
+    at async Promise.all (index 0)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   51677ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[   51677ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9) @ http://192.168.178.48:8000/static/js/api.js:53
+[   51677ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9) @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   51678ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   51678ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9) @ http://192.168.178.48:8000/static/js/api.js:53
+[   51678ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   51860ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[   51861ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   51861ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   51861ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   51861ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   51861ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   56676ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[   56676ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9) @ http://192.168.178.48:8000/static/js/api.js:53
+[   56678ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9) @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   56678ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   56678ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9) @ http://192.168.178.48:8000/static/js/api.js:53
+[   56679ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   56861ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[   56861ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   56861ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   56862ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   56862ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   56862ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   61677ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[   61677ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9) @ http://192.168.178.48:8000/static/js/api.js:53
+[   61678ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9) @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   61678ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   61678ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9) @ http://192.168.178.48:8000/static/js/api.js:53
+[   61678ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   61861ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[   61862ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   61862ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   61862ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   61862ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   61862ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   66825ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   66825ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[   66826ms] [ERROR] Fehler beim Laden der Alarme: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   67000ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   67001ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[   67001ms] [ERROR] Fehler beim Laden der Alarme: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   71883ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   71883ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[   71883ms] [ERROR] Fehler beim Laden der Alarme: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   72028ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   72028ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[   72029ms] [ERROR] Fehler beim Laden der Alarme: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   76817ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   76817ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/api.js:53
+[   76818ms] [ERROR] Fehler beim Laden der Alarme: Error: HTTP 500: Internal Server Error
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:48:19)
+    at async Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:12)
+    at async ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:24)
+    at async Promise.all (index 1)
+    at async aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:193:5) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   76912ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   76912ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   76913ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   76913ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[   76913ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   76913ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   81676ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[   81677ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9) @ http://192.168.178.48:8000/static/js/api.js:53
+[   81677ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9) @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   81677ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   81677ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9) @ http://192.168.178.48:8000/static/js/api.js:53
+[   81677ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   81859ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[   81860ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   81860ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   81861ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   81861ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   81861ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:127
