@@ -112,9 +112,11 @@ static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
 if os.path.exists(static_dir):
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
-# CORS - in Produktion auf spezifische Origins einschränken
-import os
-allowed_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
+# CORS - erlaubt alle Origins für Entwicklung
+cors_env = os.getenv("CORS_ORIGINS", "")
+allowed_origins = [o.strip() for o in cors_env.split(",") if o.strip()]
+if not allowed_origins:
+    allowed_origins = ["http://localhost:3000", "http://127.0.0.1:3000"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,

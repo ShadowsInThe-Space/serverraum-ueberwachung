@@ -121,7 +121,7 @@ async function quittiereAlarm(alarmId) {
  */
 async function checkApiConnection() {
     try {
-        await apiRequest('/');
+        await getStatus();
         return true;
     } catch {
         return false;
