@@ -364,5 +364,33 @@ class Datenbank:
             return []
 
 
+    def schwellwerte_abrufen(self) -> Dict:
+        """Ruft alle Schwellwerte aus alarm_konfiguration ab"""
+        conn = _neue_verbindung()
+        if not conn:
+            return {}
+
+        try:
+            cursor = conn.cursor(dictionary=True)
+            sql = "SELECT sensor_id, alarm_typ, wert FROM alarm_konfiguration"
+            cursor.execute(sql)
+            ergebnis = cursor.fetchall()
+            cursor.close()
+            conn.close()
+
+            # Umwandeln in Dict mit sensor_id als Key
+            schwellwerte = {}
+            for row in ergebnis:
+                key = f"{row['sensor_id']}_{row['alarm_typ']}"
+                schwellwerte[key] = row['wert']
+
+            return schwellwerte
+
+        except Error as e:
+            logger.error(f"Fehler beim Abrufen der Schwellwerte: {e}")
+            conn.close()
+            return {}
+
+
 # Globale Datenbank-Instanz
 datenbank = Datenbank()
