@@ -55,6 +55,36 @@ class Datenbank:
     Jede Methode erstellt ihre eigene Verbindung für Zuverlässigkeit.
     """
 
+    def __init__(self):
+        self.connection = None
+
+    def verbinden(self):
+        """Verbindet zur Datenbank (für Kompatibilität mit main.py)"""
+        import os
+        try:
+            self.connection = mysql.connector.connect(
+                host=config.datenbank.host,
+                port=config.datenbank.port,
+                user=config.datenbank.benutzer,
+                password=config.datenbank.passwort or os.getenv('DB_PASS', ''),
+                database=config.datenbank.datenbank,
+                charset='utf8mb4',
+                collation='utf8mb4_unicode_ci',
+                autocommit=True,
+                connection_timeout=60
+            )
+            self.cursor = self.connection.cursor(dictionary=True)
+            return True
+        except Error as e:
+            logger.error(f"Verbindungsfehler: {e}")
+            return False
+
+    def trennen(self):
+        """Trennt die Datenbankverbindung"""
+        if self.connection:
+            self.connection.close()
+            self.connection = None
+
     def sensor_speichern(self, sensor_id: str, sensor_typ: str, name: str = None) -> int:
         """Speichert einen neuen Sensor oder aktualisiert existierenden"""
         conn = _neue_verbindung()
