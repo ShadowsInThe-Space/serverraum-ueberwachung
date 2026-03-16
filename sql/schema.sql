@@ -69,23 +69,19 @@ CREATE TABLE IF NOT EXISTS alarm_konfiguration (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
--- Tabelle: alarms
--- Speichert ausgelöste Alarme
+-- Tabelle: alarme
+-- Speichert ausgelöste Alarme (ACHTUNG: "alarme" nicht "alarms"!)
 -- =====================================================
-CREATE TABLE IF NOT EXISTS alarms (
+CREATE TABLE IF NOT EXISTS alarme (
     id INT AUTO_INCREMENT PRIMARY KEY,
     sensor_id INT NOT NULL COMMENT 'Fremdschlüssel zu sensoren',
     alarm_typ VARCHAR(50) NOT NULL COMMENT 'Alarmtyp',
-    messwert DECIMAL(10,2) NOT NULL COMMENT 'Auslösender Messwert',
+    wert DECIMAL(10,2) NOT NULL COMMENT 'Auslösender Messwert',
     schwellwert DECIMAL(10,2) COMMENT 'Überschrittener Schwellwert',
     nachricht VARCHAR(255) COMMENT 'Optionale Alarmnachricht',
-    status VARCHAR(20) DEFAULT 'aktiv' COMMENT 'Status: aktiv, acknowledged, resolved',
+    status VARCHAR(20) DEFAULT 'aktiv' COMMENT 'Status: aktiv, quittiert, geloest',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    acknowledged_at DATETIME NULL COMMENT 'Zeitpunkt der Quittierung',
-    resolved_at DATETIME NULL COMMENT 'Zeitpunkt der Lösung',
-    FOREIGN KEY (sensor_id) REFERENCES sensoren(id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
+    quittiert_at DATETIME NULL COMMENT 'Zeitpunkt der Quittierung',
     INDEX idx_sensor_id (sensor_id),
     INDEX idx_status (status),
     INDEX idx_created_at (created_at)
@@ -187,12 +183,12 @@ SELECT
     a.sensor_id,
     s.name AS sensor_name,
     a.alarm_typ,
-    a.messwert,
+    a.wert AS messwert,
     a.schwellwert,
     a.nachricht,
     a.status,
     a.created_at
-FROM alarms a
+FROM alarme a
 JOIN sensoren s ON a.sensor_id = s.id
 WHERE a.status = 'aktiv'
 ORDER BY a.created_at DESC;
