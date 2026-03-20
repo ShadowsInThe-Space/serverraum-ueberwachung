@@ -20,10 +20,12 @@ Projekt: Serverraum-Überwachung (IHK-Abschlussprojekt)
 """
 
 import logging
+import uuid
 from contextlib import asynccontextmanager
-from typing import List, Optional
-from fastapi import FastAPI, HTTPException, Query
+from typing import List, Optional, Any
+from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from . import config
 from .mqtt_client import mqtt_client
@@ -36,6 +38,126 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+
+# ============================================================================
+# Custom HTTPException Klassen
+# ============================================================================
+
+class ServerraumHTTPException(HTTPException):
+    """Basisklasse für alle Serverraum-spezifischen Exceptions"""
+
+    def __init__(self, status_code: int, detail: str, error_type: str = "server_error"):
+        super().__init__(status_code=status_code, detail=detail)
+        self.error_type = error_type
+
+
+class SensorNichtGefundenException(ServerraumHTTPException):
+    """Exception wenn ein Sensor nicht gefunden wird"""
+
+    def __init__(self, sensor_id: str):
+        super().__init__(
+            status_code=404,
+            detail=f"Sensor mit ID '{sensor_id}' nicht gefunden",
+            error_type="sensor_not_found"
+        )
+
+
+class AlarmNichtGefundenException(ServerraumHTTPException):
+    """Exception wenn ein Alarm nicht gefunden wird"""
+
+    def __init__(self, alarm_id: int):
+        super().__init__(
+            status_code=404,
+            detail=f"Alarm mit ID '{alarm_id}' nicht gefunden",
+            error_type="alarm_not_found"
+        )
+
+
+class DatenbankVerbindungsException(ServerraumHTTPException):
+    """Exception bei Datenbankverbindungsproblemen"""
+
+    def __init__(self, detail: str = "Datenbankverbindung fehlgeschlagen"):
+        super().__init__(
+            status_code=503,
+            detail=detail,
+            error_type="database_connection_error"
+        )
+
+
+class MQTTVerbindungsException(ServerraumHTTPException):
+    """Exception bei MQTT-Verbindungsproblemen"""
+
+    def __init__(self, detail: str = "MQTT-Verbindung fehlgeschlagen"):
+        super().__init__(
+            status_code=503,
+            detail=detail,
+            error_type="mqtt_connection_error"
+        )
+
+
+class ValidierungsException(ServerraumHTTPException):
+    """Exception bei Validierungsfehlern"""
+
+    def __init__(self, detail: str):
+        super().__init__(
+            status_code=422,
+            detail=detail,
+            error_type="validation_error"
+        )
+
+
+# ============================================================================
+# Request ID Middleware & Context
+# ============================================================================
+
+# Request ID Context (vor App Definition)
+class RequestContext:
+    """Thread-safe Request Context für Request ID"""
+    _request_id: str = "no-request"
+
+    @classmethod
+    def set_request_id(cls, request_id: str):
+        cls._request_id = request_id
+
+    @classmethod
+    def get_request_id(cls) -> str:
+        return cls._request_id
+
+
+# ============================================================================
+# Strukturierte Error Response
+# ============================================================================
+
+class ErrorResponse(BaseModel):
+    """Standardisiertes Error Response Format"""
+    error: str
+    detail: str
+    status_code: int
+    request_id: Optional[str] = None
+
+
+def create_error_response(
+    error: str,
+    detail: str,
+    status_code: int,
+    request_id: Optional[str] = None
+) -> JSONResponse:
+    """
+    Erstellt eine standardisierte Error Response
+
+    Format: {"error": "message", "detail": "...", "status_code": 500, "request_id": "..."}
+    """
+    content = ErrorResponse(
+        error=error,
+        detail=detail,
+        status_code=status_code,
+        request_id=request_id or RequestContext.get_request_id()
+    )
+    return JSONResponse(
+        status_code=status_code,
+        content=content.model_dump()
+    )
 
 
 # ============================================================================
@@ -104,6 +226,103 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan
 )
+
+
+# ============================================================================
+# Globale Exception Handler
+# ============================================================================
+
+@app.exception_handler(ServerraumHTTPException)
+async def serverraum_http_exception_handler(request: Request, exc: ServerraumHTTPException):
+    """
+    Handler für alle Serverraum-spezifischen HTTP Exceptions
+    """
+    logger.error(
+        f"ServerraumHTTPException: {exc.error_type} - {exc.detail} "
+        f"[{RequestContext.get_request_id()}]"
+    )
+    return create_error_response(
+        error=exc.error_type,
+        detail=exc.detail,
+        status_code=exc.status_code
+    )
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    """
+    Handler für Standard FastAPI HTTPException (404, 422, 500 etc.)
+    """
+    error_type = {
+        400: "bad_request",
+        401: "unauthorized",
+        403: "forbidden",
+        404: "not_found",
+        405: "method_not_allowed",
+        422: "validation_error",
+        500: "internal_server_error",
+        502: "bad_gateway",
+        503: "service_unavailable"
+    }.get(exc.status_code, "http_error")
+
+    logger.warning(
+        f"HTTPException: {error_type} ({exc.status_code}) - {exc.detail} "
+        f"[{RequestContext.get_request_id()}]"
+    )
+    return create_error_response(
+        error=error_type,
+        detail=exc.detail,
+        status_code=exc.status_code
+    )
+
+
+@app.exception_handler(Exception)
+async def generic_exception_handler(request: Request, exc: Exception):
+    """
+    Generic Exception Handler für alle unhandled Exceptions
+    Fängt alle Exceptions ab die nicht vorher behandelt wurden
+    """
+    request_id = RequestContext.get_request_id()
+    logger.critical(
+        f"Unhandled Exception: {type(exc).__name__}: {str(exc)} "
+        f"[{request_id}] Path: {request.url.path}"
+    )
+
+    # Stacktrace im Debug-Modus
+    debug_mode = getattr(getattr(config, 'api', None), 'debug', False) if hasattr(config, 'api') else False
+    if debug_mode:
+        import traceback
+        detail = f"{type(exc).__name__}: {str(exc)}\n{traceback.format_exc()}"
+    else:
+        detail = "Ein unerwarteter Fehler ist aufgetreten"
+
+    return create_error_response(
+        error="internal_server_error",
+        detail=detail,
+        status_code=500
+    )
+
+
+# ============================================================================
+# Request ID Middleware (nach Exception Handlern)
+# ============================================================================
+
+@app.middleware("http")
+async def request_id_middleware(request: Request, call_next):
+    """
+    Middleware die jede Anfrage mit einer Request ID versieht
+    Header: X-Request-ID
+    """
+    # Request ID aus Header holen oder neue generieren
+    request_id = request.headers.get("X-Request-ID", str(uuid.uuid4()))
+    RequestContext.set_request_id(request_id)
+
+    # Request ID als Response Header setzen
+    response = await call_next(request)
+    response.headers["X-Request-ID"] = request_id
+
+    return response
+
 
 # Static files für Frontend
 from fastapi.staticfiles import StaticFiles
@@ -209,7 +428,7 @@ async def system_status():
 
     return {
         "status": "online",
-        "mqtt_verbunden": mqtt_client.verbunden,
+        "mqtt_verbunden": mqtt_client.ist_verbunden,
         "datenbank_verbunden": datenbank.connection is not None,
         "aktive_alarme": len(aktive_alarme)
     }
