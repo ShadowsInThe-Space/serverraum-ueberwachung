@@ -195,15 +195,15 @@ class Datenbank:
 
         try:
             cursor = conn.cursor(dictionary=True)
+            # sensor_id ist hier die Datenbank-ID als String
             sql = """
-                SELECT m.wert, m.status, m.timestamp
+                SELECT m.wert, m.timestamp
                 FROM messungen m
-                JOIN sensoren s ON m.sensor_id = s.id
-                WHERE s.sensor_id = %s
+                WHERE m.sensor_id = %s
                 ORDER BY m.timestamp DESC
                 LIMIT %s
             """
-            cursor.execute(sql, (sensor_id, limit))
+            cursor.execute(sql, (int(sensor_id), limit))
             ergebnis = cursor.fetchall()
             cursor.close()
             return ergebnis

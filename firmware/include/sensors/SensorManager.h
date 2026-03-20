@@ -26,6 +26,7 @@
 #include "MQ2Sensor.h"
 #include "MQ135Sensor.h"
 #include "PIRSensor.h"
+#include "SHT31Sensor.h"
 
 // Maximale Anzahl Sensoren, die verwaltet werden können
 #define MAX_SENSOREN 10
@@ -268,6 +269,18 @@ public:
             case SensorTyp::PIR:
                 // Bewegung wird separat behandelt
                 break;
+
+            case SensorTyp::SHT31:
+                // SHT31 misst Temperatur und Feuchte - Alarm wenn zu warm oder zu feucht
+                if (messwert.wert >= 30.0f)
+                {
+                    sendeAlarm("Temperatur kritisch! " + String(messwert.wert, 1) + "°C", messwert);
+                }
+                else if (messwert.wert >= 26.0f)
+                {
+                    sendeAlarm("Temperatur erhöht: " + String(messwert.wert, 1) + "°C", messwert);
+                }
+                break;
         }
     }
 
@@ -325,6 +338,7 @@ private:
             case SensorTyp::MQ2: return "MQ2";
             case SensorTyp::MQ135: return "MQ135";
             case SensorTyp::PIR: return "PIR";
+            case SensorTyp::SHT31: return "SHT31";
             default: return "UNBEKANNT";
         }
     }

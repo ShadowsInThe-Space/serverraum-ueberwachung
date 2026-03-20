@@ -27,10 +27,13 @@ from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from . import config
+from . import config as config_module
 from .mqtt_client import mqtt_client
 from .db import datenbank
 from .alarm_engine import alarm_engine
+
+# Config-Instanz für方便的 Zugriff
+config = config_module.config
 
 # Logging konfigurieren
 logging.basicConfig(
@@ -362,7 +365,6 @@ class SensorResponse(BaseModel):
 class MessungResponse(BaseModel):
     """Response-Modell für Messungen"""
     wert: float
-    status: str
     timestamp: str
 
 
@@ -444,7 +446,7 @@ async def sensoren_liste():
     try:
         # Hole alle Sensoren aus Datenbank
         datenbank.cursor.execute("""
-            SELECT sensor_id, sensor_typ, name, aktiviert
+            SELECT id, sensor_typ, name, aktiv
             FROM sensoren
             ORDER BY created_at DESC
         """)
@@ -453,7 +455,7 @@ async def sensoren_liste():
         ergebnis = []
         for sensor in sensoren:
             # Hole letzte Messung
-            messungen = datenbank.letzte_messungen_abrufen(sensor['sensor_id'], 1)
+            messungen = datenbank.letzte_messungen_abrufen(str(sensor['id']), 1)
 
             letzte_messung = None
             letzte_zeit = None
@@ -462,10 +464,10 @@ async def sensoren_liste():
                 letzte_zeit = str(messungen[0]['timestamp'])
 
             ergebnis.append({
-                "sensor_id": sensor['sensor_id'],
+                "sensor_id": str(sensor['id']),
                 "sensor_typ": sensor['sensor_typ'],
                 "name": sensor['name'],
-                "aktiviert": bool(sensor['aktiviert']),
+                "aktiviert": bool(sensor['aktiv']),
                 "letzte_messung": letzte_messung,
                 "letzte_zeit": letzte_zeit
             })
@@ -498,7 +500,6 @@ async def messungen_liste(
         return [
             {
                 "wert": m['wert'],
-                "status": m['status'],
                 "timestamp": str(m['timestamp'])
             }
             for m in messungen
@@ -606,7 +607,7 @@ if __name__ == "__main__":
     import uvicorn
 
     # Lade Konfiguration aus Umgebung
-    config.lade_konfiguration_aus_env()
+    config_module.lade_konfiguration_aus_env()
 
     # Starte Server
     uvicorn.run(

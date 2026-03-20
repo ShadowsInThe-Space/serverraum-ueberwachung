@@ -82,6 +82,7 @@ function aktualisiereSensorKarten(sensoren) {
     // Sensor-Konfiguration
     const sensorConfig = [
         { id: 'temp_serverraum', name: 'Temperatur', icon: '🌡️', einheit: '°C' },
+        { id: 'feuchte_serverraum', name: 'Feuchte', icon: '💧', einheit: '%' },
         { id: 'rauchgas', name: 'Rauchgas', icon: '⚠️', einheit: 'ppm' },
         { id: 'luftqualitaet', name: 'Luftqualität', icon: '🌬️', einheit: 'ppm' },
         { id: 'bewegung', name: 'Bewegung', icon: '🚶', einheit: '' }
@@ -145,19 +146,85 @@ function zeigeAlarme(alarme) {
         alarme.forEach(alarm => {
             const div = document.createElement('div');
             div.className = 'bg-red-900/30 border border-red-600 rounded-lg p-4 flex justify-between items-center';
-            div.innerHTML = `
-                <div>
-                    <span class="font-medium">${alarm.alarm_typ || 'Alarm'}</span>
-                    <span class="text-gray-400 ml-2">${alarm.nachricht || ''}</span>
-                </div>
-                <button onclick="quittiereAlarm(${alarm.id})" class="text-sm bg-red-600 hover:bg-red-700 px-3 py-1 rounded">
-                    Quittieren
-                </button>
-            `;
+
+            const alarmTyp = document.createElement('span');
+            alarmTyp.className = 'font-medium';
+            alarmTyp.textContent = alarm.alarm_typ || 'Alarm';
+
+            const nachricht = document.createElement('span');
+            nachricht.className = 'text-gray-400 ml-2';
+            nachricht.textContent = alarm.nachricht || '';
+
+            const btn = document.createElement('button');
+            btn.className = 'text-sm bg-red-600 hover:bg-red-700 px-3 py-1 rounded';
+            btn.textContent = 'Quittieren';
+            btn.onclick = () => quittiereAlarm(alarm.id);
+
+            const textDiv = document.createElement('div');
+            textDiv.appendChild(alarmTyp);
+            textDiv.appendChild(nachricht);
+
+            div.appendChild(textDiv);
+            div.appendChild(btn);
             container.appendChild(div);
         });
+
+        // Alarm Overlay anzeigen
+        zeigeAlarmOverlay(alarme.length);
     } else {
         section.style.display = 'none';
+        // Alarm Overlay ausblenden
+        versteckeAlarmOverlay();
+    }
+}
+
+/**
+ * Zeigt den Alarm-Overlay
+ */
+function zeigeAlarmOverlay(anzahl) {
+    const overlay = document.getElementById('alarm-overlay');
+    const countElement = document.getElementById('alarm-count');
+
+    if (overlay) {
+        if (anzahl > 0) {
+            if (countElement) {
+                countElement.textContent = anzahl;
+            }
+            overlay.style.display = 'flex';
+        } else {
+            overlay.style.display = 'none';
+        }
+    }
+}
+
+/**
+ * Versteckt den Alarm-Overlay
+ */
+function versteckeAlarmOverlay() {
+    const overlay = document.getElementById('alarm-overlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
+}
+
+/**
+ * Quittiert alle aktiven Alarme
+ */
+async function quittiereAlleAlarme() {
+    if (!alarmDaten || alarmDaten.length === 0) {
+        return;
+    }
+
+    try {
+        // Alle Alarme sequenziell quittieren
+        for (const alarm of alarmDaten) {
+            await window.api.quittiereAlarm(alarm.id);
+        }
+
+        // Alarm-Daten neu laden
+        ladeAlarmDaten();
+    } catch (error) {
+        console.error('Fehler beim Quittieren aller Alarme:', error);
     }
 }
 
@@ -382,6 +449,7 @@ function formatZeitstempel(zeit) {
 
 // Globale Funktionen für HTML onclick
 window.quittiereAlarm = quittiereAlarm;
+window.quittiereAlleAlarme = quittiereAlleAlarme;
 window.wechselTab = wechselTab;
 window.ladeVerlauf = ladeVerlauf;
 window.ladeAlarme = ladeAlarme;

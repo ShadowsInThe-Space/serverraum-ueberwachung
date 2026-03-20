@@ -104,3 +104,8 @@ const chartManager = {
 
 // Exportiere für globale Nutzung
 window.chartManager = chartManager;
+
+// Kompatibilitätsfunktion für dashboard.js
+window.aktualisiereVerlaufChart = function(messungen, sensorId) {
+    chartManager.erstelleVerlaufChart(messungen);
+};
