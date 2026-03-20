@@ -9,7 +9,7 @@
  */
 
 // Basis-URL für API (kann in Einstellungen geändert werden)
-let apiBaseUrl = 'http://192.168.178.48:8000';
+let apiBaseUrl = 'http://localhost:8000';
 
 /**
  * Setzt die API-Basis-URL
@@ -94,14 +94,14 @@ async function getStatistik(sensorId, stunden = 24) {
 
 /**
  * Holt alle Alarme
- * @param {string} status - Filter: 'aktiv', 'alle'
+ * @param {string} status - Filter: 'aktiv', 'quittiert', 'alle'
  * @param {number} limit - Anzahl
  * @returns {Promise<array>}
  */
 async function getAlarme(status = 'alle', limit = 100) {
     let endpoint = `/alarme?limit=${limit}`;
-    if (status === 'aktiv') {
-        endpoint += '&status=aktiv';
+    if (status && status !== 'alle') {
+        endpoint += `&status=${status}`;
     }
     return await apiRequest(endpoint);
 }

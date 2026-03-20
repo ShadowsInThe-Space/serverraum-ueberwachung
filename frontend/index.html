@@ -53,6 +53,73 @@
         .nav-item.active {
             @apply bg-gray-700 text-white;
         }
+
+        /* Alarm Overlay - Pulsierender roter Bildschirm */
+        .alarm-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.85) 0%, rgba(185, 28, 28, 0.9) 100%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: alarm-pulsieren 1.5s ease-in-out infinite;
+        }
+
+        @keyframes alarm-pulsieren {
+            0%, 100% {
+                background: linear-gradient(135deg, rgba(239, 68, 68, 0.85) 0%, rgba(185, 28, 28, 0.9) 100%);
+            }
+            50% {
+                background: linear-gradient(135deg, rgba(239, 68, 68, 0.95) 0%, rgba(185, 28, 28, 0.98) 100%);
+            }
+        }
+
+        .alarm-overlay-content {
+            text-align: center;
+            max-width: 600px;
+            padding: 2rem;
+        }
+
+        .alarm-overlay h2 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .alarm-overlay p {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .alarm-overlay .alarm-count {
+            font-size: 5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+
+        .alarm-quittieren-btn {
+            background: white;
+            color: #dc2626;
+            font-size: 1.25rem;
+            font-weight: bold;
+            padding: 1rem 3rem;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .alarm-quittieren-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen">
@@ -282,6 +349,19 @@
             </div>
         </section>
     </main>
+
+    <!-- Alarm Overlay (wird bei aktiven Alarmen angezeigt) -->
+    <div id="alarm-overlay" class="alarm-overlay" style="display: none;">
+        <div class="alarm-overlay-content">
+            <h2>⚠️ ALARM ⚠️</h2>
+            <p>Es sind aktive Alarme vorhanden!</p>
+            <div class="alarm-count" id="alarm-count">0</div>
+            <p>Alarme</p>
+            <button onclick="quittiereAlleAlarme()" class="alarm-quittieren-btn">
+                Alle Alarme Quittieren
+            </button>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-gray-800 border-t border-gray-700 mt-8 py-4">

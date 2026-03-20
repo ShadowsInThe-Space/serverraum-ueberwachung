@@ -220,6 +220,31 @@ void mqttCallback(char* topic, byte* payload, unsigned int length)
 }
 
 /**
+ * @brief Globaler I2C-Scan beim Boot
+ */
+void scanneI2CBus()
+{
+    delay(500);  // Warte bis Serielle bereit
+    Serial.println("\n=== GLOBALER I2C SCAN ===");
+    Wire.begin(PIN_SHT31_SDA, PIN_SHT31_SCL);
+    Wire.setClock(100000);
+    delay(100);
+
+    int gefunden = 0;
+    for (uint8_t addr = 1; addr < 127; addr++)
+    {
+        Wire.beginTransmission(addr);
+        uint8_t error = Wire.endTransmission();
+        if (error == 0)
+        {
+            Serial.printf(">>> I2C Gerät gefunden: 0x%02X\n", addr);
+            gefunden++;
+        }
+    }
+    Serial.printf("I2C-Scan beendet: %d Geräte gefunden\n\n", gefunden);
+}
+
+/**
  * @brief Initialisiert alle Sensoren
  * @details Erstellt Sensor-Objekte und fügt sie dem Manager hinzu.
  */
@@ -321,6 +346,9 @@ void setup()
 
     // MQTT Callback setzen
     mqttClient.setCallback(mqttCallback);
+
+    // I2C Bus scannen
+    scanneI2CBus();
 
     // Sensoren initialisieren
     initialisiereSensoren();
