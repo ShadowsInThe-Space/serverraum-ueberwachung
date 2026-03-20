@@ -20,49 +20,31 @@ import logging
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 import mysql.connector
-from mysql.connector import Error
+from mysql.connector import Error, pooling
 from .config import config
 
 # Logger konfigurieren
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Connection Pool Konfiguration
+POOL_NAME = "serverraum_pool"
+POOL_SIZE = 5
 
-def _neue_verbindung():
-    """Erstellt eine neue Datenbankverbindung"""
-    import os
-    try:
-        conn = mysql.connector.connect(
-            host=config.datenbank.host,
-            port=config.datenbank.port,
-            user=config.datenbank.benutzer,
-            password=config.datenbank.passwort or os.getenv('DB_PASS', ''),
-            database=config.datenbank.datenbank,
-            charset='utf8mb4',
-            collation='utf8mb4_unicode_ci',
-            autocommit=True,
-            connection_timeout=60
-        )
-        return conn
-    except Error as e:
-        logger.error(f"Verbindungsfehler: {e}")
-        return None
+# Globaler Connection Pool
+_pool = None
 
 
-class Datenbank:
-    """
-    Klasse für MariaDB Datenbank-Operationen
-    Jede Methode erstellt ihre eigene Verbindung für Zuverlässigkeit.
-    """
-
-    def __init__(self):
-        self.connection = None
-
-    def verbinden(self):
-        """Verbindet zur Datenbank (für Kompatibilität mit main.py)"""
+def _get_pool():
+    """Gibt den Connection Pool zurück (Lazy Initialization)"""
+    global _pool
+    if _pool is None:
         import os
         try:
-            self.connection = mysql.connector.connect(
+            _pool = pooling.MySQLConnectionPool(
+                pool_name=POOL_NAME,
+                pool_size=POOL_SIZE,
+                pool_reset_session=True,
                 host=config.datenbank.host,
                 port=config.datenbank.port,
                 user=config.datenbank.benutzer,
@@ -73,6 +55,40 @@ class Datenbank:
                 autocommit=True,
                 connection_timeout=60
             )
+            logger.info(f"Connection Pool '{POOL_NAME}' mit Größe {POOL_SIZE} initialisiert")
+        except Error as e:
+            logger.error(f"Fehler beim Erstellen des Connection Pools: {e}")
+            raise
+    return _pool
+
+
+def _neue_verbindung():
+    """Erstellt eine neue Datenbankverbindung (aus Pool)"""
+    try:
+        pool = _get_pool()
+        conn = pool.get_connection()
+        return conn
+    except Error as e:
+        logger.error(f"Verbindungsfehler: {e}")
+        return None
+
+
+class Datenbank:
+    """
+    Klasse für MariaDB Datenbank-Operationen
+    Verwendet Connection Pooling für effiziente Verbindungsverwaltung.
+    """
+
+    def __init__(self):
+        self.connection = None
+        self.cursor = None
+
+    def verbinden(self):
+        """Verbindet zur Datenbank (für Kompatibilität mit main.py)"""
+        import os
+        try:
+            pool = _get_pool()
+            self.connection = pool.get_connection()
             self.cursor = self.connection.cursor(dictionary=True)
             return True
         except Error as e:
@@ -84,6 +100,21 @@ class Datenbank:
         if self.connection:
             self.connection.close()
             self.connection = None
+            self.cursor = None
+
+    def get_pool_status(self) -> Dict:
+        """Gibt Pool-Statistiken zurück"""
+        try:
+            pool = _get_pool()
+            return {
+                'pool_name': POOL_NAME,
+                'pool_size': POOL_SIZE,
+                'pool_available': pool.pool_size,
+                'status': 'aktiv'
+            }
+        except Error as e:
+            logger.error(f"Fehler beim Abrufen des Pool-Status: {e}")
+            return {'status': 'fehler', 'fehler': str(e)}
 
     def sensor_speichern(self, sensor_id: str, sensor_typ: str, name: str = None) -> int:
         """Speichert einen neuen Sensor oder aktualisiert existierenden"""
@@ -109,14 +140,16 @@ class Datenbank:
             sensor_db_id = ergebnis['id'] if ergebnis else 0
 
             cursor.close()
-            conn.close()
             return sensor_db_id
 
         except Error as e:
             logger.error(f"Fehler beim Speichern des Sensors: {e}")
             conn.rollback()
-            conn.close()
             return 0
+
+        finally:
+            if conn and conn.is_connected():
+                conn.close()
 
     def messung_speichern(self, sensor_id: str, wert: float, status: str) -> bool:
         """Speichert eine Sensor-Messung"""
@@ -133,7 +166,6 @@ class Datenbank:
 
             if not ergebnis:
                 cursor.close()
-                conn.close()
                 return False
 
             sensor_db_id = ergebnis['id']
@@ -144,14 +176,16 @@ class Datenbank:
             conn.commit()
 
             cursor.close()
-            conn.close()
             return True
 
         except Error as e:
             logger.error(f"Fehler beim Speichern der Messung: {e}")
             conn.rollback()
-            conn.close()
             return False
+
+        finally:
+            if conn and conn.is_connected():
+                conn.close()
 
     def letzte_messungen_abrufen(self, sensor_id: str, limit: int = 100) -> List[Dict]:
         """Ruft die letzten Messungen eines Sensors ab"""
@@ -172,13 +206,15 @@ class Datenbank:
             cursor.execute(sql, (sensor_id, limit))
             ergebnis = cursor.fetchall()
             cursor.close()
-            conn.close()
             return ergebnis
 
         except Error as e:
             logger.error(f"Fehler beim Abrufen der Messungen: {e}")
-            conn.close()
             return []
+
+        finally:
+            if conn and conn.is_connected():
+                conn.close()
 
     def alarm_speichern(self, sensor_id: str, alarm_typ: str, nachricht: str,
                        wert: float, schwellwert: float) -> int:
@@ -196,7 +232,6 @@ class Datenbank:
 
             if not ergebnis:
                 cursor.close()
-                conn.close()
                 return 0
 
             sensor_db_id = ergebnis['id']
@@ -214,14 +249,16 @@ class Datenbank:
             alarm_id = ergebnis['id'] if ergebnis else 0
 
             cursor.close()
-            conn.close()
             return alarm_id
 
         except Error as e:
             logger.error(f"Fehler beim Speichern des Alarms: {e}")
             conn.rollback()
-            conn.close()
             return 0
+
+        finally:
+            if conn and conn.is_connected():
+                conn.close()
 
     def alarm_quittieren(self, alarm_id: int) -> bool:
         """Quittiert einen Alarm"""
@@ -235,14 +272,16 @@ class Datenbank:
             cursor.execute(sql, (alarm_id,))
             conn.commit()
             cursor.close()
-            conn.close()
             return True
 
         except Error as e:
             logger.error(f"Fehler beim Quittieren des Alarms: {e}")
             conn.rollback()
-            conn.close()
             return False
+
+        finally:
+            if conn and conn.is_connected():
+                conn.close()
 
     def aktive_alarme_abrufen(self) -> List[Dict]:
         """Ruft alle aktiven Alarme ab"""
@@ -263,13 +302,15 @@ class Datenbank:
             cursor.execute(sql)
             ergebnis = cursor.fetchall()
             cursor.close()
-            conn.close()
             return ergebnis
 
         except Error as e:
             logger.error(f"Fehler beim Abrufen der Alarme: {e}")
-            conn.close()
             return []
+
+        finally:
+            if conn and conn.is_connected():
+                conn.close()
 
     def alle_alarme_abrufen(self, limit: int = 100) -> List[Dict]:
         """Ruft alle Alarme (Historie) ab"""
@@ -290,13 +331,15 @@ class Datenbank:
             cursor.execute(sql, (limit,))
             ergebnis = cursor.fetchall()
             cursor.close()
-            conn.close()
             return ergebnis
 
         except Error as e:
             logger.error(f"Fehler beim Abrufen der Alarm-Historie: {e}")
-            conn.close()
             return []
+
+        finally:
+            if conn and conn.is_connected():
+                conn.close()
 
     def statistik_abrufen(self, sensor_id: str, stunden: int = 24) -> Dict:
         """Ruft Statistiken für einen Sensor ab"""
@@ -321,7 +364,6 @@ class Datenbank:
             ergebnis = cursor.fetchone()
 
             cursor.close()
-            conn.close()
 
             return {
                 'min': float(ergebnis['min_wert']) if ergebnis and ergebnis['min_wert'] else 0,
@@ -332,8 +374,11 @@ class Datenbank:
 
         except Error as e:
             logger.error(f"Fehler beim Abrufen der Statistik: {e}")
-            conn.close()
             return {'min': 0, 'max': 0, 'durchschnitt': 0, 'anzahl': 0}
+
+        finally:
+            if conn and conn.is_connected():
+                conn.close()
 
     def alle_sensoren_abrufen(self) -> List[Dict]:
         """Ruft alle Sensoren ab"""
@@ -355,14 +400,15 @@ class Datenbank:
             cursor.execute(sql)
             ergebnis = cursor.fetchall()
             cursor.close()
-            conn.close()
             return ergebnis
 
         except Error as e:
             logger.error(f"Fehler beim Abrufen der Sensoren: {e}")
-            conn.close()
             return []
 
+        finally:
+            if conn and conn.is_connected():
+                conn.close()
 
     def schwellwerte_abrufen(self) -> Dict:
         """Ruft alle Schwellwerte aus alarm_konfiguration ab"""
@@ -376,7 +422,6 @@ class Datenbank:
             cursor.execute(sql)
             ergebnis = cursor.fetchall()
             cursor.close()
-            conn.close()
 
             # Umwandeln in Dict mit sensor_id als Key
             schwellwerte = {}
@@ -388,8 +433,11 @@ class Datenbank:
 
         except Error as e:
             logger.error(f"Fehler beim Abrufen der Schwellwerte: {e}")
-            conn.close()
             return {}
+
+        finally:
+            if conn and conn.is_connected():
+                conn.close()
 
 
 # Globale Datenbank-Instanz

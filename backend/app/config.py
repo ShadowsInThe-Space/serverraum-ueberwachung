@@ -8,93 +8,101 @@ Enthält alle Einstellungen für:
 - Alarmierung
 - REST-API
 
+Verwendet Pydantic Settings für automatisiertes Laden aus .env
+und Environment Variables.
+
 @author Marc-Dennis Haberland
-@date 04.03.2026
+@date 20.03.2026
 Projekt: Serverraum-Überwachung (IHK-Abschlussprojekt)
 """
 
-from dataclasses import dataclass, field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field, field_validator, model_validator
 from typing import Optional
 
 
-@dataclass
-class MqttConfig:
+class MqttConfig(BaseSettings):
     """MQTT Broker Konfiguration"""
     broker: str = "localhost"
-    port: int = 1883
+    port: int = Field(default=1883, ge=1, le=65535)
     client_id: str = "serverraum_backend"
     topic_basis: str = "serverraum/sensor"
     # QoS Level: 0 = einmal senden, 1 = mindestens einmal, 2 = genau einmal
-    qos: int = 1
+    qos: int = Field(default=1, ge=0, le=2)
+
+    model_config = SettingsConfigDict(env_prefix="MQTT_")
 
 
-@dataclass
-class DatabaseConfig:
+class DatabaseConfig(BaseSettings):
     """MariaDB Datenbank Konfiguration"""
     host: str = "localhost"
-    port: int = 3306
+    port: int = Field(default=3306, ge=1, le=65535)
     benutzer: str = "serverraum"
-    passwort: str = ""  # Muss über DB_PASS Umgebungsvariable gesetzt werden
+    passwort: str = Field(default="", env="DB_PASS")
     datenbank: str = "serverraum_ueberwachung"
 
+    model_config = SettingsConfigDict(env_prefix="DB_")
 
-@dataclass
-class AlarmConfig:
+
+class AlarmConfig(BaseSettings):
     """Alarmierung Konfiguration"""
     # E-Mail Einstellungen
     email_enabled: bool = True
     email_smtp_server: str = "smtp.gmail.com"
-    email_smtp_port: int = 587
+    email_smtp_port: int = Field(default=587, ge=1, le=65535)
     email_absender: str = "serverraum@example.com"
-    email_passwort: str = ""  # Muss über EMAIL_PASS Umgebungsvariable gesetzt werden
+    email_passwort: str = Field(default="", env="EMAIL_PASS")
     email_empfaenger: str = "admin@example.com"
 
     # Warn-LED (GPIO Pin am Raspberry Pi)
     led_enabled: bool = True
-    led_pin: int = 17
+    led_pin: int = Field(default=17, ge=0, le=27)
 
     # Buzzer
     buzzer_enabled: bool = True
-    buzzer_pin: int = 27
+    buzzer_pin: int = Field(default=27, ge=0, le=27)
 
     # Alarm-Schwellwerte
-    temperatur_max: float = 30.0  # °C
-    temperatur_min: float = 15.0  # °C
-    rauchgas_max: float = 200.0   # ppm
-    luftqualitaet_max: float = 800.0  # ppm CO2-Äquivalent
+    temperatur_max: float = Field(default=30.0, ge=-50, le=100)
+    temperatur_min: float = Field(default=15.0, ge=-50, le=100)
+    rauchgas_max: float = Field(default=200.0, ge=0)
+    luftqualitaet_max: float = Field(default=800.0, ge=0)
+
+    @model_validator(mode="after")
+    def validate_temperatur_schwellwerte(self) -> "AlarmConfig":
+        """Validiert dass temperatur_min < temperatur_max"""
+        if self.temperatur_min >= self.temperatur_max:
+            raise ValueError(
+                f"temperatur_min ({self.temperatur_min}) muss kleiner als "
+                f"temperatur_max ({self.temperatur_max}) sein"
+            )
+        return self
+
+    model_config = SettingsConfigDict(env_prefix="ALARM_")
 
 
-@dataclass
-class ApiConfig:
+class ApiConfig(BaseSettings):
     """REST-API Konfiguration"""
     host: str = "0.0.0.0"
-    port: int = 8000
+    port: int = Field(default=8000, ge=1, le=65535)
     debug: bool = False
 
-
-def _default_mqtt():
-    return MqttConfig()
+    model_config = SettingsConfigDict(env_prefix="API_")
 
 
-def _default_database():
-    return DatabaseConfig()
-
-
-def _default_alarm():
-    return AlarmConfig()
-
-
-def _default_api():
-    return ApiConfig()
-
-
-@dataclass
-class Config:
+class Config(BaseSettings):
     """Hauptkonfiguration - fasst alle Teil-Konfigurationen zusammen"""
-    mqtt: MqttConfig = field(default_factory=_default_mqtt)
-    datenbank: DatabaseConfig = field(default_factory=_default_database)
-    alarm: AlarmConfig = field(default_factory=_default_alarm)
-    api: ApiConfig = field(default_factory=_default_api)
+    mqtt: MqttConfig = Field(default_factory=MqttConfig)
+    datenbank: DatabaseConfig = Field(default_factory=DatabaseConfig)
+    alarm: AlarmConfig = Field(default_factory=AlarmConfig)
+    api: ApiConfig = Field(default_factory=ApiConfig)
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        env_nested_delimiter="__",
+        extra="ignore"
+    )
 
 
 # Globale Konfigurations-Instanz
@@ -105,23 +113,13 @@ config = Config()
 def lade_konfiguration_aus_env():
     """
     Lädt Konfiguration aus Umgebungsvariablen
-    Ermöglicht Deployment ohne Code-Änderung
+    (Nicht mehr nötig - Pydantic lädt automatisch)
+
+    Diese Funktion bleibt für Abwärtskompatibilität.
     """
-    import os
-
-    # MQTT
-    config.mqtt.broker = os.getenv("MQTT_BROKER", config.mqtt.broker)
-    config.mqtt.port = int(os.getenv("MQTT_PORT", str(config.mqtt.port)))
-
-    # Datenbank
-    config.datenbank.host = os.getenv("DB_HOST", config.datenbank.host)
-    config.datenbank.benutzer = os.getenv("DB_USER", config.datenbank.benutzer)
-    config.datenbank.passwort = os.getenv("DB_PASS", config.datenbank.passwort)
-    config.datenbank.datenbank = os.getenv("DB_NAME", config.datenbank.datenbank)
-
-    # API
-    config.api.port = int(os.getenv("API_PORT", str(config.api.port)))
-    config.api.debug = os.getenv("DEBUG", "false").lower() == "true"
+    # Pydantic lädt bereits automatisch aus .env und Environment Variables
+    # Hier nichts weiter zu tun
+    pass
 
 
 if __name__ == "__main__":
@@ -134,3 +132,6 @@ if __name__ == "__main__":
     print(f"  Temperatur: {config.alarm.temperatur_min}°C - {config.alarm.temperatur_max}°C")
     print(f"  Rauchgas: {config.alarm.rauchgas_max} ppm")
     print(f"  Luftqualität: {config.alarm.luftqualitaet_max} ppm")
+    print(f"\n  E-Mail Alarm: {'Aktiviert' if config.alarm.email_enabled else 'Deaktiviert'}")
+    print(f"  LED Alarm: {'Aktiviert (Pin ' + str(config.alarm.led_pin) + ')' if config.alarm.led_enabled else 'Deaktiviert'}")
+    print(f"  Buzzer Alarm: {'Aktiviert (Pin ' + str(config.alarm.buzzer_pin) + ')' if config.alarm.buzzer_enabled else 'Deaktiviert'}")
