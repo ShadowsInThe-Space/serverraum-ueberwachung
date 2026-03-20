@@ -23,7 +23,7 @@ from typing import Optional
 
 class MqttConfig(BaseSettings):
     """MQTT Broker Konfiguration"""
-    broker: str = "localhost"
+    broker: str = "192.168.178.48"
     port: int = Field(default=1883, ge=1, le=65535)
     client_id: str = "serverraum_backend"
     topic_basis: str = "serverraum/sensor"
