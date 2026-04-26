@@ -79,6 +79,28 @@ def _execute(sql: str, params: tuple = (), commit: bool = True) -> bool:
             conn.close()
 
 
+def _insert_and_get_id(sql: str, params: tuple) -> int:
+    """Führt INSERT aus und gibt die eingefügte ID zurück (funktioniert über Connection-Grenzen hinweg)"""
+    conn = None
+    try:
+        conn = _get_pool().get_connection()
+        cursor = conn.cursor()
+        cursor.execute(sql, params)
+        conn.commit()
+        cursor.execute("SELECT LAST_INSERT_ID() as id")
+        result = cursor.fetchone()
+        cursor.close()
+        return result[0] if result else 0
+    except Error as e:
+        logger.error(f"Insert Fehler: {e}")
+        if conn:
+            conn.rollback()
+        return 0
+    finally:
+        if conn and conn.is_connected():
+            conn.close()
+
+
 class Datenbank:
     """Datenbank-Operationen"""
 
@@ -169,15 +191,15 @@ class Datenbank:
 
     def aktive_alarme_abrufen(self) -> List[Dict]:
         return _query("""
-            SELECT a.*, s.sensor_id
-            FROM alarme a JOIN sensoren s ON a.sensor_id = s.id
+            SELECT a.*, COALESCE(s.sensor_id, CONCAT('sensor_', a.sensor_id)) as sensor_id
+            FROM alarme a LEFT JOIN sensoren s ON a.sensor_id = s.id
             WHERE a.status = 'aktiv' ORDER BY a.created_at DESC
         """)
 
     def alle_alarme_abrufen(self, limit: int = 100) -> List[Dict]:
         return _query("""
-            SELECT a.*, s.sensor_id
-            FROM alarme a JOIN sensoren s ON a.sensor_id = s.id
+            SELECT a.*, COALESCE(s.sensor_id, CONCAT('sensor_', a.sensor_id)) as sensor_id
+            FROM alarme a LEFT JOIN sensoren s ON a.sensor_id = s.id
             ORDER BY a.created_at DESC LIMIT %s
         """, (limit,))
 
@@ -193,10 +215,7 @@ class Datenbank:
             INSERT INTO alarm_emails (alarm_id, empfaenger, subject, body, sende_status, error_message, created_at)
             VALUES (%s, %s, %s, %s, %s, %s, NOW())
         """
-        if _execute(sql, (alarm_id, empfaenger, subject, body, sende_status, error_message)):
-            result = _query("SELECT LAST_INSERT_ID() as id")
-            return result[0]["id"] if result else 0
-        return 0
+        return _insert_and_get_id(sql, (alarm_id, empfaenger, subject, body, sende_status, error_message))
 
     def alarm_email_aktualisieren(self, email_id: int, sende_status: str,
                                    error_message: str = None) -> bool:
@@ -212,10 +231,11 @@ class Datenbank:
         """Alle gesendeten Alarm-Emails abrufen"""
         return _query("""
             SELECT ae.*, a.alarm_typ, a.nachricht, a.wert, a.schwellwert,
-                   a.created_at as alarm_zeitstempel, s.sensor_id
+                   a.created_at as alarm_zeitstempel,
+                   COALESCE(s.sensor_id, CONCAT('sensor_', a.sensor_id)) as sensor_id
             FROM alarm_emails ae
             JOIN alarme a ON ae.alarm_id = a.id
-            JOIN sensoren s ON a.sensor_id = s.id
+            LEFT JOIN sensoren s ON a.sensor_id = s.id
             ORDER BY ae.created_at DESC
             LIMIT %s
         """, (limit,))
