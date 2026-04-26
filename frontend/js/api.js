@@ -9,7 +9,7 @@
  */
 
 // Basis-URL für API (kann in Einstellungen geändert werden)
-let apiBaseUrl = 'http://localhost:8000';
+let apiBaseUrl = window.location.origin.replace(/\/$/, '');
 
 /**
  * Setzt die API-Basis-URL

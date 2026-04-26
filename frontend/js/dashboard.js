@@ -64,10 +64,43 @@ async function ladeSensorDaten() {
         const sensoren = await window.api.getSensoren();
         sensorDaten = sensoren;
         aktualisiereSensorKarten(sensoren);
+        aktualisiereVerlaufSensorDropdown(sensoren);
         aktualisiereZeitstempel();
     } catch (error) {
         console.error('Fehler beim Laden der Sensoren:', error);
     }
+}
+
+/**
+ * Füllt das Sensor-Dropdown im Verlauf-Tab dynamisch
+ */
+function aktualisiereVerlaufSensorDropdown(sensoren) {
+    const dropdown = document.getElementById('verlauf-sensor');
+    if (!dropdown) return;
+
+    dropdown.innerHTML = '';
+
+    // Sensor-Name Mapping für Anzeige
+    const sensorNamen = {
+        'ds18b20_01': 'Temperatur (DS18B20)',
+        'sht31_temp_01': 'Temperatur (SHT31)',
+        'sht31_feuchte_01': 'Feuchtigkeit (SHT31)',
+        'mq2_01': 'Rauchgas (MQ2)',
+        'mq2_2': 'Rauchgas (MQ2)',
+        'mq2_6': 'Rauchgas (MQ2)',
+        'mq135_3': 'Luftqualität (MQ135)',
+        'mq135_7': 'Luftqualität (MQ135)',
+        'pir_4': 'Bewegung (PIR)',
+        'pir_8': 'Bewegung (PIR)'
+    };
+
+    sensoren.forEach(sensor => {
+        const option = document.createElement('option');
+        option.value = sensor.sensor_id;
+        // Versuche den Namen aus dem Sensor-Objekt oder dem Mapping
+        option.textContent = sensor.name || sensorNamen[sensor.sensor_id] || sensor.sensor_typ || sensor.sensor_id;
+        dropdown.appendChild(option);
+    });
 }
 
 /**
@@ -79,13 +112,14 @@ function aktualisiereSensorKarten(sensoren) {
 
     container.innerHTML = '';
 
-    // Sensor-Konfiguration
+    // Sensor-Konfiguration - IDs müssen mit der DB übereinstimmen
+    // DB: ds18b20_01, sht31_temp_01, sht31_feuchte_01, mq2_01, mq2_2, mq2_6, mq135_3, mq135_7, pir_4, pir_8
     const sensorConfig = [
-        { id: 'temp_serverraum', name: 'Temperatur', icon: '🌡️', einheit: '°C' },
-        { id: 'feuchte_serverraum', name: 'Feuchte', icon: '💧', einheit: '%' },
-        { id: 'rauchgas', name: 'Rauchgas', icon: '⚠️', einheit: 'ppm' },
-        { id: 'luftqualitaet', name: 'Luftqualität', icon: '🌬️', einheit: 'ppm' },
-        { id: 'bewegung', name: 'Bewegung', icon: '🚶', einheit: '' }
+        { id: 'ds18b20_01', name: 'Temperatur (DS18B20)', icon: '🌡️', einheit: '°C' },
+        { id: 'sht31_temp_01', name: 'Temperatur (SHT31)', icon: '🌡️', einheit: '°C' },
+        { id: 'sht31_feuchte_01', name: 'Feuchtigkeit (SHT31)', icon: '💧', einheit: '%' },
+        { id: 'mq2_01', name: 'Rauchgas (MQ2)', icon: '⚠️', einheit: 'ppm' },
+        { id: 'pir_4', name: 'Bewegung (PIR)', icon: '🚶', einheit: '' }
     ];
 
     sensorConfig.forEach(config => {

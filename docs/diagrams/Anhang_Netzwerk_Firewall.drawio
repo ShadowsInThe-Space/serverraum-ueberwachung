@@ -1,0 +1,199 @@
+<mxfile host="app.diagrams.net" modified="2026-04-20T10:00:00.000Z" agent="Buddy" etag="abc132" version="21.0.0">
+  <diagram name="Netzwerk-Firewall" id="network">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="title" value="Netzwerk- und Firewall-Übersicht" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;fontColor=#2E5090" vertex="1" parent="1">
+          <mxGeometry x="450" y="20" width="500" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- ==================== INTERNET ==================== -->
+        <mxCell id="internet" value="INTERNET&#xa;(Cloud)" style="shape=cloud;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="60" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- ==================== FIREWALL/Router ==================== -->
+        <mxCell id="firewall-box" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C00000;strokeColor=#8B0000;verticalAlign=top;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="800" y="40" width="180" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="firewall-icon" value="🛡️ FIREWALL" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontColor=#FFFFFF" vertex="1" parent="firewall-box">
+          <mxGeometry y="5" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="fw-ports" value="Ports Regeln:&#xa;━━━━━━━━━━━━━━━━&#xa;✓ 22 (SSH) → Admin&#xa;✓ 80 (HTTP) → Web&#xa;✓ 443 (HTTPS) → Web&#xa;✗ 3306 (MySQL) → BLOCK&#xa;✗ 1883 (MQTT) → BLOCK" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#FFFFFF;spacingLeft=10;" vertex="1" parent="firewall-box">
+          <mxGeometry y="40" width="180" height="75" as="geometry" />
+        </mxCell>
+        
+        <!-- Internet -> Firewall -->
+        <mxCell id="r-internet-fw" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#C00000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1000" y="100" as="sourcePoint" />
+            <mxPoint x="800" y="100" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- ==================== DMZ / Server-Netzwerk ==================== -->
+        <mxCell id="dmz-box" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dce6f1;strokeColor=#8eaadb;verticalAlign=top;spacingTop=5;spacingLeft=5;spacingRight=5;spacingBottom=5;" vertex="1" parent="1">
+          <mxGeometry x="200" y="40" width="580" height="420" as="geometry" />
+        </mxCell>
+        <mxCell id="dmz-label" value="DMZ / Server-Netzwerk (192.168.178.0/24)" style="text;html=1;strokeColor=none;fillColor=#2E5090;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#FFFFFF" vertex="1" parent="1">
+          <mxGeometry x="200" y="40" width="580" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- ==================== Raspberry Pi ==================== -->
+        <mxCell id="rpi-box" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#70AD47;strokeColor=#538135;verticalAlign=top;spacingTop=5;spacingLeft=5;spacingRight=5;spacingBottom=5;" vertex="1" parent="1">
+          <mxGeometry x="220" y="90" width="160" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="rpi-title" value="🍇 Raspberry Pi 4B" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#FFFFFF" vertex="1" parent="rpi-box">
+          <mxGeometry y="5" width="160" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="rpi-ip" value="IP: 192.168.178.50" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#FFFFFF" vertex="1" parent="rpi-box">
+          <mxGeometry y="32" width="160" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="rpi-services" value="Dienste:&#xa;─────────────────&#xa;🐳 Docker&#xa;📦 MariaDB:3306&#xa;📨 Mosquitto:1883&#xa;🌐 Backend:3001&#xa;🌍 Nginx:80,443" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#FFFFFF;spacingLeft=5;" vertex="1" parent="rpi-box">
+          <mxGeometry y="55" width="160" height="120" as="geometry" />
+        </mxCell>
+        
+        <!-- ==================== ESP32 ==================== -->
+        <mxCell id="esp-box" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#4472C4;strokeColor=#2E5090;verticalAlign=top;spacingTop=5;spacingLeft=5;spacingRight=5;spacingBottom=5;" vertex="1" parent="1">
+          <mxGeometry x="220" y="290" width="160" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="esp-title" value="🔌 ESP32-S3" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#FFFFFF" vertex="1" parent="esp-box">
+          <mxGeometry y="5" width="160" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="esp-ip" value="IP: 192.168.178.51" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#FFFFFF" vertex="1" parent="esp-box">
+          <mxGeometry y="32" width="160" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="esp-services" value="Dienste:&#xa;─────────────────&#xa;📡 MQTT Publisher&#xa;🌐 WiFi Client&#xa;🔧 Sensorik&#xa;&#xa;Sensoren:&#xa;• DS18B20 (Temp)&#xa;• SHT31 (Feucht)&#xa;• MQ-2 (Gas)&#xa;• PIR (Bewegung)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#FFFFFF;spacingLeft=5;" vertex="1" parent="esp-box">
+          <mxGeometry y="55" width="160" height="90" as="geometry" />
+        </mxCell>
+        
+        <!-- ==================== Clients ==================== -->
+        <mxCell id="client1" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4B400;strokeColor=#D4940F;verticalAlign=top;spacingTop=5;spacingLeft=5;spacingRight=5;spacingBottom=5;" vertex="1" parent="1">
+          <mxGeometry x="400" y="90" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="client1-icon" value="💻" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=28;" vertex="1" parent="client1">
+          <mxGeometry y="5" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="client1-label" value="Admin PC&#xa;192.168.178.100" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#000000" vertex="1" parent="client1">
+          <mxGeometry y="50" width="120" height="45" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="client2" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4B400;strokeColor=#D4940F;verticalAlign=top;spacingTop=5;spacingLeft=5;spacingRight=5;spacingBottom=5;" vertex="1" parent="1">
+          <mxGeometry x="540" y="90" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="client2-icon" value="📱" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=28;" vertex="1" parent="client2">
+          <mxGeometry y="5" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="client2-label" value="Mobile&#xa;192.168.178.101" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#000000" vertex="1" parent="client2">
+          <mxGeometry y="50" width="120" height="45" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="client3" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4B400;strokeColor=#D4940F;verticalAlign=top;spacingTop=5;spacingLeft=5;spacingRight=5;spacingBottom=5;" vertex="1" parent="1">
+          <mxGeometry x="400" y="210" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="client3-icon" value="💻" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=28;" vertex="1" parent="client3">
+          <mxGeometry y="5" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="client3-label" value="Techniker&#xa;192.168.178.102" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#000000" vertex="1" parent="client3">
+          <mxGeometry y="50" width="120" height="45" as="geometry" />
+        </mxCell>
+        
+        <!-- ==================== Serverraum ==================== -->
+        <mxCell id="room-box" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#5B9BD5;strokeColor=#41719C;verticalAlign=top;spacingTop=5;spacingLeft=5;spacingRight=5;spacingBottom=5;" vertex="1" parent="1">
+          <mxGeometry x="540" y="290" width="220" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="room-title" value="🖥️ SERVERRAUM" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#FFFFFF" vertex="1" parent="room-box">
+          <mxGeometry y="5" width="220" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="room-content" value="Sensoren:&#xa;━━━━━━━━━━━━━━━━&#xa;🌡️ Temperatur&#xa;💧 Feuchtigkeit&#xa;🔥 Gas/MQ-2&#xa;👤 Bewegung (PIR)&#xa;&#xa;Aktoren:&#xa;🔴 LED (Alarm)&#xa;🔊 Buzzer (Alarm)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#FFFFFF;spacingLeft=5;" vertex="1" parent="room-box">
+          <mxGeometry y="35" width="220" height="110" as="geometry" />
+        </mxCell>
+        
+        <!-- ==================== Verbindungen ==================== -->
+        
+        <!-- Clients -> Raspberry -->
+        <mxCell id="r-client-rpi" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#70AD47;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="190" as="sourcePoint" />
+            <mxPoint x="380" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label-http" value="HTTP/HTTPS" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#70AD47;rotation=-30" vertex="1" parent="1">
+          <mxGeometry x="375" y="170" width="70" height="20" as="geometry" />
+        </mxCell>
+        
+        <!-- ESP32 -> Raspberry (MQTT) -->
+        <mxCell id="r-esp-rpi" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#4472C4;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="380" y="365" as="sourcePoint" />
+            <mxPoint x="300" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label-mqtt" value="MQTT" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#4472C4;rotation=-60" vertex="1" parent="1">
+          <mxGeometry x="310" y="260" width="40" height="20" as="geometry" />
+        </mxCell>
+        
+        <!-- ESP32 -> Serverraum -->
+        <mxCell id="r-esp-room" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#5B9BD5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="540" y="365" as="sourcePoint" />
+            <mxPoint x="540" y="365" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Raspberry -> Firewall -->
+        <mxCell id="r-rpi-fw" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#2E5090;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="650" y="180" as="sourcePoint" />
+            <mxPoint x="800" y="100" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label-fw" value="HTTPS (Dashboard)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#2E5090" vertex="1" parent="1">
+          <mxGeometry x="700" y="125" width="100" height="20" as="geometry" />
+        </mxCell>
+        
+        <!-- ==================== Port-Tabelle ==================== -->
+        <mxCell id="port-table" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#dddddd;verticalAlign=top;spacingTop=5;spacingLeft=5;spacingRight=5;spacingBottom=5;" vertex="1" parent="1">
+          <mxGeometry x="200" y="460" width="580" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="port-title" value="Port-Übersicht" style="text;html=1;strokeColor=none;fillColor=#2E5090;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#FFFFFF" vertex="1" parent="1">
+          <mxGeometry x="200" y="460" width="580" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="port-header" value="Port   │ Protokoll │ Service        │ Intern │ Extern │ Status&#xa;────────┼───────────┼────────────────┼────────┼────────┼────────" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Courier New;fontColor=#333333;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="210" y="495" width="560" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="port-22" value="22     │ TCP       │ SSH            │   ✅   │   ✅   │ Admin only" style="text;html=1;strokeColor=none;fillColor=#f0fff0;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Courier New;fontColor=#333333;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="210" y="520" width="560" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="port-80" value="80     │ TCP       │ HTTP (Nginx)   │   ✅   │   ✅   │ Redirect → HTTPS" style="text;html=1;strokeColor=none;fillColor=#f0fff0;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Courier New;fontColor=#333333;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="210" y="540" width="560" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="port-443" value="443    │ TCP       │ HTTPS (Nginx)  │   ✅   │   ✅   │ TLS enabled" style="text;html=1;strokeColor=none;fillColor=#f0fff0;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Courier New;fontColor=#333333;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="210" y="560" width="560" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="port-1883" value="1883   │ TCP       │ MQTT           │   ✅   │   ✗    │ Intern only" style="text;html=1;strokeColor=none;fillColor=#fff0f0;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Courier New;fontColor=#333333;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="210" y="580" width="560" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="port-3306" value="3306   │ TCP       │ MariaDB        │   ✅   │   ✗    │ BLOCKED" style="text;html=1;strokeColor=none;fillColor=#fff0f0;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Courier New;fontColor=#C00000;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="210" y="598" width="560" height="18" as="geometry" />
+        </mxCell>
+        
+        <!-- ==================== Legende ==================== -->
+        <mxCell id="legend" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dddddd;verticalAlign=top;spacingTop=5;spacingLeft=5;spacingRight=5;spacingBottom=5;" vertex="1" parent="1">
+          <mxGeometry x="800" y="180" width="160" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-title" value="LEGENDE" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontStyle=1;fontColor=#000000" vertex="1" parent="1">
+          <mxGeometry x="800" y="180" width="160" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-items" value="✅ Port offen&#xa;✗ Port blockiert&#xa;─── Kabel/Netzwerk&#xa;- - -> Fernzugriff&#xa;🛡️ Firewall" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#333333;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="800" y="205" width="160" height="90" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

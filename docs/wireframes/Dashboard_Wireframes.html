@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Wireframes - Real Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .tab.active {
+            @apply text-white border-b-2 border-blue-500;
+        }
+        .tab:not(.active) {
+            @apply text-gray-400;
+        }
+        .sensor-card {
+            @apply bg-gray-800 rounded-xl p-6 transition-all duration-300;
+        }
+        .sensor-card:hover {
+            @apply transform -translate-y-1 shadow-lg;
+        }
+        @keyframes pulsieren {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .alarm-puls {
+            animation: pulsieren 1s infinite;
+        }
+        .alarm-overlay {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.85) 0%, rgba(185, 28, 28, 0.9) 100%);
+        }
+        .alarm-btn {
+            background: white;
+            color: #dc2626;
+            font-size: 1.25rem;
+            font-weight: bold;
+            padding: 1rem 3rem;
+            border: none;
+            border-radius: 0.75rem;
+        }
+        @media print {
+            body { background: white; color: black; }
+            .wireframe { box-shadow: none; border: 1px solid #ddd; page-break-inside: avoid; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+
+    <!-- ==================== WIREFRAME 1: ÜBERSICHT / DASHBOARD ==================== -->
+    <div style="page-break-after: always; padding: 20px;">
+        <div style="background: #1e293b; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
+            <h2 style="color: #60a5fa; font-size: 18px; margin-bottom: 5px;">📱 Tab 1: Dashboard / Übersicht</h2>
+            <p style="color: #9ca3af; font-size: 12px;">Entspricht dem Haupt-Dashboard mit aktuellen Messwerten</p>
+        </div>
+
+        <!-- Header -->
+        <header style="background: #1f2937; border-bottom: 1px solid #374151;" class="sticky top-0 z-50">
+            <div style="max-width: 1200px; margin: 0 auto; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">🔒</span>
+                    <h1 style="font-size: 20px; font-weight: bold;">Serverraum-Überwachung</h1>
+                </div>
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #22c55e;"></span>
+                        <span>Verbunden</span>
+                    </div>
+                    <button style="padding: 8px; background: #374151; border-radius: 8px;">⚙️</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main style="max-width: 1200px; margin: 0 auto; padding: 24px 16px;">
+            <!-- Section: Aktuelle Messwerte -->
+            <section style="margin-bottom: 32px;">
+                <h2 style="font-size: 14px; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px;">
+                    Aktuelle Messwerte
+                </h2>
+                
+                <!-- Sensor Cards Grid -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
+                    <!-- Sensor Card 1: Temperatur -->
+                    <div class="sensor-card" style="border-left: 4px solid #3b82f6;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                            <span style="font-size: 32px;">🌡️</span>
+                            <div>
+                                <div style="font-size: 14px; color: #9ca3af;">Temperatur</div>
+                                <div style="font-size: 28px; font-weight: bold;">23.5 °C</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 12px; color: #22c55e;">● Normal (18-26°C)</div>
+                    </div>
+
+                    <!-- Sensor Card 2: Feuchte -->
+                    <div class="sensor-card" style="border-left: 4px solid #3b82f6;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                            <span style="font-size: 32px;">💧</span>
+                            <div>
+                                <div style="font-size: 14px; color: #9ca3af;">Feuchte</div>
+                                <div style="font-size: 28px; font-weight: bold;">45 %</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 12px; color: #22c55e;">● Normal (40-60%)</div>
+                    </div>
+
+                    <!-- Sensor Card 3: Rauchgas -->
+                    <div class="sensor-card" style="border-left: 4px solid #ef4444;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                            <span style="font-size: 32px;">⚠️</span>
+                            <div>
+                                <div style="font-size: 14px; color: #9ca3af;">Rauchgas</div>
+                                <div style="font-size: 28px; font-weight: bold;">320 ppm</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 12px; color: #eab308;">● Warnung (&lt; 500 ppm)</div>
+                    </div>
+
+                    <!-- Sensor Card 4: Bewegung -->
+                    <div class="sensor-card" style="border-left: 4px solid #6b7280;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                            <span style="font-size: 32px;">🚶</span>
+                            <div>
+                                <div style="font-size: 14px; color: #9ca3af;">Bewegung</div>
+                                <div style="font-size: 28px; font-weight: bold;">–</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 12px; color: #6b7280;">○ Inaktiv</div>
+                    </div>
+                </div>
+
+                <!-- System Status Bar -->
+                <div style="background: #1f2937; border-radius: 8px; padding: 16px; display: flex; flex-wrap: wrap; gap: 16px; font-size: 14px; color: #9ca3af;">
+                    <div>Letzte Aktualisierung: <span style="color: white; font-family: monospace;">12:45:30</span></div>
+                    <div>● Verbunden mit <span style="color: white;">ESP32-001</span></div>
+                    <div>📶 WLAN: <span style="color: white;">-65 dBm</span></div>
+                </div>
+            </section>
+
+            <!-- Section: Tab Navigation -->
+            <section>
+                <div style="display: flex; gap: 8px; border-bottom: 1px solid #374151; margin-bottom: 24px;">
+                    <button class="tab active" style="padding: 8px 16px;">Dashboard</button>
+                    <button class="tab" style="padding: 8px 16px;">Verlauf</button>
+                    <button class="tab" style="padding: 8px 16px;">Alarme</button>
+                    <button class="tab" style="padding: 8px 16px;">Einstellungen</button>
+                </div>
+
+                <!-- Dashboard Content -->
+                <div style="background: #1f2937; border-radius: 12px; padding: 24px;">
+                    <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Übersicht</h3>
+                    <p style="color: #9ca3af; margin-bottom: 16px;">Alle Sensoren auf einen Blick. Die Daten werden automatisch aktualisiert.</p>
+                    
+                    <!-- Mini Chart Placeholder -->
+                    <div style="background: #374151; border-radius: 8px; padding: 16px; height: 200px; display: flex; align-items: center; justify-content: center; color: #6b7280;">
+                        [Chart.js Verlaufsdiagramm hier]
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer style="background: #1f2937; border-top: 1px solid #374151; margin-top: 32px; padding: 16px; text-align: center;">
+            <p style="color: #6b7280; font-size: 14px;">Serverraum-Überwachung | IHK-Abschlussprojekt Marc-Dennis Haberland</p>
+        </footer>
+    </div>
+
+    <!-- ==================== WIREFRAME 2: VERLAUF ==================== -->
+    <div style="page-break-after: always; padding: 20px;">
+        <div style="background: #1e293b; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
+            <h2 style="color: #60a5fa; font-size: 18px; margin-bottom: 5px;">📊 Tab 2: Verlauf</h2>
+            <p style="color: #9ca3af; font-size: 12px;">Historische Daten mit Chart.js Diagramm und Statistik</p>
+        </div>
+
+        <main style="max-width: 1200px; margin: 0 auto; padding: 24px 16px;">
+            <div style="background: #1f2937; border-radius: 12px; padding: 24px;">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Verlauf</h3>
+                
+                <!-- Filter Controls -->
+                <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+                    <div>
+                        <label style="display: block; font-size: 14px; color: #9ca3af; margin-bottom: 4px;">Sensor</label>
+                        <select style="background: #374151; border: 1px solid #4b5563; border-radius: 6px; padding: 8px 12px; color: white;">
+                            <option>Temperatur</option>
+                            <option>Feuchte</option>
+                            <option>Rauchgas</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 14px; color: #9ca3af; margin-bottom: 4px;">Zeitraum</label>
+                        <select style="background: #374151; border: 1px solid #4b5563; border-radius: 6px; padding: 8px 12px; color: white;">
+                            <option>1 Stunde</option>
+                            <option>6 Stunden</option>
+                            <option selected>24 Stunden</option>
+                            <option>7 Tage</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; align-items: flex-end;">
+                        <button style="background: #2563eb; padding: 8px 16px; border-radius: 6px; font-weight: 500;">Anzeigen</button>
+                    </div>
+                </div>
+
+                <!-- Chart Area -->
+                <div style="height: 320px; margin-bottom: 24px;">
+                    <canvas id="verlaufChart" style="background: #374151; border-radius: 8px; padding: 16px;"></canvas>
+                </div>
+
+                <!-- Statistics Grid -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                    <div style="background: #374151; border-radius: 8px; padding: 16px; text-align: center;">
+                        <div style="font-size: 14px; color: #9ca3af; margin-bottom: 8px;">Durchschnitt</div>
+                        <div style="font-size: 24px; font-weight: bold;">23.2 °C</div>
+                    </div>
+                    <div style="background: #374151; border-radius: 8px; padding: 16px; text-align: center;">
+                        <div style="font-size: 14px; color: #9ca3af; margin-bottom: 8px;">Minimum</div>
+                        <div style="font-size: 24px; font-weight: bold;">21.5 °C</div>
+                    </div>
+                    <div style="background: #374151; border-radius: 8px; padding: 16px; text-align: center;">
+                        <div style="font-size: 14px; color: #9ca3af; margin-bottom: 8px;">Maximum</div>
+                        <div style="font-size: 24px; font-weight: bold;">25.8 °C</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== WIREFRAME 3: ALARME ==================== -->
+    <div style="page-break-after: always; padding: 20px;">
+        <div style="background: #1e293b; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
+            <h2 style="color: #60a5fa; font-size: 18px; margin-bottom: 5px;">🚨 Tab 3: Alarme</h2>
+            <p style="color: #9ca3af; font-size: 12px;">Alarm-Historie mit Filter und Quittierung</p>
+        </div>
+
+        <main style="max-width: 1200px; margin: 0 auto; padding: 24px 16px;">
+            <div style="background: #1f2937; border-radius: 12px; padding: 24px;">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Alarme</h3>
+                
+                <!-- Filter -->
+                <div style="margin-bottom: 24px;">
+                    <select style="background: #374151; border: 1px solid #4b5563; border-radius: 6px; padding: 8px 12px; color: white;">
+                        <option>Alle</option>
+                        <option>Aktiv</option>
+                        <option>Quittiert</option>
+                    </select>
+                </div>
+
+                <!-- Alarm Table -->
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid #374151; text-align: left; color: #9ca3af; font-size: 14px;">
+                                <th style="padding: 12px 16px 12px 0;">Status</th>
+                                <th style="padding: 12px 16px 12px 0;">Sensor</th>
+                                <th style="padding: 12px 16px 12px 0;">Typ</th>
+                                <th style="padding: 12px 16px 12px 0;">Wert</th>
+                                <th style="padding: 12px 16px 12px 0;">Zeit</th>
+                                <th style="padding: 12px 0 12px 0;">Aktion</th>
+                            </tr>
+                        </thead>
+                        <tbody style="font-size: 14px;">
+                            <!-- Alarm Row 1: CRITICAL -->
+                            <tr style="border-bottom: 1px solid #374151; background: rgba(239, 68, 68, 0.1);">
+                                <td style="padding: 16px 16px 16px 0;">
+                                    <span style="color: #ef4444; font-weight: bold;">● Kritisch</span>
+                                </td>
+                                <td style="padding: 16px 16px 16px 0;">Temperatur</td>
+                                <td style="padding: 16px 16px 16px 0;">TEMPERATUR_HOCH</td>
+                                <td style="padding: 16px 16px 16px 0; color: #ef4444;">32.5 °C</td>
+                                <td style="padding: 16px 16px 16px 0; color: #9ca3af;">14:32</td>
+                                <td style="padding: 16px 0 16px 0;">
+                                    <button style="background: #2563eb; padding: 6px 12px; border-radius: 4px; font-size: 12px;">Quittieren</button>
+                                </td>
+                            </tr>
+                            <!-- Alarm Row 2: WARNING -->
+                            <tr style="border-bottom: 1px solid #374151; background: rgba(234, 179, 8, 0.1);">
+                                <td style="padding: 16px 16px 16px 0;">
+                                    <span style="color: #eab308; font-weight: bold;">● Warnung</span>
+                                </td>
+                                <td style="padding: 16px 16px 16px 0;">Rauchgas</td>
+                                <td style="padding: 16px 16px 16px 0;">RAUCHGAS</td>
+                                <td style="padding: 16px 16px 16px 0; color: #eab308;">320 ppm</td>
+                                <td style="padding: 16px 16px 16px 0; color: #9ca3af;">12:15</td>
+                                <td style="padding: 16px 0 16px 0;">
+                                    <button style="background: #22c55e; padding: 6px 12px; border-radius: 4px; font-size: 12px;">✓ Quittiert</button>
+                                </td>
+                            </tr>
+                            <!-- Alarm Row 3: QUITTIERT -->
+                            <tr style="border-bottom: 1px solid #374151;">
+                                <td style="padding: 16px 16px 16px 0;">
+                                    <span style="color: #6b7280;">○ Quittiert</span>
+                                </td>
+                                <td style="padding: 16px 16px 16px 0;">Feuchte</td>
+                                <td style="padding: 16px 16px 16px 0;">FEUCHTE_NIEDRIG</td>
+                                <td style="padding: 16px 16px 16px 0;">38 %</td>
+                                <td style="padding: 16px 16px 16px 0; color: #9ca3af;">10:30</td>
+                                <td style="padding: 16px 0 16px 0;">
+                                    <span style="color: #6b7280; font-size: 12px;">–</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Alarm Overlay Preview -->
+            <div style="margin-top: 32px;">
+                <h4 style="font-size: 14px; color: #9ca3af; margin-bottom: 16px;">BONUS: Vollbild-Alarm-Overlay</h4>
+                <div class="alarm-overlay" style="position: relative; height: 200px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+                    <h2 style="font-size: 28px; font-weight: bold; margin-bottom: 8px;">⚠️ ALARM ⚠️</h2>
+                    <p style="font-size: 14px;">Es sind aktive Alarme vorhanden!</p>
+                    <div style="font-size: 36px; font-weight: bold; margin: 8px 0;">2 Alarme</div>
+                    <button class="alarm-btn" style="position: relative; margin-top: 8px; font-size: 14px; padding: 8px 16px;">Alle Alarme Quittieren</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== WIREFRAME 4: EINSTELLUNGEN ==================== -->
+    <div style="page-break-after: always; padding: 20px;">
+        <div style="background: #1e293b; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
+            <h2 style="color: #60a5fa; font-size: 18px; margin-bottom: 5px;">⚙️ Tab 4: Einstellungen</h2>
+            <p style="color: #9ca3af; font-size: 12px;">API-Endpunkt, Refresh-Intervall und Alarm-Schwellwerte</p>
+        </div>
+
+        <main style="max-width: 800px; margin: 0 auto; padding: 24px 16px;">
+            <div style="background: #1f2937; border-radius: 12px; padding: 24px;">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 24px;">System-Einstellungen</h3>
+                
+                <!-- API Endpoint -->
+                <div style="margin-bottom: 24px;">
+                    <label style="display: block; font-size: 14px; color: #9ca3af; margin-bottom: 8px;">API-Endpunkt</label>
+                    <input type="text" value="http://localhost:8000" 
+                           style="width: 100%; background: #374151; border: 1px solid #4b5563; border-radius: 6px; padding: 10px 12px; color: white; font-size: 14px;">
+                </div>
+
+                <!-- Refresh Interval -->
+                <div style="margin-bottom: 24px;">
+                    <label style="display: block; font-size: 14px; color: #9ca3af; margin-bottom: 8px;">Aktualisierungsintervall (Sekunden)</label>
+                    <input type="number" value="5" min="1" max="60"
+                           style="width: 100%; background: #374151; border: 1px solid #4b5563; border-radius: 6px; padding: 10px 12px; color: white; font-size: 14px;">
+                </div>
+
+                <!-- Alarm Thresholds -->
+                <div style="margin-bottom: 24px;">
+                    <h4 style="font-size: 16px; font-weight: 500; margin-bottom: 16px;">Alarm-Schwellwerte</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div>
+                            <label style="display: block; font-size: 14px; color: #9ca3af; margin-bottom: 8px;">Temperatur max (°C)</label>
+                            <input type="number" value="30" step="0.5"
+                                   style="width: 100%; background: #374151; border: 1px solid #4b5563; border-radius: 6px; padding: 10px 12px; color: white; font-size: 14px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 14px; color: #9ca3af; margin-bottom: 8px;">Rauchgas max (ppm)</label>
+                            <input type="number" value="200"
+                                   style="width: 100%; background: #374151; border: 1px solid #4b5563; border-radius: 6px; padding: 10px 12px; color: white; font-size: 14px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div style="display: flex; gap: 12px;">
+                    <button style="background: #2563eb; padding: 10px 24px; border-radius: 6px; font-weight: 500;">Speichern</button>
+                    <button style="background: #374151; padding: 10px 24px; border-radius: 6px;">Zurücksetzen</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== LEGENDE ==================== -->
+    <div style="padding: 20px; max-width: 800px; margin: 0 auto;">
+        <h3 style="color: #9ca3af; font-size: 14px; margin-bottom: 16px;">LEGENDE</h3>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; font-size: 12px; color: #6b7280;">
+            <div>● <span style="color: #22c55e;">Grün</span> = Normal / OK</div>
+            <div>● <span style="color: #eab308;">Gelb</span> = Warnung</div>
+            <div>● <span style="color: #ef4444;">Rot</span> = Kritisch / Alarm</div>
+            <div>○ <span style="color: #6b7280;">Grau</span> = Inaktiv / Quittiert</div>
+        </div>
+        <p style="margin-top: 24px; color: #6b7280; font-size: 12px; text-align: center;">
+            📁 Wireframes basierend auf dem echten Dashboard<br>
+            Technologien: Tailwind CSS, Chart.js, Dark Theme<br>
+            Datei: <code>Dashboard_Wireframes.html</code>
+        </p>
+    </div>
+
+</body>
+</html>

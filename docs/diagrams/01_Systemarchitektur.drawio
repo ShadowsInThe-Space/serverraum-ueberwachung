@@ -1,0 +1,73 @@
+<mxfile host="app.diagrams.net" agent="Buddy">
+  <diagram name="Systemarchitektur" id="sys-arch">
+    <mxGraphModel dx="1202" dy="1113" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="layer1" parent="1" style="swimlane;horizontal=0;fillColor=#4472C4;strokeColor=#2E5090;fontColor=#ffffff;fontSize=12;fontStyle=1" value="SERVERRAUM" vertex="1">
+          <mxGeometry height="280" width="320" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="esp32" parent="layer1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4B400;strokeColor=#D4940F;fontColor=#000000" value="ESP32-S3&#xa;DevKitC-1" vertex="1">
+          <mxGeometry height="50" width="100" x="50" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="sm" parent="layer1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#70AD47;strokeColor=#538135" value="SensorManager" vertex="1">
+          <mxGeometry height="50" width="100" x="182.5" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="s1" parent="layer1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFC000" value="DS18B20&#xa;Temperatursensor" vertex="1">
+          <mxGeometry height="40" width="120" x="40" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="s2" parent="layer1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFC000" value="SHT31&#xa;Temp+Feuchtigkeit" vertex="1">
+          <mxGeometry height="40" width="120" x="40" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" parent="layer1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFC000" value="MQ-2&#xa;Rauchgassensor" vertex="1">
+          <mxGeometry height="40" width="115" x="175" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="s4" parent="layer1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFC000" value="PIR&#xa;Bewegungsmelder" vertex="1">
+          <mxGeometry height="40" width="115" x="175" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="a1" parent="layer1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C00000" value="RGB-LED&#xa;Ampel" vertex="1">
+          <mxGeometry height="30" width="80" x="60" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="a2" parent="layer1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C00000" value="Buzzer" vertex="1">
+          <mxGeometry height="30" width="80" x="192.5" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="wlan" edge="1" parent="1" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#4472C4;fontColor=#000000;dashed=1" value="WLAN&#xa;(MQTT)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="370" y="180" as="sourcePoint" />
+            <mxPoint x="430" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="layer2" parent="1" style="swimlane;horizontal=0;fillColor=#4472C4;strokeColor=#2E5090;fontColor=#ffffff;fontSize=12;fontStyle=1" value="RASPBERRY PI 4B" vertex="1">
+          <mxGeometry height="280" width="320" x="440" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="mqtt" parent="layer2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#70AD47;strokeColor=#538135" value="Mosquitto&#xa;MQTT Broker" vertex="1">
+          <mxGeometry height="50" width="100" x="80" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="backend" parent="layer2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#70AD47;strokeColor=#538135" value="FastAPI&#xa;Backend" vertex="1">
+          <mxGeometry height="50" width="100" x="200" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="alarm" parent="layer2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C00000;strokeColor=#8B0000;fontColor=#ffffff" value="Alarm-Engine&#xa;(SMTP)" vertex="1">
+          <mxGeometry height="50" width="100" x="80" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="db" parent="layer2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4472C4;strokeColor=#2E5090;fontColor=#ffffff" value="MariaDB&#xa;10.11" vertex="1">
+          <mxGeometry height="50" width="100" x="200" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="rest" edge="1" parent="1" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#4472C4;fontColor=#000000;dashed=1" value="REST API&#xa;(Port 8000)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="770" y="180" as="sourcePoint" />
+            <mxPoint x="830" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="layer3" parent="1" style="swimlane;horizontal=0;fillColor=#4472C4;strokeColor=#2E5090;fontColor=#ffffff;fontSize=12;fontStyle=1" value="BROWSER / DASHBOARD" vertex="1">
+          <mxGeometry height="280" width="220" x="840" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="spa" parent="layer3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#70AD47;strokeColor=#538135" value="JavaScript SPA&#xa;Dashboard" vertex="1">
+          <mxGeometry height="50" width="100" x="60" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="charts" parent="layer3" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F4B400;strokeColor=#D4940F" value="Chart.js&#xa;Verlaufskurven" vertex="1">
+          <mxGeometry height="40" width="100" x="60" y="160" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

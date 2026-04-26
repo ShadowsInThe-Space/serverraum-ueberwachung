@@ -68,52 +68,103 @@ public:
      */
     bool init() override
     {
+        Serial.println("[SHT31] >>> INIT AUFGERUFEN <<<");
+        Serial.flush();
         Serial.printf("[SHT31] Starte Initialisierung mit SCL=GPIO%d, SDA=GPIO%d\n", sclPin, sdaPin);
+        Serial.flush();
 
         // I2C initialisieren mit benutzerdefinierten Pins
         Wire.begin(sdaPin, sclPin);
         Wire.setClock(100000);  // 100kHz für bessere Stabilität
         delay(100);  // Kurze Pause nach Wire.begin
 
-        // I2C-Scan NACH Wire.begin - immer ausführen!
+        // I2C-Scan NACH Wire.begin - aber nur echte SHT31-Adressen testen
         Serial.println("[SHT31] === I2C SCAN ===");
-        int geraeteGefunden = 0;
-        for (uint8_t addr = 1; addr < 127; addr++)
+        int sht31Gefunden = 0;
+        uint8_t scanAdressen[2] = {SHT31_ADDR_1, SHT31_ADDR_2};
+        const char* scanNamen[2] = {"0x44", "0x45"};
+
+        for (int i = 0; i < 2; i++)
         {
-            Wire.beginTransmission(addr);
+            Wire.beginTransmission(scanAdressen[i]);
             uint8_t error = Wire.endTransmission();
             if (error == 0)
             {
-                Serial.printf("[SHT31] >>> I2C-Gerät gefunden: 0x%02X\n", addr);
-                geraeteGefunden++;
+                Serial.printf("[SHT31] >>> I2C Adresse %s antwortet!\n", scanNamen[i]);
+                sht31Gefunden++;
             }
-            else if (error != 2)  // 2 = kein Gerät, das ist normal
+            else
             {
-                Serial.printf("[SHT31] >>> Fehler bei Adresse 0x%02X: %d\n", addr, error);
+                Serial.printf("[SHT31] >>> Adresse %s antwortet nicht (error=%d)\n", scanNamen[i], error);
             }
         }
-        Serial.printf("[SHT31] I2C-Scan beendet. Gefunden: %d Geräte\n", geraeteGefunden);
+        Serial.printf("[SHT31] I2C-Scan beendet. %d von 2 SHT31-Adressen antworten\n", sht31Gefunden);
+        Serial.flush();
 
-        // Jetzt SHT31 initialisieren
-        // Software-Reset senden
-        Wire.beginTransmission(i2cAdresse);
-        Wire.write(0x30);  // Soft Reset Command
-        Wire.write(0xA2);
-        if (Wire.endTransmission() != 0)
+        // Kurze Pause damit Serial Output vollständig übertragen wird
+        delay(50);
+
+        // Teste BEIDE SHT31-Adressen systematisch
+        bool sensorGefunden = false;
+        uint8_t testAdressen[2] = {SHT31_ADDR_1, SHT31_ADDR_2};
+        const char* addrNamen[2] = {"0x44 (Standard)", "0x45 (Alternative)"};
+
+        for (int i = 0; i < 2; i++)
         {
-            Serial.println("[SHT31] Fehler: Soft Reset fehlgeschlagen!");
-            // Versuche alternative Adresse
-            i2cAdresse = SHT31_ADDR_2;
-            Serial.printf("[SHT31] Versuche alternative Adresse 0x%02X\n", i2cAdresse);
+            i2cAdresse = testAdressen[i];
+            Serial.printf("[SHT31] Teste %s...\n", addrNamen[i]);
+
+            // Prüfe ob Adresse auf I2C-Bus antwortet
             Wire.beginTransmission(i2cAdresse);
-            Wire.write(0x30);
+            uint8_t txError = Wire.endTransmission();
+            Serial.printf("[SHT31]   Transmission: %s\n", txError == 0 ? "ACK" : (txError == 2 ? "NACK (kein Gerät)" : "Fehler"));
+
+            if (txError != 0) continue;
+
+            // SHT31 Break Command senden (stoppt jede laufende Messung)
+            Wire.beginTransmission(i2cAdresse);
+            Wire.write(0x30);  // Break command
+            Wire.write(0x93);
+            Wire.endTransmission();
+            delay(1);
+
+            // Software-Reset senden
+            Wire.beginTransmission(i2cAdresse);
+            Wire.write(0x30);  // Soft Reset
             Wire.write(0xA2);
-            if (Wire.endTransmission() != 0)
+            uint8_t resetError = Wire.endTransmission();
+            Serial.printf("[SHT31]   Soft Reset: %s\n", resetError == 0 ? "OK" : "Fehler");
+            delay(10);
+
+            // Statusregister lesen (0xF32D)
+            Wire.beginTransmission(i2cAdresse);
+            Wire.write(0xF3);  // Read Status Register High
+            Wire.write(0x2D);
+            Wire.endTransmission();
+
+            delay(5);
+            Wire.requestFrom(i2cAdresse, (uint8_t)3);
+            if (Wire.available() >= 2)
             {
-                Serial.println("[SHT31] Fehler: Kein Sensor gefunden!");
-                messwert.status = SensorStatus::NICHT_VERFUEGBAR;
-                return false;
+                uint8_t statusHigh = Wire.read();
+                uint8_t statusLow = Wire.read();
+                uint8_t statusCRC = Wire.read();
+                Serial.printf("[SHT31]   Status: 0x%02X 0x%02X (CRC=0x%02X)\n", statusHigh, statusLow, statusCRC);
+                sensorGefunden = true;
+                Serial.printf("[SHT31] >>> SHT31 gefunden auf %s!\n", addrNamen[i]);
+                break;
             }
+            else
+            {
+                Serial.printf("[SHT31]   Keine Daten von %s (available=%d)\n", addrNamen[i], Wire.available());
+            }
+        }
+
+        if (!sensorGefunden)
+        {
+            Serial.println("[SHT31] Fehler: Kein SHT31-Sensor gefunden!");
+            messwert.status = SensorStatus::NICHT_VERFUEGBAR;
+            return false;
         }
 
         messwert.status = SensorStatus::OK;
