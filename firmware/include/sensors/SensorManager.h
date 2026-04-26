@@ -182,7 +182,7 @@ public:
     void sendeSensorDaten(const SensorMesswert& messwert)
     {
         // Erstelle JSON-Dokument
-        StaticJsonDocument<256> jsonDoc;
+        JsonDocument jsonDoc;
 
         // Fülle JSON mit Messwerten
         jsonDoc["sensor_id"] = messwert.sensorId;
@@ -215,7 +215,7 @@ public:
      */
     void sendeHeartbeat()
     {
-        StaticJsonDocument<128> jsonDoc;
+        JsonDocument jsonDoc;
         jsonDoc["status"] = "online";
         jsonDoc["uptime_ms"] = millis();
         jsonDoc["sensor_count"] = anzahlSensoren;
@@ -289,7 +289,7 @@ public:
      */
     void sendeAlarm(String nachricht, const SensorMesswert& messwert)
     {
-        StaticJsonDocument<256> jsonDoc;
+        JsonDocument jsonDoc;
         jsonDoc["alarm"] = true;
         jsonDoc["nachricht"] = nachricht;
         jsonDoc["sensor_id"] = messwert.sensorId;

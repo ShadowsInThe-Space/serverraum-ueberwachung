@@ -6,7 +6,7 @@ Starten mit:
     uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 @author Marc-Dennis Haberland
-@date 04.03.2026
+@date 16.03.2026
 """
 
 import logging
@@ -28,7 +28,7 @@ from .alarm_engine import alarm_engine
 config = config_module.config
 logger = logging.getLogger(__name__)
 
-STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend")
+STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "frontend")
 
 
 # =============================================================================
