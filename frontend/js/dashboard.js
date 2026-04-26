@@ -539,7 +539,7 @@ function zeigeAlarmTabelle(alarme) {
                     <option value="email">Per Email senden</option>
                     <option value="loeschen">Löschen</option>
                 </select>
-                ` : '--'}
+                ` : (alarm.letzte_aktion || '--')}
             </td>
         `;
 

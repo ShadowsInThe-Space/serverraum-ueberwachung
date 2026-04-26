@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
     <title>Serverraum-Überwachung</title>
 
     <!-- Tailwind CSS via CDN -->
@@ -616,13 +617,17 @@
 
     <!-- Alarm Overlay -->
     <div id="alarm-overlay" class="alarm-overlay" style="display: none;" role="alertdialog" aria-modal="true" aria-labelledby="alarm-title" aria-describedby="alarm-description">
+        <button onclick="versteckeAlarmOverlay()" class="absolute top-4 right-4 text-white text-3xl font-bold hover:text-gray-200" aria-label="Overlay schließen">&times;</button>
         <div class="text-center">
             <h2 id="alarm-title" class="text-5xl font-bold text-white mb-4">ALARM</h2>
             <p id="alarm-description" class="text-xl text-white mb-8">Es sind aktive Alarme vorhanden!</p>
             <div class="text-8xl font-bold text-white mb-8" id="alarm-count" aria-live="polite">0</div>
             <p class="text-lg text-white mb-8">Aktive Alarme</p>
-            <button onclick="quittiereAlleAlarme()" class="alarm-quittieren-btn">
+            <button onclick="quittiereAlleAlarme()" class="alarm-quittieren-btn mr-4">
                 Alle Alarme Quittieren
+            </button>
+            <button onclick="wechselTab('alarme'); versteckeAlarmOverlay();" class="bg-white text-red-600 font-bold py-4 px-8 rounded-lg cursor-pointer">
+                Details anzeigen
             </button>
         </div>
     </div>
@@ -635,8 +640,8 @@
     </footer>
 
     <!-- JavaScript -->
-    <script src="./js/api.js"></script>
-    <script src="./js/dashboard.js"></script>
+    <script src="./js/api.js?v=2"></script>
+    <script src="./js/dashboard.js?v=2"></script>
     <script src="./js/charts.js"></script>
 
     <!-- App Initialisierung -->

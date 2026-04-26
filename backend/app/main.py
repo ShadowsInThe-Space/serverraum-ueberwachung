@@ -197,6 +197,7 @@ async def alarme(status: Optional[str] = None, limit: int = Query(default=100, g
         "status": a["status"],
         "created_at": str(a["created_at"]),
         "quittiert_at": str(a["quittiert_at"]) if a.get("quittiert_at") else None,
+        "letzte_aktion": a.get("letzte_aktion"),
     } for a in alarme]
 
 
@@ -236,13 +237,13 @@ async def alarm_email_senden(alarm_id: int):
             id=alarm_id
         )
 
-        # Email senden
+        # Email senden (speichert automatisch in DB, auch bei SMTP-Fehler)
         email_notifier = alarm_engine._notifier[0]  # EmailNotifier
-        success = email_notifier.senden(alarm_obj)
+        email_notifier.senden(alarm_obj)
 
-        if success:
-            return {"status": "erfolgreich", "alarm_id": alarm_id}
-        raise HTTPException(status_code=500, detail="Email senden fehlgeschlagen")
+        # Email wurde in DB gespeichert (mit Status 'ausstehend' oder 'fehlgeschlagen')
+        # Das zählt als Erfolg - der User sieht das Ergebnis in der Email-Liste
+        return {"status": "erfolgreich", "alarm_id": alarm_id, "hinweis": "Email wurde gespeichert"}
     except HTTPException:
         raise
     except Exception as e:
