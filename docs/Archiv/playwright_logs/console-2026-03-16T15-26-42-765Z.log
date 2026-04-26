@@ -1,0 +1,69 @@
+[      19ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9) @ http://192.168.178.48:8000/static/js/api.js:53
+[      19ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9) @ http://192.168.178.48:8000/static/js/api.js:53
+[      20ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9) @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[      20ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[      43ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[   40238ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   40239ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9) @ http://192.168.178.48:8000/static/js/api.js:53
+[   40239ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9) @ http://192.168.178.48:8000/static/js/dashboard.js:127
+[   40240ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[   40240ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9) @ http://192.168.178.48:8000/static/js/api.js:53
+[   40240ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9) @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   41270ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/sensoren:0
+[   41270ms] [ERROR] API Fehler: /sensoren TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   41271ms] [ERROR] Fehler beim Laden der Sensoren: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getSensoren (http://192.168.178.48:8000/static/js/api.js:72:18)
+    at ladeSensorDaten (http://192.168.178.48:8000/static/js/dashboard.js:64:43)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:194:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:68
+[   41271ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.178.48:8000/alarme?limit=100&status=aktiv:0
+[   41271ms] [ERROR] API Fehler: /alarme?limit=100&status=aktiv TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/api.js:53
+[   41271ms] [ERROR] Fehler beim Laden der Alarme: TypeError: Failed to fetch
+    at apiRequest (http://192.168.178.48:8000/static/js/api.js:45:32)
+    at Object.getAlarme (http://192.168.178.48:8000/static/js/api.js:106:18)
+    at ladeAlarmDaten (http://192.168.178.48:8000/static/js/dashboard.js:124:41)
+    at aktualisiereDaten (http://192.168.178.48:8000/static/js/dashboard.js:195:9)
+    at http://192.168.178.48:8000/static/js/dashboard.js:185:9 @ http://192.168.178.48:8000/static/js/dashboard.js:127

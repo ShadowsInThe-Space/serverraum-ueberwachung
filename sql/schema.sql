@@ -2,7 +2,7 @@
 -- Serverraum-Überwachung Datenbank-Schema
 -- MariaDB
 -- Version: 1.0
--- Datum: 03.03.2026
+-- Datum: 13.03.2026
 -- =====================================================
 
 -- Datenbank erstellen (falls nicht vorhanden)
@@ -121,7 +121,7 @@ ON DUPLICATE KEY UPDATE wert = VALUES(wert);
 -- Initiale Sensoren
 -- =====================================================
 INSERT INTO sensoren (sensor_typ, name, beschreibung, gpio_pin, einheit) VALUES
-    ('dht22', 'Temperatur & Feuchte', 'DHT22 Sensor für Temperatur und Luftfeuchtigkeit', 5, '°C/%'),
+    ('sht31', 'Temperatur & Feuchte', 'SHT31 Sensor für Temperatur und Luftfeuchtigkeit', 9, '°C/%'),
     ('mq2', 'Rauchgas', 'MQ-2 Rauchgassensor', 1, 'ppm'),
     ('mq135', 'Luftqualität', 'MQ-135 Luftqualitätssensor', 2, 'ppm'),
     ('pir', 'Bewegung', 'PIR-Bewegungsmelder', 6, 'bool')

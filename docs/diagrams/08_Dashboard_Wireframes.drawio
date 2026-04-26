@@ -1,0 +1,260 @@
+<mxfile host="app.diagrams.net" modified="2026-04-20T10:00:00.000Z" agent="Buddy" etag="abc130" version="21.0.0">
+  <diagram name="Dashboard Wireframes" id="wireframes">
+    <mxGraphModel dx="1400" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- ==================== WIREFRAME 1: ÜBERSICHT ==================== -->
+        <mxCell id="wf1-title" value="Tab 1: Übersicht (Dashboard)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontColor=#2E5090" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="400" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Browser Chrome -->
+        <mxCell id="wf1-chrome" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f0f0f0;strokeColor=#cccccc;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="500" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="wf1-url" value="🔒 serverraum.local/dashboard" style="text;html=1;strokeColor=none;fillColor=#e0e0e0;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666" vertex="1" parent="1">
+          <mxGeometry x="50" y="70" width="480" height="25" as="geometry" />
+        </mxCell>
+        
+        <!-- Header -->
+        <mxCell id="wf1-header" value="🌡️ Serverraum-Überwachung" style="text;html=1;strokeColor=none;fillColor=#2E5090;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;fontColor=#FFFFFF;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="500" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Tabs -->
+        <mxCell id="wf1-tabs" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e8e8e8;strokeColor=#cccccc;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="140" width="500" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="wf1-tab1" value="[ Übersicht ]" style="text;html=1;strokeColor=none;fillColor=#ffffff;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#2E5090;spacingLeft=0;" vertex="1" parent="1">
+          <mxGeometry x="55" y="142" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wf1-tab2" value="Sensoren" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="140" y="142" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wf1-tab3" value="Alarme" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="225" y="142" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wf1-tab4" value="Einstellungen" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="310" y="142" width="80" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Content Area -->
+        <mxCell id="wf1-content" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#cccccc;verticalAlign=top;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="180" width="500" height="275" as="geometry" />
+        </mxCell>
+        
+        <!-- Status Cards Row 1 -->
+        <mxCell id="wf1-card1" value="⚡ System&#xa;Status&#xa;&#xa;&#xa;✔ Online" style="text;html=1;strokeColor=#70AD47;fillColor=#f0fff0;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=5;fontSize=11;fontColor=#2E5090;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="55" y="195" width="110" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="wf1-card2" value="🌡️ Temperatur&#xa;&#xa;&#xa;23.5 °C" style="text;html=1;strokeColor=#4472C4;fillColor=#f0f8ff;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=5;fontSize=11;fontColor=#2E5090;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="175" y="195" width="110" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="wf1-card3" value="💧 Luftfeucht.&#xa;&#xa;&#xa;45 %" style="text;html=1;strokeColor=#5B9BD5;fillColor=#f0f8ff;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=5;fontSize=11;fontColor=#2E5090;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="295" y="195" width="110" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="wf1-card4" value="🚨 Alarme&#xa;&#xa;&#xa;2 Offen" style="text;html=1;strokeColor=#C00000;fillColor=#fff0f0;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=5;fontSize=11;fontColor=#C00000;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="415" y="195" width="110" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Chart Area -->
+        <mxCell id="wf1-chart" value="📈 Temperatur (24h)&#xa;&#xa;▂▃▅▇█▆▄▃▂▂▃▅▆▇█▇▆▅▄▃▂▂▃&#xa;00:00    06:00    12:00    18:00    24:00" style="text;html=1;strokeColor=#dddddd;fillColor=#fafafa;align=left;verticalAlign=top;whiteSpace=wrap;rounded=5;fontSize=10;fontColor=#333333;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="55" y="290" width="230" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="wf1-chart2" value="📊 Sensor-Übersicht&#xa;&#xa;▓▓▓▓▓▓▓▓░░░ 78%&#xa;▓▓▓▓▓▓░░░░░ 62%" style="text;html=1;strokeColor=#dddddd;fillColor=#fafafa;align=left;verticalAlign=top;whiteSpace=wrap;rounded=5;fontSize=10;fontColor=#333333;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="295" y="290" width="230" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Recent Alarms -->
+        <mxCell id="wf1-alarms" value="Letzte Alarme:&#xa;─────────────────&#xa;🔴 14:32 - Temperatur > 30°C&#xa;🟡 12:15 - Feuchtigkeit < 40%&#xa;─────────────────" style="text;html=1;strokeColor=#dddddd;fillColor=#fffaf0;align=left;verticalAlign=top;whiteSpace=wrap;rounded=5;fontSize=10;fontColor=#333333;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="55" y="385" width="470" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- ==================== WIREFRAME 2: SENSOREN ==================== -->
+        <mxCell id="wf2-title" value="Tab 2: Sensoren (Detailansicht)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontColor=#2E5090" vertex="1" parent="1">
+          <mxGeometry x="580" y="20" width="400" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Browser Chrome -->
+        <mxCell id="wf2-chrome" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f0f0f0;strokeColor=#cccccc;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="580" y="60" width="500" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="wf2-url" value="🔒 serverraum.local/dashboard/sensoren" style="text;html=1;strokeColor=none;fillColor=#e0e0e0;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666" vertex="1" parent="1">
+          <mxGeometry x="590" y="70" width="480" height="25" as="geometry" />
+        </mxCell>
+        
+        <!-- Header -->
+        <mxCell id="wf2-header" value="🌡️ Serverraum-Überwachung" style="text;html=1;strokeColor=none;fillColor=#2E5090;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;fontColor=#FFFFFF;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="580" y="100" width="500" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Tabs -->
+        <mxCell id="wf2-tabs" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e8e8e8;strokeColor=#cccccc;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="580" y="140" width="500" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="wf2-tab1" value="Übersicht" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="595" y="142" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wf2-tab2" value="[ Sensoren ]" style="text;html=1;strokeColor=none;fillColor=#ffffff;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#2E5090;spacingLeft=0;" vertex="1" parent="1">
+          <mxGeometry x="680" y="142" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wf2-tab3" value="Alarme" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="765" y="142" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wf2-tab4" value="Einstellungen" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="850" y="142" width="80" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Content Area -->
+        <mxCell id="wf2-content" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#cccccc;verticalAlign=top;align=left;" vertex="1" parent="1">
+          <mxGeometry x="580" y="180" width="500" height="275" as="geometry" />
+        </mxCell>
+        
+        <!-- Sensor Table -->
+        <mxCell id="wf2-table-header" value="Name        │ Typ        │ Wert    │ Status   │ Grenzwerte    │&#xa;─────────────┼────────────┼─────────┼───────────┼──────────────" style="text;html=1;strokeColor=#dddddd;fillColor=#f5f5f5;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontFamily=Courier New;fontColor=#333333;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="595" y="195" width="470" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="wf2-row1" value="🌡️ Server_Temp │ Temperatur │ 23.5°C  │ ✔ OK     │ 18°C - 26°C  │" style="text;html=1;strokeColor=none;fillColor=#f0fff0;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontFamily=Courier New;fontColor=#333333;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="595" y="225" width="470" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wf2-row2" value="💧 Server_Feucht│ Feuchtig. │ 45%      │ ✔ OK     │ 40% - 60%    │" style="text;html=1;strokeColor=none;fillColor=#f0fff0;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontFamily=Courier New;fontColor=#333333;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="595" y="260" width="470" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wf2-row3" value="🔥 Gas_Sensor   │ MQ-2       │ 320 ppm  │ 🟡 WARN  │ < 500 ppm    │" style="text;html=1;strokeColor=none;fillColor=#fffde7;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontFamily=Courier New;fontColor=#333333;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="595" y="295" width="470" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wf2-row4" value="👤 Bewegung     │ PIR        │ Keine    │ ✔ OK     │ -            │" style="text;html=1;strokeColor=none;fillColor=#f0fff0;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontFamily=Courier New;fontColor=#333333;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="595" y="330" width="470" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Detail Panel -->
+        <mxCell id="wf2-detail" value="Sensor-Details: Server_Temp&#xa;─────────────────&#xa;Letzter Wert: 23.5°C (14:35)&#xa;Durchschnitt (24h): 22.8°C&#xa;Min/Max: 21.2°C / 24.1°C&#xa;&#xa;[ Verlauf anzeigen ]" style="text;html=1;strokeColor=#4472C4;fillColor=#f0f8ff;align=left;verticalAlign=top;whiteSpace=wrap;rounded=5;fontSize=10;fontColor=#333333;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="595" y="375" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="wf2-actions" value="[ Sensor konfigurieren ]&#xa;[ Grenzwerte anpassen ]" style="text;html=1;strokeColor=#dddddd;fillColor=#fafafa;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=5;fontSize=10;fontColor=#2E5090;" vertex="1" parent="1">
+          <mxGeometry x="825" y="375" width="240" height="70" as="geometry" />
+        </mxCell>
+        
+        <!-- ==================== WIREFRAME 3: ALARME ==================== -->
+        <mxCell id="wf3-title" value="Tab 3: Alarme (Historie + Quittierung)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontColor=#C00000" vertex="1" parent="1">
+          <mxGeometry x="40" y="490" width="450" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Browser Chrome -->
+        <mxCell id="wf3-chrome" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f0f0f0;strokeColor=#cccccc;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="40" y="530" width="500" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="wf3-url" value="🔒 serverraum.local/dashboard/alarme" style="text;html=1;strokeColor=none;fillColor=#e0e0e0;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666" vertex="1" parent="1">
+          <mxGeometry x="50" y="540" width="480" height="25" as="geometry" />
+        </mxCell>
+        
+        <!-- Header -->
+        <mxCell id="wf3-header" value="🚨 Alarmverwaltung" style="text;html=1;strokeColor=none;fillColor=#C00000;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;fontColor=#FFFFFF;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="570" width="500" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Tabs -->
+        <mxCell id="wf3-tabs" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e8e8e8;strokeColor=#cccccc;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="610" width="500" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="wf3-tab1" value="Übersicht" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="55" y="612" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wf3-tab2" value="Sensoren" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="140" y="612" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wf3-tab3" value="[ Alarme ]" style="text;html=1;strokeColor=none;fillColor=#ffffff;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#C00000;spacingLeft=0;" vertex="1" parent="1">
+          <mxGeometry x="225" y="612" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wf3-tab4" value="Einstellungen" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="310" y="612" width="80" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Content Area -->
+        <mxCell id="wf3-content" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#cccccc;verticalAlign=top;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="650" width="500" height="275" as="geometry" />
+        </mxCell>
+        
+        <!-- Filter -->
+        <mxCell id="wf3-filter" value="Filter: [Alle ▼]  [Letzte 24h ▼]  [☑ Nur offene]" style="text;html=1;strokeColor=#dddddd;fillColor=#f5f5f5;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=3;fontSize=10;fontColor=#333333;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="55" y="665" width="470" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Alarm List -->
+        <mxCell id="wf3-alarm1" value="🔴 KRITISCH  Server_Temp     32.5°C  14:32  [ Quittieren ]" style="text;html=1;strokeColor=#C00000;fillColor=#fff0f0;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=3;fontSize=10;fontColor=#C00000;spacingLeft=5;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="55" y="705" width="470" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="wf3-alarm2" value="🟡 WARNUNG   Server_Feucht   38%     12:15  [✓ Quittiert]" style="text;html=1;strokeColor=#FFC000;fillColor=#fffde7;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=3;fontSize=10;fontColor=#C65911;spacingLeft=5;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="55" y="745" width="470" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="wf3-alarm3" value="🟡 WARNUNG   Gas_Sensor      480ppm  11:22  [✓ Quittiert]" style="text;html=1;strokeColor=#FFC000;fillColor=#fffde7;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=3;fontSize=10;fontColor=#C65911;spacingLeft=5;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="55" y="785" width="470" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="wf3-alarm4" value="⚪ INFO      System-Start    -       08:00  -" style="text;html=1;strokeColor=#dddddd;fillColor=#fafafa;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=3;fontSize=10;fontColor=#666666;spacingLeft=5;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="55" y="825" width="470" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- ==================== WIREFRAME 4: EINSTELLUNGEN ==================== -->
+        <mxCell id="wf4-title" value="Tab 4: Einstellungen (Konfiguration)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontColor=#2E5090" vertex="1" parent="1">
+          <mxGeometry x="580" y="490" width="450" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Browser Chrome -->
+        <mxCell id="wf4-chrome" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f0f0f0;strokeColor=#cccccc;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="580" y="530" width="500" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="wf4-url" value="🔒 serverraum.local/dashboard/settings" style="text;html=1;strokeColor=none;fillColor=#e0e0e0;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666" vertex="1" parent="1">
+          <mxGeometry x="590" y="540" width="480" height="25" as="geometry" />
+        </mxCell>
+        
+        <!-- Header -->
+        <mxCell id="wf4-header" value="⚙️ Einstellungen" style="text;html=1;strokeColor=none;fillColor=#2E5090;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;fontColor=#FFFFFF;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="580" y="570" width="500" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Tabs -->
+        <mxCell id="wf4-tabs" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e8e8e8;strokeColor=#cccccc;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="580" y="610" width="500" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="wf4-tab1" value="Übersicht" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="595" y="612" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wf4-tab2" value="Sensoren" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="680" y="612" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wf4-tab3" value="Alarme" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="765" y="612" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wf4-tab4" value="[ Einstellungen ]" style="text;html=1;strokeColor=none;fillColor=#ffffff;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#2E5090;spacingLeft=0;" vertex="1" parent="1">
+          <mxGeometry x="850" y="612" width="100" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Content Area -->
+        <mxCell id="wf4-content" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#cccccc;verticalAlign=top;align=left;" vertex="1" parent="1">
+          <mxGeometry x="580" y="650" width="500" height="275" as="geometry" />
+        </mxCell>
+        
+        <!-- Settings Groups -->
+        <mxCell id="wf4-grp1" value="Allgemein&#xa;─────────────────&#xa;Systemname: [Serverraum-Überwachung]&#xa;Standort:    [Raum B-213         ]&#xa;&#xa;Grenzwereinstellungen&#xa;─────────────────&#xa;Temp Min: [18]°C  Temp Max: [26]°C&#xa;Feucht Min:[40]%    Feucht Max:[60]%" style="text;html=1;strokeColor=#dddddd;fillColor=#f9f9f9;align=left;verticalAlign=top;whiteSpace=wrap;rounded=5;fontSize=10;fontColor=#333333;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="595" y="665" width="220" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="wf4-grp2" value="Benachrichtigungen&#xa;─────────────────&#xa;☑ E-Mail bei Alarm&#xa;  Empfänger: [admin@firma.de]&#xa;☑ Telegram Benachrichtigung&#xa;  Chat-ID:   [@serverraum_bot]&#xa;&#xa;☑ LED bei Alarm einschalten&#xa;☑ Buzzer bei kritischen Alarmen" style="text;html=1;strokeColor=#dddddd;fillColor=#f9f9f9;align=left;verticalAlign=top;whiteSpace=wrap;rounded=5;fontSize=10;fontColor=#333333;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="825" y="665" width="220" height="130" as="geometry" />
+        </mxCell>
+        
+        <!-- Action Buttons -->
+        <mxCell id="wf4-actions" value="[ Konfiguration speichern ]&#xa;[ Auf Standard zurücksetzen ]" style="text;html=1;strokeColor=#70AD47;fillColor=#f0fff0;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=5;fontSize=11;fontColor=#538135;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="595" y="810" width="450" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- System Info -->
+        <mxCell id="wf4-info" value="Systemversion: 1.0.0  |  ESP32 Firmware: v1.2.3  |  Letzter Neustart: vor 3 Tagen" style="text;html=1;strokeColor=#dddddd;fillColor=#f5f5f5;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="580" y="870" width="500" height="25" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

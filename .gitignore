@@ -29,10 +29,18 @@ serverraum-dashboard/.vite/
 # System
 .DS_Store
 Thumbs.db
+*.log
+*.bak
+*.tmp
 
 # Environment
 .env
 .env.local
+
+# IHK Documentation Lock Files & Temp
+.~lock.*
+*.tmp
+.kilo/
 
 # AGENTS.md und .github behalten (wichtig für das Projekt)
 # AGENTS.md
