@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Wireframe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9fafb;
+            color: #111827;
+        }
+        /* Typischer "Mockup"-Stil: Harte Ränder, keine Schatten */
+        .wireframe-box {
+            border: 2px solid #374151;
+            background-color: #ffffff;
+            border-radius: 4px;
+        }
+        .wireframe-dashed {
+            border: 2px dashed #9ca3af;
+            background-color: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="p-8">
+    <div class="max-w-6xl mx-auto space-y-6">
+
+        <div class="wireframe-box p-4 flex justify-between items-center bg-gray-100">
+            <div class="font-bold text-xl tracking-widest text-gray-700">[ LOGO / deCode GmbH ]</div>
+            <div class="font-mono text-sm border-2 border-gray-400 text-gray-600 px-3 py-1 rounded bg-white">
+                STATUS: ONLINE
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="wireframe-box p-4">
+                <h3 class="font-bold border-b-2 border-gray-200 pb-2 mb-2 text-gray-500 uppercase text-xs tracking-wider">[ SHT3x Sensor ]</h3>
+                <p class="font-mono text-3xl mt-4 text-gray-800">--.- °C</p>
+                <p class="font-mono text-sm text-gray-500 mt-1">Humidity: -- %</p>
+            </div>
+            <div class="wireframe-box p-4">
+                <h3 class="font-bold border-b-2 border-gray-200 pb-2 mb-2 text-gray-500 uppercase text-xs tracking-wider">[ DS18B20 ]</h3>
+                <p class="font-mono text-3xl mt-4 text-gray-800">--.- °C</p>
+                <p class="font-mono text-sm text-gray-500 mt-1">Rack Temperatur</p>
+            </div>
+            <div class="wireframe-box p-4">
+                <h3 class="font-bold border-b-2 border-gray-200 pb-2 mb-2 text-gray-500 uppercase text-xs tracking-wider">[ MQ-2 Gassensor ]</h3>
+                <p class="font-mono text-3xl mt-4 text-gray-800">---- ppm</p>
+                <p class="font-mono text-sm text-gray-500 mt-1">Rauch Level</p>
+            </div>
+            <div class="wireframe-box p-4">
+                <h3 class="font-bold border-b-2 border-gray-200 pb-2 mb-2 text-gray-500 uppercase text-xs tracking-wider">[ PIR Sensor ]</h3>
+                <p class="font-mono text-3xl mt-4 text-gray-800">KEINE</p>
+                <p class="font-mono text-sm text-gray-500 mt-1">Bewegung erkannt</p>
+            </div>
+        </div>
+
+        <div class="wireframe-box p-4 h-80 flex flex-col">
+            <h3 class="font-bold text-gray-500 uppercase text-xs tracking-wider mb-4 border-b-2 border-gray-200 pb-2">Historie (Letzte 24 Std.)</h3>
+            <div class="wireframe-dashed flex-1 rounded">
+                <p class="text-gray-500 font-mono text-center">
+                    [ PLATZHALTER LINIENDIAGRAMM - CHART.JS ]<br><br>
+                    <span class="text-sm">(Darstellung des Temperaturverlaufs)</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="wireframe-box p-4">
+            <h3 class="font-bold text-gray-500 uppercase text-xs tracking-wider mb-4 border-b-2 border-gray-200 pb-2">System- & Alarm-Logs</h3>
+            <div class="space-y-2 font-mono text-sm text-gray-600">
+                <div class="p-2 border border-gray-300 rounded bg-gray-50">[ TT.MM.JJJJ HH:MM ] - [ WARNING ] - Rauch Level kritisch (1200 ppm)</div>
+                <div class="p-2 border border-gray-300 rounded bg-gray-50">[ TT.MM.JJJJ HH:MM ] - [ INFO ] - System gestartet</div>
+                <div class="p-2 border border-gray-300 rounded bg-gray-50">[ TT.MM.JJJJ HH:MM ] - [ INFO ] - MQTT Broker verbunden</div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
