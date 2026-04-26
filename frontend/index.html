@@ -6,11 +6,11 @@
     <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
     <title>Serverraum-Überwachung</title>
 
-    <!-- Tailwind CSS via CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS lokal -->
+    <script src="/js/vendor/tailwind.js"></script>
 
-    <!-- Chart.js für Diagramme -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js lokal -->
+    <script src="/js/vendor/chart.umd.min.js"></script>
 
     <!-- Tailwind Konfiguration mit WCAG 2.1 AA konformen Farben -->
     <script>
@@ -102,16 +102,16 @@
 
         /* Tab-Navigation */
         .tab-button {
-            color: var(--text-secondary);
+            color: #374151;
         }
         .tab-button[aria-selected="true"] {
             border-bottom-width: 2px;
             border-bottom-color: #3b82f6;
-            color: var(--text-primary);
+            color: #1f2937;
             background-color: var(--bg-tertiary);
         }
         .tab-button:hover {
-            color: var(--text-primary);
+            color: #1f2937;
         }
 
         /* Sensor-Karten */
@@ -206,8 +206,10 @@
     <header class="sticky top-0 z-50 border-b" role="banner" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
         <div class="container mx-auto px-4 py-4">
             <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-2xl font-bold tracking-tight">Serverraum-Überwachung</h1>
+                <div class="flex items-center gap-4">
+                    <img src="/static/logo.svg" alt="deCode Logo" class="h-10 w-auto">
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight">Serverraum-Überwachung</h1>
                     <p class="text-sm text-gray-500 mt-1">Echtzeit-Monitoring aller Sensoren</p>
                 </div>
                 <div class="flex items-center gap-6">

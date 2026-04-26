@@ -421,14 +421,14 @@ function aktualisiereZeitstempel() {
 function wechselTab(tabName) {
     // Tab-Buttons aktualisieren
     document.querySelectorAll('[id^="tab-"]').forEach(btn => {
-        btn.classList.remove('border-blue-500', 'text-white');
-        btn.classList.add('text-gray-400');
+        btn.setAttribute('aria-selected', 'false');
+        btn.setAttribute('tabindex', '-1');
     });
 
     const aktiverTab = document.getElementById('tab-' + tabName);
     if (aktiverTab) {
-        aktiverTab.classList.add('border-blue-500', 'text-white');
-        aktiverTab.classList.remove('text-gray-400');
+        aktiverTab.setAttribute('aria-selected', 'true');
+        aktiverTab.setAttribute('tabindex', '0');
     }
 
     // Tab-Inhalt aktualisieren

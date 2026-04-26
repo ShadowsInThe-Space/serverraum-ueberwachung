@@ -202,7 +202,7 @@ void loop() {
         if (sht31Sensor != nullptr && millis() - letzterFeuchteSenden >= 10000) {
             float feucht = sht31Sensor->getLuftfeuchtigkeit();
             if (feucht > 0) {
-                StaticJsonDocument<256> doc;
+                JsonDocument doc;
                 doc["sensor_id"] = "feuchte_sht31";
                 doc["sensor_typ"] = "SHT31";
                 doc["wert"] = feucht;
