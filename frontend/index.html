@@ -1,46 +1,159 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Serverraum-Überwachung</title>
 
     <!-- Tailwind CSS via CDN -->
-    <!-- Hinweis: Für Produktion sollte Tailwind lokal gebaut werden! -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Chart.js für Diagramme -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Konfiguration für Tailwind -->
+    <!-- Tailwind Konfiguration mit WCAG 2.1 AA konformen Farben -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        // Farbschema laut Wireframes
-                        normal: '#22c55e',   // Grün - Normal
-                        warnung: '#eab308',  // Gelb - Warnung
-                        alarm: '#ef4444',    // Rot - Alarm
-                        inaktiv: '#6b7280'   // Grau - Inaktiv
+                        // Status-Farben mit 4.5:1 Kontrast
+                        status: {
+                            normal: { DEFAULT: '#22c55e', light: '#86efac', dark: '#166534' },
+                            warning: { DEFAULT: '#eab308', light: '#fef08a', dark: '#854d0e' },
+                            alarm: { DEFAULT: '#ef4444', light: '#fca5a5', dark: '#991b1b' },
+                            inactive: { DEFAULT: '#6b7280', light: '#9ca3af', dark: '#374151' }
+                        },
+                        // Textfarben mit Kontrastprüfung
+                        text: {
+                            primary: '#f9fafb',
+                            secondary: '#9ca3af',
+                            muted: '#6b7280'
+                        }
                     }
                 }
             }
         }
     </script>
 
-    <!-- Eigene Styles -->
     <style>
-        /* Animation für Status-Änderungen */
-        .status-card {
-            transition: all 0.3s ease;
-        }
-        .status-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        /* CSS Variables für Theme */
+        :root {
+            --bg-primary: #020617;
+            --bg-secondary: #111827;
+            --bg-tertiary: #1f2937;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --border-color: #374151;
         }
 
-        /* Pulsierender Alarm-Indikator */
+        [data-theme="light"] {
+            --bg-primary: #f9fafb;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f3f4f6;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+        }
+
+        /* Theme-basierte Styles */
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .bg-theme-primary { background-color: var(--bg-primary); }
+        .bg-theme-secondary { background-color: var(--bg-secondary); }
+        .bg-theme-tertiary { background-color: var(--bg-tertiary); }
+        .text-theme-primary { color: var(--text-primary); }
+        .text-theme-secondary { color: var(--text-secondary); }
+        .text-theme-muted { color: var(--text-muted); }
+        .border-theme { border-color: var(--border-color); }
+
+        /* Fokus-Indikatoren für Tastaturnavigation */
+        :focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        /* Visuell versteckte Region für Screenreader */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Status-Punkt */
+        .status-punkt {
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 9999px;
+            display: inline-block;
+        }
+
+        /* Tab-Navigation */
+        .tab-button {
+            color: var(--text-secondary);
+        }
+        .tab-button[aria-selected="true"] {
+            border-bottom-width: 2px;
+            border-bottom-color: #3b82f6;
+            color: var(--text-primary);
+            background-color: var(--bg-tertiary);
+        }
+        .tab-button:hover {
+            color: var(--text-primary);
+        }
+
+        /* Sensor-Karten */
+        .sensor-card {
+            transition: all 0.3s ease;
+        }
+        .sensor-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Theme-Buttons */
+        .btn-theme {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        .btn-theme:hover {
+            background-color: var(--border-color);
+        }
+
+        /* Alarm Collapsible */
+        .alarm-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .alarm-content.expanded {
+            max-height: 500px;
+        }
+
+        /* Trend-Indikatoren */
+        .trend-up {
+            color: #ef4444;
+        }
+        .trend-down {
+            color: #3b82f6;
+        }
+        .trend-stable {
+            color: #6b7280;
+        }
+
+        /* Pulsierender Alarm */
         @keyframes pulsieren {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
@@ -49,12 +162,7 @@
             animation: pulsieren 1s infinite;
         }
 
-        /* Navigation */
-        .nav-item.active {
-            @apply bg-gray-700 text-white;
-        }
-
-        /* Alarm Overlay - Pulsierender roter Bildschirm */
+        /* Alarm Overlay */
         .alarm-overlay {
             position: fixed;
             top: 0;
@@ -67,40 +175,6 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            animation: alarm-pulsieren 1.5s ease-in-out infinite;
-        }
-
-        @keyframes alarm-pulsieren {
-            0%, 100% {
-                background: linear-gradient(135deg, rgba(239, 68, 68, 0.85) 0%, rgba(185, 28, 28, 0.9) 100%);
-            }
-            50% {
-                background: linear-gradient(135deg, rgba(239, 68, 68, 0.95) 0%, rgba(185, 28, 28, 0.98) 100%);
-            }
-        }
-
-        .alarm-overlay-content {
-            text-align: center;
-            max-width: 600px;
-            padding: 2rem;
-        }
-
-        .alarm-overlay h2 {
-            font-size: 3rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .alarm-overlay p {
-            font-size: 1.25rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .alarm-overlay .alarm-count {
-            font-size: 5rem;
-            font-weight: bold;
-            margin: 1rem 0;
         }
 
         .alarm-quittieren-btn {
@@ -113,129 +187,254 @@
             border-radius: 0.75rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
 
-        .alarm-quittieren-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        /* Alarm-Karten */
+        .alarm-card {
+            background-color: var(--bg-tertiary);
+            border-left: 4px solid #ef4444;
         }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen">
+<body class="min-h-screen" style="background-color: var(--bg-primary); color: var(--text-primary);">
+
+    <!-- Screenreader-Ankündigungen -->
+    <div id="screenreader-announcements" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
     <!-- Header -->
-    <header class="bg-gray-800 border-b border-gray-700 sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <span class="text-2xl">🔒</span>
-                <h1 class="text-xl font-bold">Serverraum-Überwachung</h1>
-            </div>
-            <div class="flex items-center gap-4">
-                <!-- Verbindungsstatus -->
-                <div id="verbindungs-status" class="flex items-center gap-2 text-sm">
-                    <span class="w-2 h-2 rounded-full bg-gray-500" id="status-punkt"></span>
-                    <span id="status-text">Verbindung wird hergestellt...</span>
+    <header class="sticky top-0 z-50 border-b" role="banner" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight">Serverraum-Überwachung</h1>
+                    <p class="text-sm text-gray-500 mt-1">Echtzeit-Monitoring aller Sensoren</p>
                 </div>
-                <!-- Einstellungen Button -->
-                <button onclick="zeigeEinstellungen()" class="p-2 hover:bg-gray-700 rounded-lg">
-                    ⚙️
-                </button>
+                <div class="flex items-center gap-6">
+                    <!-- Verbindungsstatus -->
+                    <div id="verbindungs-status" class="flex items-center gap-3" role="status" aria-live="polite">
+                        <span class="relative flex h-3 w-3">
+                            <span id="status-punkt" class="absolute inline-flex h-full w-full rounded-full bg-gray-500"></span>
+                        </span>
+                        <div>
+                            <div id="status-text" class="text-sm font-medium">Verbindung wird hergestellt...</div>
+                            <div id="status-subtext" class="text-xs text-gray-500">Letzte Aktualisierung: <span id="letzte-aktualisierung">--:--:--</span></div>
+                        </div>
+                    </div>
+                    <!-- Theme Toggle Button -->
+                    <button
+                        onclick="toggleTheme()"
+                        id="theme-toggle"
+                        class="p-2 rounded-lg btn-theme focus-visible:ring-2 focus-visible:ring-blue-500"
+                        aria-label="Theme wechseln"
+                        title="Theme wechseln"
+                    >
+                        <svg id="theme-icon-dark" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <svg id="theme-icon-light" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                        </svg>
+                    </button>
+                    <!-- Einstellungen Button -->
+                    <button
+                        onclick="zeigeEinstellungen()"
+                        class="px-4 py-2 btn-theme rounded-lg text-sm font-medium transition focus-visible:ring-2 focus-visible:ring-blue-500"
+                        aria-label="Einstellungen öffnen"
+                    >
+                        Einstellungen
+                    </button>
+                </div>
             </div>
         </div>
     </header>
 
     <!-- Hauptinhalt -->
-    <main class="container mx-auto px-4 py-6">
+    <main class="container mx-auto px-4 py-6" id="main-content">
 
-        <!-- Sensor-Karten -->
-        <section class="mb-8">
-            <h2 class="text-lg font-semibold mb-4 text-gray-400 uppercase text-sm tracking-wider">
-                Aktuelle Messwerte
-            </h2>
-
-            <!-- Grid für Sensor-Karten -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" id="sensor-karten">
-                <!-- Wird durch JavaScript gefüllt -->
-                <!-- Lade-Indikator -->
-                <div class="bg-gray-800 rounded-xl p-6 flex items-center justify-center">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-                </div>
-            </div>
-
-            <!-- Letzte Aktualisierung & Systemstatus -->
-            <div class="bg-gray-800 rounded-lg p-4 flex flex-wrap gap-4 text-sm text-gray-400">
+        <!-- System-Status-Leiste -->
+        <section class="mb-6 rounded-xl p-4" aria-labelledby="system-status-heading" style="background-color: var(--bg-secondary);">
+            <h2 id="system-status-heading" class="sr-only">Systemstatus</h2>
+            <div class="flex flex-wrap gap-6 text-sm">
                 <div class="flex items-center gap-2">
-                    <span>Letzte Aktualisierung:</span>
-                    <span id="letzte-aktualisierung" class="text-white font-mono">--:--:--</span>
+                    <span class="text-gray-500">ESP32:</span>
+                    <span id="esp32-name" class="font-medium">ESP32-001</span>
+                    <span id="esp32-status" class="text-status-normal text-xs">(Verbunden)</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span>●</span>
-                    <span>Verbunden mit <span id="esp32-name" class="text-white">ESP32-001</span></span>
+                    <span class="text-gray-500">WLAN Signal:</span>
+                    <span id="wifi-signal" class="font-medium">N/A</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span>📶</span>
-                    <span>WLAN: <span id="wifi-signal" class="text-white">-- dBm</span></span>
+                    <span class="text-gray-500">Sensoren:</span>
+                    <span id="sensoren-count" class="font-medium">5</span>
+                    <span class="text-gray-500">aktiv</span>
                 </div>
             </div>
         </section>
 
-        <!-- Aktive Alarme -->
-        <section class="mb-8" id="alarme-section" style="display: none;">
-            <h2 class="text-lg font-semibold mb-4 text-alarm uppercase text-sm tracking-wider">
-                ⚠️ Aktive Alarme
+        <!-- Collapsible Alarm-Bereich -->
+        <section class="mb-6" id="alarme-section" style="display: none;" aria-labelledby="alarme-heading">
+            <div class="rounded-xl overflow-hidden" style="background-color: var(--bg-secondary);">
+                <button
+                    onclick="toggleAlarme()"
+                    class="w-full px-6 py-4 flex justify-between items-center transition focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
+                    style="background-color: var(--bg-secondary);"
+                    aria-expanded="true"
+                    aria-controls="alarm-content"
+                    id="alarme-toggle"
+                >
+                    <div class="flex items-center gap-3">
+                        <span class="status-punkt bg-status-alarm alarm-puls" aria-hidden="true"></span>
+                        <span id="alarme-heading" class="font-semibold text-status-alarm">
+                            Aktive Alarme (<span id="alarm-count-badge">0</span>)
+                        </span>
+                    </div>
+                    <svg id="alarm-chevron" class="w-5 h-5 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="alarm-content" class="alarm-content expanded">
+                    <div id="aktive-alarme" class="px-6 pb-4 space-y-3">
+                        <!-- Wird durch JavaScript gefüllt -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sensor-Karten Grid -->
+        <section class="mb-8" aria-labelledby="sensoren-heading">
+            <h2 id="sensoren-heading" class="text-lg font-semibold mb-4 text-gray-400 uppercase text-xs tracking-wider">
+                Aktuelle Messwerte
             </h2>
-            <div id="aktive-alarme" class="space-y-3">
+
+            <!-- Grid für Sensor-Karten - 5 Spalten für alle Sensoren -->
+            <div
+                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"
+                id="sensor-karten"
+                role="list"
+                aria-label="Sensoren"
+            >
                 <!-- Wird durch JavaScript gefüllt -->
             </div>
         </section>
 
         <!-- Navigation Tabs -->
-        <section>
-            <div class="flex gap-2 mb-6 border-b border-gray-700">
-                <button onclick="wechselTab('dashboard')" id="tab-dashboard"
-                        class="px-4 py-2 text-white border-b-2 border-blue-500 font-medium">
-                    Dashboard
+        <section aria-label="Navigation">
+            <div
+                class="flex gap-1 mb-6 rounded-xl p-2"
+                role="tablist"
+                aria-label="Dashboard Bereiche"
+                style="background-color: var(--bg-secondary);"
+            >
+                <button
+                    onclick="wechselTab('dashboard')"
+                    id="tab-dashboard"
+                    class="tab-button flex-1 px-4 py-3 rounded-lg text-sm font-medium transition focus-visible:ring-2 focus-visible:ring-blue-500"
+                    role="tab"
+                    aria-selected="true"
+                    aria-controls="inhalt-dashboard"
+                    tabindex="0"
+                >
+                    Übersicht
                 </button>
-                <button onclick="wechselTab('verlauf')" id="tab-verlauf"
-                        class="px-4 py-2 text-gray-400 hover:text-white transition">
+                <button
+                    onclick="wechselTab('verlauf')"
+                    id="tab-verlauf"
+                    class="tab-button flex-1 px-4 py-3 rounded-lg text-sm font-medium transition focus-visible:ring-2 focus-visible:ring-blue-500"
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="inhalt-verlauf"
+                    tabindex="-1"
+                >
                     Verlauf
                 </button>
-                <button onclick="wechselTab('alarme')" id="tab-alarme"
-                        class="px-4 py-2 text-gray-400 hover:text-white transition">
+                <button
+                    onclick="wechselTab('alarme')"
+                    id="tab-alarme"
+                    class="tab-button flex-1 px-4 py-3 rounded-lg text-sm font-medium transition focus-visible:ring-2 focus-visible:ring-blue-500"
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="inhalt-alarme"
+                    tabindex="-1"
+                >
                     Alarme
                 </button>
-                <button onclick="wechselTab('einstellungen')" id="tab-einstellungen"
-                        class="px-4 py-2 text-gray-400 hover:text-white transition">
+                <button
+                    onclick="wechselTab('einstellungen')"
+                    id="tab-einstellungen"
+                    class="tab-button flex-1 px-4 py-3 rounded-lg text-sm font-medium transition focus-visible:ring-2 focus-visible:ring-blue-500"
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="inhalt-einstellungen"
+                    tabindex="-1"
+                >
                     Einstellungen
                 </button>
             </div>
 
             <!-- Tab-Inhalt: Dashboard -->
-            <div id="inhalt-dashboard">
-                <div class="bg-gray-800 rounded-xl p-6">
-                    <h3 class="text-lg font-semibold mb-4">Übersicht</h3>
-                    <p class="text-gray-400">Alle Sensoren auf einen Blick. Die Daten werden automatisch aktualisiert.</p>
-                    <!-- Platzhalter für Dashboard-Inhalt -->
-                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4" id="dashboard-grid">
-                        <!-- Wird dynamisch gefüllt -->
+            <div id="inhalt-dashboard" role="tabpanel" aria-labelledby="tab-dashboard">
+                <div class="rounded-xl p-6" style="background-color: var(--bg-secondary);">
+                    <h3 class="text-lg font-semibold mb-4">System-Übersicht</h3>
+                    <p class="text-gray-400 mb-6">Alle Sensoren werden automatisch alle 5 Sekunden aktualisiert.</p>
+
+                    <!-- Info-Karten -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="rounded-lg p-4" style="background-color: var(--bg-tertiary);">
+                            <div class="text-sm mb-1" style="color: var(--text-muted);">Temperatur-Sensoren</div>
+                            <div class="text-2xl font-bold" id="info-temp-count">2</div>
+                            <div class="text-xs mt-1" style="color: var(--text-muted);">DS18B20, SHT31</div>
+                        </div>
+                        <div class="rounded-lg p-4" style="background-color: var(--bg-tertiary);">
+                            <div class="text-sm mb-1" style="color: var(--text-muted);">Feuchtigkeit</div>
+                            <div class="text-2xl font-bold" id="info-feuchte-count">1</div>
+                            <div class="text-xs mt-1" style="color: var(--text-muted);">SHT31</div>
+                        </div>
+                        <div class="rounded-lg p-4" style="background-color: var(--bg-tertiary);">
+                            <div class="text-sm mb-1" style="color: var(--text-muted);">Sicherheit</div>
+                            <div class="text-2xl font-bold" id="info-sicherheit-count">2</div>
+                            <div class="text-xs mt-1" style="color: var(--text-muted);">MQ2, PIR</div>
+                        </div>
+                    </div>
+
+                    <!-- Legende -->
+                    <div class="rounded-lg p-4" style="background-color: var(--bg-tertiary);">
+                        <h4 class="text-sm font-medium mb-3">Status-Legende</h4>
+                        <div class="flex flex-wrap gap-4 text-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="status-punkt bg-status-normal" aria-hidden="true"></span>
+                                <span>Normal - Wert im sicheren Bereich</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="status-punkt bg-status-warning" aria-hidden="true"></span>
+                                <span>Warnung - Wert nähert sich dem Grenzwert</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="status-punkt bg-status-alarm" aria-hidden="true"></span>
+                                <span>Alarm - Wert überschreitet den Grenzwert</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="status-punkt bg-status-inactive" aria-hidden="true"></span>
+                                <span>Inaktiv - Keine Daten verfügbar</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Tab-Inhalt: Verlauf -->
-            <div id="inhalt-verlauf" class="hidden">
-                <div class="bg-gray-800 rounded-xl p-6">
+            <div id="inhalt-verlauf" class="hidden" role="tabpanel" aria-labelledby="tab-verlauf">
+                <div class="rounded-xl p-6" style="background-color: var(--bg-secondary);">
                     <div class="flex flex-wrap gap-4 mb-6">
                         <div>
-                            <label class="block text-sm text-gray-400 mb-1">Sensor</label>
-                            <select id="verlauf-sensor" class="bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                            <label for="verlauf-sensor" class="block text-sm mb-2" style="color: var(--text-secondary);">Sensor auswählen</label>
+                            <select id="verlauf-sensor" class="rounded-lg px-4 py-2 focus-visible:ring-2 focus-visible:ring-blue-500" style="background-color: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary);">
                                 <!-- Dynamisch gefüllt via JavaScript -->
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm text-gray-400 mb-1">Zeitraum</label>
-                            <select id="verlauf-zeitraum" class="bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                            <label for="verlauf-zeitraum" class="block text-sm mb-2" style="color: var(--text-secondary);">Zeitraum</label>
+                            <select id="verlauf-zeitraum" class="rounded-lg px-4 py-2 focus-visible:ring-2 focus-visible:ring-blue-500" style="background-color: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary);">
                                 <option value="1">1 Stunde</option>
                                 <option value="6">6 Stunden</option>
                                 <option value="24" selected>24 Stunden</option>
@@ -243,29 +442,32 @@
                             </select>
                         </div>
                         <div class="flex items-end">
-                            <button onclick="ladeVerlauf()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded font-medium">
+                            <button
+                                onclick="ladeVerlauf()"
+                                class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-medium transition focus-visible:ring-2 focus-visible:ring-blue-500"
+                            >
                                 Anzeigen
                             </button>
                         </div>
                     </div>
 
                     <!-- Chart -->
-                    <div class="h-80">
-                        <canvas id="verlauf-chart"></canvas>
+                    <div class="h-80 mb-6" role="img" aria-label="Verlaufsdiagramm">
+                        <canvas id="verlauf-chart" aria-label="Sensorverlauf als Liniendiagramm"></canvas>
                     </div>
 
                     <!-- Statistik -->
-                    <div class="mt-4 grid grid-cols-3 gap-4" id="statistik-grid">
-                        <div class="bg-gray-700 rounded p-4 text-center">
-                            <div class="text-sm text-gray-400">Durchschnitt</div>
+                    <div class="grid grid-cols-3 gap-4" role="region" aria-label="Statistik">
+                        <div class="rounded-lg p-4 text-center" style="background-color: var(--bg-tertiary);">
+                            <div class="text-sm mb-1" style="color: var(--text-muted);">Durchschnitt</div>
                             <div class="text-2xl font-bold" id="stat-avg">--</div>
                         </div>
-                        <div class="bg-gray-700 rounded p-4 text-center">
-                            <div class="text-sm text-gray-400">Minimum</div>
+                        <div class="rounded-lg p-4 text-center" style="background-color: var(--bg-tertiary);">
+                            <div class="text-sm mb-1" style="color: var(--text-muted);">Minimum</div>
                             <div class="text-2xl font-bold" id="stat-min">--</div>
                         </div>
-                        <div class="bg-gray-700 rounded p-4 text-center">
-                            <div class="text-sm text-gray-400">Maximum</div>
+                        <div class="rounded-lg p-4 text-center" style="background-color: var(--bg-tertiary);">
+                            <div class="text-sm mb-1" style="color: var(--text-muted);">Maximum</div>
                             <div class="text-2xl font-bold" id="stat-max">--</div>
                         </div>
                     </div>
@@ -273,27 +475,33 @@
             </div>
 
             <!-- Tab-Inhalt: Alarme -->
-            <div id="inhalt-alarme" class="hidden">
-                <div class="bg-gray-800 rounded-xl p-6">
+            <div id="inhalt-alarme" class="hidden" role="tabpanel" aria-labelledby="tab-alarme">
+                <div class="rounded-xl p-6" style="background-color: var(--bg-secondary);">
                     <div class="flex gap-4 mb-6">
-                        <select id="alarm-filter" onchange="ladeAlarme()" class="bg-gray-700 border border-gray-600 rounded px-3 py-2">
-                            <option value="alle">Alle</option>
-                            <option value="aktiv">Aktiv</option>
-                            <option value="quittiert">Quittiert</option>
+                        <label for="alarm-filter" class="sr-only">Alarm-Filter</label>
+                        <select
+                            id="alarm-filter"
+                            onchange="ladeAlarme()"
+                            class="border rounded-lg px-4 py-2 focus-visible:ring-2 focus-visible:ring-blue-500"
+                            style="background-color: var(--bg-tertiary); border-color: var(--border-color); color: var(--text-primary);"
+                        >
+                            <option value="alle">Alle Alarme</option>
+                            <option value="aktiv">Nur aktive</option>
+                            <option value="quittiert">Nur quittierte</option>
                         </select>
                     </div>
 
                     <!-- Alarm-Liste -->
                     <div class="overflow-x-auto">
-                        <table class="w-full">
+                        <table class="w-full" aria-label="Alarmliste">
                             <thead>
-                                <tr class="border-b border-gray-700 text-left text-gray-400">
-                                    <th class="pb-3 pr-4">Status</th>
-                                    <th class="pb-3 pr-4">Sensor</th>
-                                    <th class="pb-3 pr-4">Typ</th>
-                                    <th class="pb-3 pr-4">Wert</th>
-                                    <th class="pb-3 pr-4">Zeit</th>
-                                    <th class="pb-3">Aktion</th>
+                                <tr class="border-b text-left text-sm" style="border-color: var(--border-color); color: var(--text-muted);">
+                                    <th scope="col" class="pb-3 pr-4">Status</th>
+                                    <th scope="col" class="pb-3 pr-4">Sensor</th>
+                                    <th scope="col" class="pb-3 pr-4">Typ</th>
+                                    <th scope="col" class="pb-3 pr-4">Wert</th>
+                                    <th scope="col" class="pb-3 pr-4">Zeit</th>
+                                    <th scope="col" class="pb-3">Aktion</th>
                                 </tr>
                             </thead>
                             <tbody id="alarm-tabelle">
@@ -301,60 +509,118 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Alarm-Emails Section -->
+                    <div class="mt-8 pt-6 border-t" style="border-color: var(--border-color);">
+                        <h4 class="text-md font-semibold mb-4" style="color: var(--text-primary);">
+                            Gesendete Alarm-Emails
+                        </h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full" aria-label="Alarm-Email Liste">
+                                <thead>
+                                    <tr class="border-b text-left text-sm" style="border-color: var(--border-color); color: var(--text-muted);">
+                                        <th scope="col" class="pb-3 pr-4">Zeit</th>
+                                        <th scope="col" class="pb-3 pr-4">Sensor</th>
+                                        <th scope="col" class="pb-3 pr-4">Alarm-Typ</th>
+                                        <th scope="col" class="pb-3 pr-4">Empfänger</th>
+                                        <th scope="col" class="pb-3 pr-4">Status</th>
+                                        <th scope="col" class="pb-3">Antwort</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="alarm-email-tabelle">
+                                    <!-- Wird durch JavaScript gefüllt -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Tab-Inhalt: Einstellungen -->
-            <div id="inhalt-einstellungen" class="hidden">
-                <div class="bg-gray-800 rounded-xl p-6">
-                    <h3 class="text-lg font-semibold mb-4">System-Einstellungen</h3>
+            <div id="inhalt-einstellungen" class="hidden" role="tabpanel" aria-labelledby="tab-einstellungen">
+                <div class="rounded-xl p-6" style="background-color: var(--bg-secondary);">
+                    <h3 class="text-lg font-semibold mb-6">System-Einstellungen</h3>
 
-                    <!-- API-Endpunkt -->
-                    <div class="mb-6">
-                        <label class="block text-sm text-gray-400 mb-1">API-Endpunkt</label>
-                        <input type="text" id="api-endpunkt" value="http://localhost:8000"
-                               class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
-                    </div>
+                    <div class="max-w-2xl">
+                        <!-- API-Endpunkt -->
+                        <div class="mb-6">
+                            <label for="api-endpunkt" class="block text-sm font-medium mb-2">API-Endpunkt</label>
+                            <input
+                                type="text"
+                                id="api-endpunkt"
+                                value="http://localhost:8080"
+                                class="w-full rounded-lg px-4 py-3 focus-visible:ring-2 focus-visible:ring-blue-500"
+                                style="background-color: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary);"
+                                aria-describedby="api-endpunkt-help"
+                            >
+                            <p id="api-endpunkt-help" class="text-xs mt-1" style="color: var(--text-muted);">URL des Backend-Servers für die Datenverbindung</p>
+                        </div>
 
-                    <!-- Aktualisierungsintervall -->
-                    <div class="mb-6">
-                        <label class="block text-sm text-gray-400 mb-1">Aktualisierungsintervall (Sekunden)</label>
-                        <input type="number" id="refresh-intervall" value="5" min="1" max="60"
-                               class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
-                    </div>
-
-                    <!-- Schwellwerte -->
-                    <div class="mb-6">
-                        <h4 class="font-medium mb-3">Alarm-Schwellwerte</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm text-gray-400 mb-1">Temperatur max (°C)</label>
-                                <input type="number" id="schwelle-temp" value="30" step="0.5"
-                                       class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                        <!-- Aktualisierungsintervall -->
+                        <div class="mb-6">
+                            <label for="refresh-intervall" class="block text-sm font-medium mb-2">Aktualisierungsintervall</label>
+                            <div class="flex items-center gap-3">
+                                <input
+                                    type="number"
+                                    id="refresh-intervall"
+                                    value="5"
+                                    min="1"
+                                    max="60"
+                                    class="w-24 rounded-lg px-4 py-3 focus-visible:ring-2 focus-visible:ring-blue-500"
+                                    style="background-color: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary);"
+                                >
+                                <span style="color: var(--text-secondary);">Sekunden</span>
                             </div>
-                            <div>
-                                <label class="block text-sm text-gray-400 mb-1">Rauchgas max (ppm)</label>
-                                <input type="number" id="schwelle-rauch" value="200"
-                                       class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                            <p class="text-xs mt-1" style="color: var(--text-muted);">Wie oft die Sensordaten aktualisiert werden (1-60 Sekunden)</p>
+                        </div>
+
+                        <!-- Schwellwerte -->
+                        <div class="mb-6">
+                            <h4 class="text-sm font-medium mb-4">Alarm-Schwellwerte</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="schwelle-temp" class="block text-sm mb-2" style="color: var(--text-secondary);">Temperatur max (°C)</label>
+                                    <input
+                                        type="number"
+                                        id="schwelle-temp"
+                                        value="30"
+                                        step="0.5"
+                                        class="w-full rounded-lg px-4 py-3 focus-visible:ring-2 focus-visible:ring-blue-500"
+                                        style="background-color: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary);"
+                                    >
+                                </div>
+                                <div>
+                                    <label for="schwelle-rauch" class="block text-sm mb-2" style="color: var(--text-secondary);">Rauchgas max (ppm)</label>
+                                    <input
+                                        type="number"
+                                        id="schwelle-rauch"
+                                        value="200"
+                                        class="w-full rounded-lg px-4 py-3 focus-visible:ring-2 focus-visible:ring-blue-500"
+                                        style="background-color: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary);"
+                                    >
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <button onclick="speichereEinstellungen()" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded font-medium">
-                        Speichern
-                    </button>
+                        <button
+                            onclick="speichereEinstellungen()"
+                            class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-medium transition focus-visible:ring-2 focus-visible:ring-blue-500"
+                        >
+                            Einstellungen speichern
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Alarm Overlay (wird bei aktiven Alarmen angezeigt) -->
-    <div id="alarm-overlay" class="alarm-overlay" style="display: none;">
-        <div class="alarm-overlay-content">
-            <h2>⚠️ ALARM ⚠️</h2>
-            <p>Es sind aktive Alarme vorhanden!</p>
-            <div class="alarm-count" id="alarm-count">0</div>
-            <p>Alarme</p>
+    <!-- Alarm Overlay -->
+    <div id="alarm-overlay" class="alarm-overlay" style="display: none;" role="alertdialog" aria-modal="true" aria-labelledby="alarm-title" aria-describedby="alarm-description">
+        <div class="text-center">
+            <h2 id="alarm-title" class="text-5xl font-bold text-white mb-4">ALARM</h2>
+            <p id="alarm-description" class="text-xl text-white mb-8">Es sind aktive Alarme vorhanden!</p>
+            <div class="text-8xl font-bold text-white mb-8" id="alarm-count" aria-live="polite">0</div>
+            <p class="text-lg text-white mb-8">Aktive Alarme</p>
             <button onclick="quittiereAlleAlarme()" class="alarm-quittieren-btn">
                 Alle Alarme Quittieren
             </button>
@@ -362,35 +628,58 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 border-t border-gray-700 mt-8 py-4">
-        <div class="container mx-auto px-4 text-center text-gray-500 text-sm">
+    <footer class="mt-8 py-6 border-t" role="contentinfo" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
+        <div class="container mx-auto px-4 text-center text-sm" style="color: var(--text-muted);">
             <p>Serverraum-Überwachung | IHK-Abschlussprojekt Marc-Dennis Haberland</p>
         </div>
     </footer>
 
     <!-- JavaScript -->
-    <script src="/static/js/api.js"></script>
-    <script src="/static/js/dashboard.js"></script>
-    <script src="/static/js/charts.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/dashboard.js"></script>
+    <script src="./js/charts.js"></script>
 
     <!-- App Initialisierung -->
     <script>
-        // Globale Konfiguration
         const APP_CONFIG = {
-            apiBaseUrl: localStorage.getItem('apiEndpoint') || 'http://localhost:8000',
-            refreshInterval: (parseInt(localStorage.getItem('refreshInterval')) || 5) * 1000,
-            sensorKarten: [
-                { id: 'temp_serverraum', name: 'Temperatur', icon: '🌡️', einheit: '°C' },
-                { id: 'feuchte_serverraum', name: 'Feuchte', icon: '💧', einheit: '%' },
-                { id: 'rauchgas', name: 'Rauchgas', icon: '⚠️', einheit: 'ppm' },
-                { id: 'luftqualitaet', name: 'Luftqualität', icon: '🌬️', einheit: 'ppm' },
-                { id: 'bewegung', name: 'Bewegung', icon: '🚶', einheit: '' }
-            ]
+            apiBaseUrl: localStorage.getItem('apiEndpoint') || 'http://localhost:8080',
+            refreshInterval: (parseInt(localStorage.getItem('refreshInterval')) || 5) * 1000
         };
 
-        // App initialisieren wenn Seite geladen
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+            announceToScreenreader('Theme gewechselt zu ' + (newTheme === 'dark' ? 'Dunkel' : 'Hell'));
+        }
+
+        function updateThemeIcon(theme) {
+            const darkIcon = document.getElementById('theme-icon-dark');
+            const lightIcon = document.getElementById('theme-icon-light');
+            if (theme === 'dark') {
+                darkIcon.classList.remove('hidden');
+                lightIcon.classList.add('hidden');
+            } else {
+                darkIcon.classList.add('hidden');
+                lightIcon.classList.remove('hidden');
+            }
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             console.log('Serverraum-Überwachung Dashboard gestartet');
+
+            // Theme laden
+            loadTheme();
 
             // API-Endpunkt aus Einstellungen laden
             const gespeicherterEndpoint = localStorage.getItem('apiEndpoint');
@@ -398,12 +687,80 @@
                 document.getElementById('api-endpunkt').value = gespeicherterEndpoint;
             }
 
+            // Tab-Styles initialisieren
+            updateTabStyles();
+
+            // Keyboard-Navigation für Tabs
+            initTabKeyboardNavigation();
+
             // Daten laden
             initDashboard();
 
             // Periodisch aktualisieren
             setInterval(aktualisiereDaten, APP_CONFIG.refreshInterval);
         });
+
+        function updateTabStyles() {
+            // Tab-Styles werden jetzt über CSS gesteuert
+            // Keine explizite Aktualisierung nötig
+        }
+
+        function initTabKeyboardNavigation() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach((button, index) => {
+                button.addEventListener('keydown', (e) => {
+                    let targetIndex = index;
+                    switch (e.key) {
+                        case 'ArrowRight':
+                        case 'ArrowDown':
+                            targetIndex = (index + 1) % tabButtons.length;
+                            e.preventDefault();
+                            break;
+                        case 'ArrowLeft':
+                        case 'ArrowUp':
+                            targetIndex = (index - 1 + tabButtons.length) % tabButtons.length;
+                            e.preventDefault();
+                            break;
+                        case 'Home':
+                            targetIndex = 0;
+                            e.preventDefault();
+                            break;
+                        case 'End':
+                            targetIndex = tabButtons.length - 1;
+                            e.preventDefault();
+                            break;
+                        default:
+                            return;
+                    }
+                    tabButtons[targetIndex].focus();
+                    wechselTab(tabButtons[targetIndex].id.replace('tab-', ''));
+                });
+            });
+        }
+
+        function toggleAlarme() {
+            const content = document.getElementById('alarm-content');
+            const toggle = document.getElementById('alarme-toggle');
+            const chevron = document.getElementById('alarm-chevron');
+            const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+
+            toggle.setAttribute('aria-expanded', !isExpanded);
+            content.classList.toggle('expanded');
+
+            if (!isExpanded) {
+                chevron.classList.remove('rotate-180');
+            } else {
+                chevron.classList.add('rotate-180');
+            }
+        }
+
+        function announceToScreenreader(message) {
+            const announcement = document.getElementById('screenreader-announcements');
+            if (announcement) {
+                announcement.textContent = message;
+                setTimeout(() => { announcement.textContent = ''; }, 1000);
+            }
+        }
     </script>
 </body>
 </html>

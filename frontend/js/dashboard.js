@@ -19,6 +19,9 @@ let alarmDaten = [];
 function initDashboard() {
     console.log('Dashboard wird initialisiert...');
 
+    // WLAN-Signal Simulation starten
+    starteWifiSignalSimulation();
+
     // API-Verbindung prüfen
     window.api.checkApiConnection().then(verbunden => {
         if (verbunden) {
@@ -36,6 +39,44 @@ function initDashboard() {
         console.error('Verbindungsfehler:', err);
         aktualisiereVerbindungsStatus(false);
     });
+}
+
+/**
+ * Startet die Simulation des WLAN-Signals
+ */
+function starteWifiSignalSimulation() {
+    // Initiales WLAN-Signal setzen
+    simuliereWifiSignal();
+
+    // Alle 5 Sekunden aktualisieren
+    setInterval(simuliereWifiSignal, 5000);
+}
+
+/**
+ * Simuliert ein WLAN-Signal (RSSI Wert zwischen -45 und -75 dBm)
+ */
+function simuliereWifiSignal() {
+    // Typischer WLAN RSSI Bereich: -30 (sehr gut) bis -90 (schwach)
+    // Wir simulieren einen relativ stabilen Wert mit kleinen Schwankungen
+    const basisWert = -55;
+    const schwankung = Math.floor(Math.random() * 20) - 10; // -10 bis +10
+    const rssi = basisWert + schwankung;
+
+    const wifiElement = document.getElementById('wifi-signal');
+    if (wifiElement) {
+        wifiElement.textContent = rssi + ' dBm';
+
+        // Farbe basierend auf Signalstärke
+        if (rssi >= -50) {
+            wifiElement.style.color = '#22c55e'; // Grün - Sehr gut
+        } else if (rssi >= -65) {
+            wifiElement.style.color = '#eab308'; // Gelb - Gut
+        } else if (rssi >= -75) {
+            wifiElement.style.color = '#f97316'; // Orange - Mittel
+        } else {
+            wifiElement.style.color = '#ef4444'; // Rot - Schwach
+        }
+    }
 }
 
 /**
@@ -80,31 +121,51 @@ function aktualisiereVerlaufSensorDropdown(sensoren) {
 
     dropdown.innerHTML = '';
 
-    // Sensor-Name Mapping für Anzeige
-    const sensorNamen = {
-        'ds18b20_01': 'Temperatur (DS18B20)',
-        'sht31_temp_01': 'Temperatur (SHT31)',
-        'sht31_feuchte_01': 'Feuchtigkeit (SHT31)',
-        'mq2_01': 'Rauchgas (MQ2)',
-        'mq2_2': 'Rauchgas (MQ2)',
-        'mq2_6': 'Rauchgas (MQ2)',
-        'mq135_3': 'Luftqualität (MQ135)',
-        'mq135_7': 'Luftqualität (MQ135)',
-        'pir_4': 'Bewegung (PIR)',
-        'pir_8': 'Bewegung (PIR)'
+    // Sensor-Typen für lesbare Namen
+    const sensorTypNamen = {
+        'ds18b20': 'Temperatur (DS18B20)',
+        'sht31': 'Temperatur/Feuchtigkeit (SHT31)',
+        'mq2': 'Rauchgas (MQ2)',
+        'pir': 'Bewegung (PIR)',
+        'PIR': 'Bewegung (PIR)'
     };
 
     sensoren.forEach(sensor => {
         const option = document.createElement('option');
         option.value = sensor.sensor_id;
-        // Versuche den Namen aus dem Sensor-Objekt oder dem Mapping
-        option.textContent = sensor.name || sensorNamen[sensor.sensor_id] || sensor.sensor_typ || sensor.sensor_id;
+        // Name aus DB oder generiert aus Typ
+        const typName = sensorTypNamen[sensor.sensor_typ] || sensor.sensor_typ;
+        option.textContent = sensor.name || sensor.sensor_id + ' (' + typName + ')';
         dropdown.appendChild(option);
     });
 }
 
 /**
- * Aktualisiert die Sensor-Karten
+ * Bestimmt den Status-Label-Text basierend auf dem Sensor-Status
+ */
+function getStatusLabel(status) {
+    switch (status) {
+        case 'alarm': return 'Alarm';
+        case 'warnung': return 'Warnung';
+        case 'inaktiv': return 'Inaktiv';
+        default: return 'Normal';
+    }
+}
+
+/**
+ * Bestimmt die CSS-Klasse für den Status
+ */
+function getStatusColorClass(status) {
+    switch (status) {
+        case 'alarm': return 'status-alarm';
+        case 'warnung': return 'status-warning';
+        case 'inaktiv': return 'status-inactive';
+        default: return 'status-normal';
+    }
+}
+
+/**
+ * Aktualisiert die Sensor-Karten mit barrierefreier Struktur
  */
 function aktualisiereSensorKarten(sensoren) {
     const container = document.getElementById('sensor-karten');
@@ -113,38 +174,84 @@ function aktualisiereSensorKarten(sensoren) {
     container.innerHTML = '';
 
     // Sensor-Konfiguration - IDs müssen mit der DB übereinstimmen
-    // DB: ds18b20_01, sht31_temp_01, sht31_feuchte_01, mq2_01, mq2_2, mq2_6, mq135_3, mq135_7, pir_4, pir_8
+    // DB: ds18b20_01, sht31_temp_01, sht31_feuchte_01, mq2_01, pir_01
     const sensorConfig = [
-        { id: 'ds18b20_01', name: 'Temperatur (DS18B20)', icon: '🌡️', einheit: '°C' },
-        { id: 'sht31_temp_01', name: 'Temperatur (SHT31)', icon: '🌡️', einheit: '°C' },
-        { id: 'sht31_feuchte_01', name: 'Feuchtigkeit (SHT31)', icon: '💧', einheit: '%' },
-        { id: 'mq2_01', name: 'Rauchgas (MQ2)', icon: '⚠️', einheit: 'ppm' },
-        { id: 'pir_4', name: 'Bewegung (PIR)', icon: '🚶', einheit: '' }
+        { id: 'ds18b20_01', name: 'Temperatur (DS18B20)', einheit: '°C' },
+        { id: 'sht31_temp_01', name: 'Temperatur (SHT31)', einheit: '°C' },
+        { id: 'sht31_feuchte_01', name: 'Feuchtigkeit (SHT31)', einheit: '%' },
+        { id: 'mq2_01', name: 'Rauchgas (MQ2)', einheit: 'ppm' },
+        { id: 'pir_01', name: 'Bewegung (PIR)', einheit: '' }
     ];
 
     sensorConfig.forEach(config => {
         const sensor = sensoren.find(s => s.sensor_id === config.id);
         const wert = sensor && sensor.letzte_messung !== null ? sensor.letzte_messung : '--';
         const status = sensor && sensor.letzte_messung !== null ? 'normal' : 'inaktiv';
+        const statusLabel = getStatusLabel(status);
+        const statusColorClass = getStatusColorClass(status);
+        const borderClass = status === 'alarm' ? 'border-l-status-alarm' :
+                           status === 'warnung' ? 'border-l-status-warning' :
+                           status === 'inaktiv' ? 'border-l-status-inactive' : 'border-l-status-normal';
 
-        const card = document.createElement('div');
-        card.className = `bg-gray-800 rounded-xl p-6 status-card border-l-4 ${
-            status === 'alarm' ? 'border-red-500' :
-            status === 'warnung' ? 'border-yellow-500' :
-            status === 'inaktiv' ? 'border-gray-500' : 'border-green-500'
-        }`;
+        // Karte erstellen mit Semantic HTML und ARIA
+        const card = document.createElement('article');
+        card.className = `rounded-xl p-6 status-card border-l-4 ${borderClass}`;
+        card.style.backgroundColor = 'var(--bg-secondary)';
+        card.setAttribute('role', 'listitem');
+        card.setAttribute('aria-labelledby', `sensor-${config.id}-name`);
+
+        // Zeitstempel formatieren
+        const zeitstempel = sensor && sensor.letzte_zeit ? formatZeitstempel(sensor.letzte_zeit) : 'Keine Daten';
+        const zeitstempelISO = sensor && sensor.letzte_zeit ? sensor.letzte_zeit.replace(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1-$2-$3T$4:$5:$6') : '';
+
+        // Trend-Indikator (simplifiziert - basierend auf.previous_wert wenn verfügbar)
+        let trendLabel = '';
+        let trendAria = '';
+        if (sensor && sensor.previous_wert !== undefined && sensor.letzte_messung !== null) {
+            const diff = sensor.letzte_messung - sensor.previous_wert;
+            if (diff > 0.5) {
+                trendLabel = 'steigend';
+                trendAria = ', Tendenz: steigend';
+            } else if (diff < -0.5) {
+                trendLabel = 'fallend';
+                trendAria = ', Tendenz: fallend';
+            } else {
+                trendLabel = 'stabil';
+                trendAria = ', Tendenz: stabil';
+            }
+        }
 
         card.innerHTML = `
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-2xl">${config.icon}</span>
-                <span class="text-xs text-gray-500 uppercase">${config.name}</span>
+            <header class="mb-4">
+                <h3 id="sensor-${config.id}-name" class="text-sm font-medium uppercase tracking-wider" style="color: var(--text-secondary);">
+                    ${config.name}
+                </h3>
+            </header>
+
+            <div class="sensor-wert mb-4" aria-live="polite">
+                <span class="text-4xl font-bold" id="sensor-${config.id}-wert" aria-label="Aktueller Wert: ${wert} ${config.einheit}" style="color: var(--text-primary);">
+                    ${wert}
+                </span>
+                <span class="text-xl ml-1" style="color: var(--text-secondary);">${config.einheit}</span>
             </div>
-            <div class="text-3xl font-bold">
-                ${wert} ${config.einheit}
+
+            <div class="sensor-status ${statusColorClass} flex items-center gap-2 mb-4" role="status">
+                <span class="status-punkt bg-${statusColorClass}" aria-hidden="true"></span>
+                <span class="status-label text-sm font-medium" aria-label="Status: ${statusLabel}${trendAria}">
+                    ${statusLabel}${trendLabel ? ' (' + trendLabel + ')' : ''}
+                </span>
             </div>
-            <div class="text-sm text-gray-500 mt-1">
-                ${sensor && sensor.letzte_zeit ? formatZeitstempel(sensor.letzte_zeit) : 'Keine Daten'}
-            </div>
+
+            <footer>
+                <time
+                    class="text-xs"
+                    datetime="${zeitstempelISO}"
+                    aria-label="Letzte Messung: ${zeitstempel}"
+                    style="color: var(--text-muted);"
+                >
+                    ${zeitstempel}
+                </time>
+            </footer>
         `;
 
         container.appendChild(card);
@@ -179,7 +286,7 @@ function zeigeAlarme(alarme) {
 
         alarme.forEach(alarm => {
             const div = document.createElement('div');
-            div.className = 'bg-red-900/30 border border-red-600 rounded-lg p-4 flex justify-between items-center';
+            div.className = 'alarm-card rounded-lg p-4 flex justify-between items-center';
 
             const alarmTyp = document.createElement('span');
             alarmTyp.className = 'font-medium';
@@ -339,6 +446,7 @@ function wechselTab(tabName) {
         ladeVerlauf();
     } else if (tabName === 'alarme') {
         ladeAlarme();
+        ladeAlarmEmails();
     }
 }
 
@@ -386,7 +494,7 @@ async function ladeAlarme() {
 }
 
 /**
- * Zeigt Alarm-Tabelle
+ * Zeigt Alarm-Tabelle mit barrierefreier Struktur
  */
 function zeigeAlarmTabelle(alarme) {
     const tbody = document.getElementById('alarm-tabelle');
@@ -403,17 +511,135 @@ function zeigeAlarmTabelle(alarme) {
         const tr = document.createElement('tr');
         tr.className = 'border-b border-gray-700';
 
-        const statusClass = alarm.status === 'aktiv' ? 'text-red-500' : 'text-gray-500';
-        const statusIcon = alarm.status === 'aktiv' ? '🔴' : '🟢';
+        const istAktiv = alarm.status === 'aktiv';
+        const statusClass = istAktiv ? 'text-status-alarm' : 'text-gray-500';
+        const statusLabel = istAktiv ? 'Aktiv' : 'Quittiert';
 
         tr.innerHTML = `
-            <td class="py-3 pr-4"><span class="${statusClass}">${statusIcon}</span></td>
+            <td class="py-3 pr-4">
+                <div class="flex items-center gap-2 ${statusClass}" role="status">
+                    <span class="status-punkt ${istAktiv ? 'bg-status-alarm' : 'bg-gray-500'}" aria-hidden="true"></span>
+                    <span>${statusLabel}</span>
+                </div>
+            </td>
             <td class="py-3 pr-4">${alarm.sensor_id || '--'}</td>
             <td class="py-3 pr-4">${alarm.alarm_typ || '--'}</td>
             <td class="py-3 pr-4">${alarm.wert ?? '--'}</td>
             <td class="py-3 pr-4">${alarm.created_at ? new Date(alarm.created_at).toLocaleString('de-DE') : '--'}</td>
             <td class="py-3">
-                ${alarm.status === 'aktiv' ? '<button onclick="quittiereAlarm(' + alarm.id + ')" class="text-blue-400 hover:text-blue-300">Quittieren</button>' : '--'}
+                ${istAktiv ? `
+                <select
+                    onchange="handleAlarmAktion(${alarm.id}, this.value); this.value='';"
+                    class="rounded px-2 py-1 text-sm cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500"
+                    style="background-color: var(--bg-tertiary); border-color: var(--border-color); color: var(--text-primary);"
+                    aria-label="Aktion für Alarm ${alarm.id}"
+                >
+                    <option value="">Aktion...</option>
+                    <option value="quittieren">Quittieren</option>
+                    <option value="email">Per Email senden</option>
+                    <option value="loeschen">Löschen</option>
+                </select>
+                ` : '--'}
+            </td>
+        `;
+
+        tbody.appendChild(tr);
+    });
+}
+
+/**
+ * Behandelt Alarm-Aktionen aus dem Dropdown
+ */
+async function handleAlarmAktion(alarmId, aktion) {
+    if (!aktion) return;
+
+    switch (aktion) {
+        case 'quittieren':
+            await window.api.quittiereAlarm(alarmId);
+            ladeAlarme();
+            ladeAlarmEmails();
+            break;
+        case 'email':
+            try {
+                await window.api.sendeAlarmEmail(alarmId);
+                alert('Erinnerungs-Email wurde gesendet!');
+                ladeAlarmEmails();
+            } catch (error) {
+                console.error('Fehler beim Senden:', error);
+                alert('Email senden fehlgeschlagen!');
+            }
+            break;
+        case 'loeschen':
+            if (confirm('Alarm wirklich löschen? Dies kann nicht rückgängig gemacht werden.')) {
+                try {
+                    await window.api.loescheAlarm(alarmId);
+                    ladeAlarme();
+                    ladeAlarmEmails();
+                } catch (error) {
+                    console.error('Fehler beim Löschen:', error);
+                    alert('Löschen fehlgeschlagen!');
+                }
+            }
+            break;
+    }
+}
+
+/**
+ * Lädt Alarm-Emails
+ */
+async function ladeAlarmEmails() {
+    const filter = document.getElementById('alarm-filter')?.value || 'alle';
+
+    try {
+        const emails = await window.api.getAlarmEmails();
+        zeigeAlarmEmailsTabelle(emails);
+    } catch (error) {
+        console.error('Fehler beim Laden der Alarm-Emails:', error);
+    }
+}
+
+/**
+ * Zeigt Alarm-Emails-Tabelle mit barrierefreier Struktur
+ */
+function zeigeAlarmEmailsTabelle(emails) {
+    const tbody = document.getElementById('alarm-email-tabelle');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+
+    if (!emails || emails.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-500 py-4">Keine Alarm-Emails vorhanden</td></tr>';
+        return;
+    }
+
+    emails.forEach(email => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-gray-700';
+
+        // Status-Badge für Email
+        const statusClass = email.sende_status === 'erfolgreich' ? 'text-green-500' :
+                          email.sende_status === 'fehlgeschlagen' ? 'text-red-500' : 'text-yellow-500';
+        const statusLabel = email.sende_status === 'erfolgreich' ? 'Erfolgreich' :
+                          email.sende_status === 'fehlgeschlagen' ? 'Fehlgeschlagen' : 'Ausstehend';
+
+        // Antwort-Indikator
+        const antwortBadge = email.hat_geantwortet ?
+            `<span class="bg-green-600 text-white text-xs px-2 py-1 rounded" title="${email.anzahl_antworten} Antwort(en)">Ja (${email.anzahl_antworten})</span>` :
+            '<span class="text-gray-500 text-sm">Nein</span>';
+
+        // Zeit formatieren
+        const zeitpunkt = email.created_at ? new Date(email.created_at).toLocaleString('de-DE') : '--';
+
+        tr.innerHTML = `
+            <td class="py-3 pr-4 text-sm" style="color: var(--text-primary);">${zeitpunkt}</td>
+            <td class="py-3 pr-4 text-sm" style="color: var(--text-primary);">${email.sensor_id || '--'}</td>
+            <td class="py-3 pr-4 text-sm" style="color: var(--text-primary);">${email.alarm_typ || '--'}</td>
+            <td class="py-3 pr-4 text-sm" style="color: var(--text-primary);">${email.empfaenger || '--'}</td>
+            <td class="py-3 pr-4">
+                <span class="${statusClass} text-sm font-medium">${statusLabel}</span>
+            </td>
+            <td class="py-3">
+                ${antwortBadge}
             </td>
         `;
 
@@ -487,5 +713,7 @@ window.quittiereAlleAlarme = quittiereAlleAlarme;
 window.wechselTab = wechselTab;
 window.ladeVerlauf = ladeVerlauf;
 window.ladeAlarme = ladeAlarme;
+window.ladeAlarmEmails = ladeAlarmEmails;
+window.handleAlarmAktion = handleAlarmAktion;
 window.zeigeEinstellungen = zeigeEinstellungen;
 window.speichereEinstellungen = speichereEinstellungen;

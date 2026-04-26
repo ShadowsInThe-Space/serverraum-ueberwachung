@@ -116,6 +116,33 @@ async function quittiereAlarm(alarmId) {
 }
 
 /**
+ * Löscht einen Alarm
+ * @param {number} alarmId - Alarm-ID
+ * @returns {Promise}
+ */
+async function loescheAlarm(alarmId) {
+    return await apiRequest(`/alarme/${alarmId}`, 'DELETE');
+}
+
+/**
+ * Sendet eine Alarm-Erinnerung per Email
+ * @param {number} alarmId - Alarm-ID
+ * @returns {Promise}
+ */
+async function sendeAlarmEmail(alarmId) {
+    return await apiRequest(`/alarme/${alarmId}/email`, 'POST');
+}
+
+/**
+ * Holt alle gesendeten Alarm-Emails
+ * @param {number} limit - Anzahl
+ * @returns {Promise<array>}
+ */
+async function getAlarmEmails(limit = 100) {
+    return await apiRequest(`/alarm-emails?limit=${limit}`);
+}
+
+/**
  * Prüft ob API erreichbar ist
  * @returns {Promise<boolean>}
  */
@@ -137,6 +164,9 @@ window.api = {
     getStatistik,
     getAlarme,
     quittiereAlarm,
+    loescheAlarm,
+    sendeAlarmEmail,
+    getAlarmEmails,
     checkApiConnection,
     get baseUrl() { return apiBaseUrl; }
 };
