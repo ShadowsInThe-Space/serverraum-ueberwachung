@@ -42,6 +42,7 @@ class Alarm:
     nachricht: str
     wert: float
     schwellwert: float
+    id: Optional[int] = None
 
 
 class SpamSchutz:
@@ -80,14 +81,30 @@ class EmailNotifier:
         if not self.enabled:
             return True
 
+        # Email in DB speichern (ausstehend)
+        email_id = datenbank.alarm_email_speichern(
+            alarm_id=alarm.id,
+            empfaenger=self.empfaenger,
+            subject=f"⚠️ Serverraum Alarm: {alarm.alarm_typ}",
+            body=f"{alarm.nachricht}\nSensor: {alarm.sensor_id}\nWert: {alarm.wert}\nSchwellwert: {alarm.schwellwert}",
+            sende_status='ausstehend'
+        )
+
+        fehler = None
         for versuch in range(3):
             try:
-                return self._sende(alarm)
+                success = self._sende(alarm)
+                if success:
+                    datenbank.alarm_email_aktualisieren(email_id, 'erfolgreich')
+                    return True
             except Exception as e:
+                fehler = e
                 logger.warning(f"E-Mail Fehler (Versuch {versuch + 1}): {e}")
                 if versuch < 2:
                     time.sleep(2)
 
+        # Fehlgeschlagen in DB speichern
+        datenbank.alarm_email_aktualisieren(email_id, 'fehlgeschlagen', str(fehler))
         logger.error("E-Mail Alarm fehlgeschlagen")
         return False
 
@@ -271,8 +288,8 @@ class AlarmEngine:
 
         logger.warning(f"ALARM: {alarm.nachricht}")
 
-        # DB speichern
-        datenbank.alarm_speichern(
+        # DB speichern und ID merken für Email-Tracking
+        alarm.id = datenbank.alarm_speichern(
             sensor_id=alarm.sensor_id,
             alarm_typ=alarm.alarm_typ,
             nachricht=alarm.nachricht,

@@ -1,0 +1,70 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]: Serverraum-Überwachung
+        - generic [ref=e7]: Serverraum-Überwachung Dashboard
+      - generic [ref=e8]:
+        - status [ref=e9]:
+          - generic [ref=e11]: Verbunden
+          - generic [ref=e12]: (Verbindung wird hergestellt)
+        - button "Einstellungen öffnen" [ref=e13] [cursor=pointer]: Einstellungen
+  - main [ref=e14]:
+    - region "Systemstatus" [ref=e15]:
+      - heading "Systemstatus" [level=2] [ref=e16]
+      - status [ref=e17]:
+        - generic [ref=e18]:
+          - generic [ref=e19]: "Letzte Aktualisierung:"
+          - time [ref=e20]: 16:25:42
+        - generic [ref=e21]:
+          - generic [ref=e22]: "Verbunden mit:"
+          - generic [ref=e23]: ESP32-001
+        - generic [ref=e24]:
+          - generic [ref=e25]: "WLAN Signal:"
+          - generic [ref=e26]: "-- dBm"
+    - region "Aktuelle Messwerte" [ref=e27]:
+      - heading "Aktuelle Messwerte" [level=2] [ref=e28]
+      - list "Sensoren" [ref=e29]:
+        - listitem "Temperatur (DS18B20)" [ref=e30]:
+          - heading "Temperatur (DS18B20)" [level=3] [ref=e32]
+          - generic [ref=e33]: 23.9 °C
+          - status [ref=e34]:
+            - 'generic "Status: Normal" [ref=e36]': Normal
+          - time [ref=e38]: "4-.-0.2026 26: 1:6:"
+        - listitem "Temperatur (SHT31)" [ref=e39]:
+          - heading "Temperatur (SHT31)" [level=3] [ref=e41]
+          - generic [ref=e42]: 22.1 °C
+          - status [ref=e43]:
+            - 'generic "Status: Normal" [ref=e45]': Normal
+          - time [ref=e47]: "4-.-0.2026 26: 1:6:"
+        - listitem "Feuchtigkeit (SHT31)" [ref=e48]:
+          - heading "Feuchtigkeit (SHT31)" [level=3] [ref=e50]
+          - generic [ref=e51]: 53.2 %
+          - status [ref=e52]:
+            - 'generic "Status: Normal" [ref=e54]': Normal
+          - time [ref=e56]: "4-.-0.2026 26: 1:6:"
+        - listitem "Rauchgas (MQ2)" [ref=e57]:
+          - heading "Rauchgas (MQ2)" [level=3] [ref=e59]
+          - generic [ref=e60]: 119.2 ppm
+          - status [ref=e61]:
+            - 'generic "Status: Normal" [ref=e63]': Normal
+          - time [ref=e65]: "4-.-0.2026 26: 1:6:"
+        - listitem "Bewegung (PIR)" [ref=e66]:
+          - heading "Bewegung (PIR)" [level=3] [ref=e68]
+          - generic [ref=e69]: "0.4"
+          - status [ref=e70]:
+            - 'generic "Status: Normal" [ref=e72]': Normal
+          - time [ref=e74]: "4-.-0.2026 26: 1:6:"
+    - region "Navigation" [ref=e75]:
+      - tablist "Dashboard Bereiche" [ref=e76]:
+        - tab "Dashboard" [selected] [ref=e77] [cursor=pointer]
+        - tab "Verlauf" [ref=e78] [cursor=pointer]
+        - tab "Alarme" [ref=e79] [cursor=pointer]
+        - tab "Einstellungen" [ref=e80] [cursor=pointer]
+      - tabpanel "Dashboard" [ref=e81]:
+        - generic [ref=e82]:
+          - heading "Übersicht" [level=3] [ref=e83]
+          - paragraph [ref=e84]: Alle Sensoren auf einen Blick. Die Daten werden automatisch alle 5 Sekunden aktualisiert.
+          - paragraph [ref=e85]: "Sensor-Status: Normal (grün), Warnung (gelb), Alarm (rot), Inaktiv (grau)"
+  - contentinfo [ref=e86]:
+    - paragraph [ref=e88]: Serverraum-Überwachung | IHK-Abschlussprojekt Marc-Dennis Haberland

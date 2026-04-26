@@ -24,12 +24,7 @@ SENSOREN = {
     "sht31_temp_01": {"typ": "sht31", "einheit": "°C", "min": 18.0, "max": 28.0, "status": "OK"},
     "sht31_feuchte_01": {"typ": "sht31", "einheit": "%", "min": 30.0, "max": 70.0, "status": "OK"},
     "mq2_01": {"typ": "mq2", "einheit": "ppm", "min": 50.0, "max": 180.0, "status": "OK"},
-    "mq2_2": {"typ": "mq2", "einheit": "ppm", "min": 50.0, "max": 180.0, "status": "OK"},
-    "mq2_6": {"typ": "mq2", "einheit": "ppm", "min": 50.0, "max": 180.0, "status": "OK"},
-    "mq135_3": {"typ": "mq135", "einheit": "ppm", "min": 100.0, "max": 500.0, "status": "OK"},
-    "mq135_7": {"typ": "mq135", "einheit": "ppm", "min": 100.0, "max": 500.0, "status": "OK"},
-    "pir_4": {"typ": "pir", "einheit": "", "min": 0.0, "max": 1.0, "status": "OK"},
-    "pir_8": {"typ": "pir", "einheit": "", "min": 0.0, "max": 1.0, "status": "OK"},
+    "pir_01": {"typ": "pir", "einheit": "", "min": 0.0, "max": 1.0, "status": "OK"},
 }
 
 # Alte Wertstände für smoothing

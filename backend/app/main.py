@@ -28,7 +28,7 @@ from .alarm_engine import alarm_engine
 config = config_module.config
 logger = logging.getLogger(__name__)
 
-STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
+STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend")
 
 
 # =============================================================================
@@ -116,7 +116,9 @@ async def exception_handler(request, exc):
 
 if os.path.exists(STATIC_DIR):
     from fastapi.staticfiles import StaticFiles
+    # Mount /static for JS/CSS and /js directly for compatibility
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+    app.mount("/js", StaticFiles(directory=os.path.join(STATIC_DIR, "js")), name="js")
 
 
 # =============================================================================
@@ -203,6 +205,80 @@ async def alarm_quittieren(alarm_id: int):
     if datenbank.alarm_quittieren(alarm_id):
         return {"status": "erfolgreich", "alarm_id": alarm_id}
     raise HTTPException(status_code=500, detail="Quittieren fehlgeschlagen")
+
+
+@app.delete("/alarme/{alarm_id}")
+async def alarm_loeschen(alarm_id: int):
+    """Löscht einen Alarm vollständig"""
+    if datenbank.alarm_loeschen(alarm_id):
+        return {"status": "erfolgreich", "alarm_id": alarm_id}
+    raise HTTPException(status_code=500, detail="Löschen fehlgeschlagen")
+
+
+@app.post("/alarme/{alarm_id}/email")
+async def alarm_email_senden(alarm_id: int):
+    """Sendet eine Erinnerungs-Email für einen Alarm"""
+    try:
+        # Alarm aus DB holen
+        alarme = datenbank.alle_alarme_abrufen(1000)
+        alarm = next((a for a in alarme if a["id"] == alarm_id), None)
+        if not alarm:
+            raise HTTPException(status_code=404, detail="Alarm nicht gefunden")
+
+        # Alarm-Objekt für EmailNotifier erstellen
+        from .alarm_engine import Alarm
+        alarm_obj = Alarm(
+            sensor_id=alarm["sensor_id"],
+            alarm_typ=alarm["alarm_typ"],
+            nachricht=alarm["nachricht"],
+            wert=alarm["wert"],
+            schwellwert=alarm["schwellwert"],
+            id=alarm_id
+        )
+
+        # Email senden
+        email_notifier = alarm_engine._notifier[0]  # EmailNotifier
+        success = email_notifier.senden(alarm_obj)
+
+        if success:
+            return {"status": "erfolgreich", "alarm_id": alarm_id}
+        raise HTTPException(status_code=500, detail="Email senden fehlgeschlagen")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Email senden Fehler: {e}")
+        raise HTTPException(status_code=500, detail="Email senden fehlgeschlagen")
+
+
+@app.get("/alarm-emails")
+async def alarm_emails_liste(limit: int = Query(default=100, ge=1, le=1000)):
+    """Alle gesendeten Alarm-Emails abrufen mit Antwort-Status"""
+    try:
+        emails = datenbank.alle_alarm_emails_abrufen(limit)
+        ergebnis = []
+        for e in emails:
+            # Antworten für diese Email abrufen
+            antworten = datenbank.alarm_email_antworten_abrufen(e["id"])
+            hat_geantwortet = len(antworten) > 0
+            ergebnis.append({
+                "id": e["id"],
+                "alarm_id": e["alarm_id"],
+                "sensor_id": e.get("sensor_id"),
+                "alarm_typ": e.get("alarm_typ"),
+                "nachricht": e.get("nachricht"),
+                "empfaenger": e["empfaenger"],
+                "subject": e["subject"],
+                "sende_status": e["sende_status"],
+                "error_message": e.get("error_message"),
+                "hat_geantwortet": hat_geantwortet,
+                "anzahl_antworten": len(antworten),
+                "created_at": str(e["created_at"]),
+                "alarm_zeitstempel": str(e.get("alarm_zeitstempel")) if e.get("alarm_zeitstempel") else None,
+            })
+        return ergebnis
+    except Exception as e:
+        logger.error(f"Alarm-Emails Fehler: {e}")
+        raise HTTPException(status_code=500, detail="Datenbankfehler")
 
 
 # =============================================================================

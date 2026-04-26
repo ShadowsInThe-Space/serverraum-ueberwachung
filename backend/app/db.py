@@ -159,9 +159,13 @@ class Datenbank:
 
     def alarm_quittieren(self, alarm_id: int) -> bool:
         return _execute(
-            "UPDATE alarme SET status = 'acknowledged', acknowledged_at = NOW() WHERE id = %s",
+            "UPDATE alarme SET status = 'quittiert', quittiert_at = NOW() WHERE id = %s",
             (alarm_id,),
         )
+
+    def alarm_loeschen(self, alarm_id: int) -> bool:
+        """Löscht einen Alarm vollständig aus der DB"""
+        return _execute("DELETE FROM alarme WHERE id = %s", (alarm_id,))
 
     def aktive_alarme_abrufen(self) -> List[Dict]:
         return _query("""
@@ -176,6 +180,65 @@ class Datenbank:
             FROM alarme a JOIN sensoren s ON a.sensor_id = s.id
             ORDER BY a.created_at DESC LIMIT %s
         """, (limit,))
+
+    # =============================================================================
+    # ALARM EMAILS
+    # =============================================================================
+
+    def alarm_email_speichern(self, alarm_id: int, empfaenger: str, subject: str,
+                              body: str = None, sende_status: str = 'ausstehend',
+                              error_message: str = None) -> int:
+        """Speichert ein gesendetes Alarm-Email"""
+        sql = """
+            INSERT INTO alarm_emails (alarm_id, empfaenger, subject, body, sende_status, error_message, created_at)
+            VALUES (%s, %s, %s, %s, %s, %s, NOW())
+        """
+        if _execute(sql, (alarm_id, empfaenger, subject, body, sende_status, error_message)):
+            result = _query("SELECT LAST_INSERT_ID() as id")
+            return result[0]["id"] if result else 0
+        return 0
+
+    def alarm_email_aktualisieren(self, email_id: int, sende_status: str,
+                                   error_message: str = None) -> bool:
+        """Aktualisiert den Status einer gesendeten Email"""
+        sql = """
+            UPDATE alarm_emails
+            SET sende_status = %s, error_message = %s
+            WHERE id = %s
+        """
+        return _execute(sql, (sende_status, error_message, email_id))
+
+    def alle_alarm_emails_abrufen(self, limit: int = 100) -> List[Dict]:
+        """Alle gesendeten Alarm-Emails abrufen"""
+        return _query("""
+            SELECT ae.*, a.alarm_typ, a.nachricht, a.wert, a.schwellwert,
+                   a.created_at as alarm_zeitstempel, s.sensor_id
+            FROM alarm_emails ae
+            JOIN alarme a ON ae.alarm_id = a.id
+            JOIN sensoren s ON a.sensor_id = s.id
+            ORDER BY ae.created_at DESC
+            LIMIT %s
+        """, (limit,))
+
+    def alarm_email_antwort_speichern(self, email_id: int, empfaenger_email: str,
+                                       antwort_text: str = None) -> int:
+        """Speichert eine Antwort auf eine Alarm-Email"""
+        sql = """
+            INSERT INTO alarm_email_antworten (alarm_email_id, empfaenger_email, antwort_text, antwort_zeitpunkt)
+            VALUES (%s, %s, %s, NOW())
+        """
+        if _execute(sql, (email_id, empfaenger_email, antwort_text)):
+            result = _query("SELECT LAST_INSERT_ID() as id")
+            return result[0]["id"] if result else 0
+        return 0
+
+    def alarm_email_antworten_abrufen(self, email_id: int) -> List[Dict]:
+        """Alle Antworten auf eine bestimmte Alarm-Email abrufen"""
+        return _query("""
+            SELECT * FROM alarm_email_antworten
+            WHERE alarm_email_id = %s
+            ORDER BY antwort_zeitpunkt DESC
+        """, (email_id,))
 
     def statistik_abrufen(self, sensor_id: str, stunden: int = 24) -> Dict:
         result = _query("""
