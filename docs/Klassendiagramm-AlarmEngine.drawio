@@ -1,0 +1,148 @@
+<mxfile host="draw.io" modified="2026-04-27T04:35:00.000Z" agent="Claude" version="24.0.0">
+  <diagram name="Alarm-Engine Klassen" id="classes">
+    <mxGraphModel dx="1200" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Serverraum-Überwachung - Alarm-Engine Klassendiagramm" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="450" y="20" width="500" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ========== DATACLASS ========== -->
+        <mxCell id="alarm_class" value="Alarm&#xa;@dataclass" style="shape=class;verticalAlign=top;align=center;spacing=10;tabWidth=120;tabHeight=30;fontStyle=1;strokeColor=#000000;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="580" y="80" width="200" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="alarm_attrs" value="+ sensor_id: str&#xa;+ alarm_typ: str&#xa;+ nachricht: str&#xa;+ wert: float&#xa;+ schwellwert: float&#xa;+ id: int = None" style="shape=partialRectangle;collapsible=0;left=0;right=0;top=0;bottom=0;fillColor=none;align=left;spacingLeft=10;fontSize=10;fontColor=#000000;" vertex="1" parent="alarm_class">
+          <mxGeometry y="30" width="200" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- ========== SPAMSCHUTZ ========== -->
+        <mxCell id="spam_class" value="SpamSchutz" style="shape=class;verticalAlign=top;align=center;spacing=10;tabWidth=120;tabHeight=30;fontStyle=1;strokeColor=#000000;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="50" y="80" width="180" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="spam_attrs" value="- abstand: int&#xa;- _letzte_alarme: dict" style="shape=partialRectangle;collapsible=0;left=0;right=0;top=0;bottom=0;fillColor=none;align=left;spacingLeft=10;fontSize=10;fontColor=#000000;" vertex="1" parent="spam_class">
+          <mxGeometry y="30" width="180" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="spam_methods" value="+ ist_erlaubt(alarm_key: str): bool" style="shape=partialRectangle;collapsible=0;left=0;right=0;top=0;bottom=0;fillColor=none;align=left;spacingLeft=10;fontSize=10;fontColor=#000000;" vertex="1" parent="spam_class">
+          <mxGeometry y="70" width="180" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ========== EMAIL NOTIFIER ========== -->
+        <mxCell id="email_class" value="EmailNotifier" style="shape=class;verticalAlign=top;align=center;spacing=10;tabWidth=120;tabHeight=30;fontStyle=1;strokeColor=#000000;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="50" y="280" width="180" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="email_attrs" value="- enabled: bool&#xa;- empfaenger: str&#xa;- absender: str&#xa;- passwort: str&#xa;- server: str&#xa;- port: int" style="shape=partialRectangle;collapsible=0;left=0;right=0;top=0;bottom=0;fillColor=none;align=left;spacingLeft=10;fontSize=10;fontColor=#000000;" vertex="1" parent="email_class">
+          <mxGeometry y="30" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="email_methods" value="+ senden(alarm: Alarm): bool&#xa;+ _sende(alarm: Alarm): bool" style="shape=partialRectangle;collapsible=0;left=0;right=0;top=0;bottom=0;fillColor=none;align=left;spacingLeft=10;fontSize=10;fontColor=#000000;" vertex="1" parent="email_class">
+          <mxGeometry y="100" width="180" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ========== GPIO DEVICE NOTIFIER ========== -->
+        <mxCell id="gpio_class" value="GPIODeviceNotifier" style="shape=class;verticalAlign=top;align=center;spacing=10;tabWidth=140;tabHeight=30;fontStyle=1;strokeColor=#000000;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="280" y="280" width="180" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="gpio_attrs" value="- pin: int&#xa;- aktion: str&#xa;- dauer: float&#xa;- _initialisiert: bool" style="shape=partialRectangle;collapsible=0;left=0;right=0;top=0;bottom=0;fillColor=none;align=left;spacingLeft=10;fontSize=10;fontColor=#000000;" vertex="1" parent="gpio_class">
+          <mxGeometry y="30" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="gpio_methods" value="+ initialisiere()&#xa;+ senden(alarm: Alarm): bool&#xa;+ _ausschalten()" style="shape=partialRectangle;collapsible=0;left=0;right=0;top=0;bottom=0;fillColor=none;align=left;spacingLeft=10;fontSize=10;fontColor=#000000;" vertex="1" parent="gpio_class">
+          <mxGeometry y="90" width="180" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ========== DASHBOARD NOTIFIER ========== -->
+        <mxCell id="dash_class" value="DashboardNotifier" style="shape=class;verticalAlign=top;align=center;spacing=10;tabWidth=140;tabHeight=30;fontStyle=1;strokeColor=#000000;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="510" y="280" width="180" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="dash_attrs" value="- _alarme: list[dict]" style="shape=partialRectangle;collapsible=0;left=0;right=0;top=0;bottom=0;fillColor=none;align=left;spacingLeft=10;fontSize=10;fontColor=#000000;" vertex="1" parent="dash_class">
+          <mxGeometry y="30" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="dash_methods" value="+ senden(alarm: Alarm): bool&#xa;+ bestaetigen(sensor_id, alarm_typ): bool" style="shape=partialRectangle;collapsible=0;left=0;right=0;top=0;bottom=0;fillColor=none;align=left;spacingLeft=10;fontSize=10;fontColor=#000000;" vertex="1" parent="dash_class">
+          <mxGeometry y="60" width="180" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ========== ALARM ENGINE ========== -->
+        <mxCell id="engine_class" value="AlarmEngine" style="shape=class;verticalAlign=top;align=center;spacing=10;tabWidth=140;tabHeight=30;fontStyle=1;strokeColor=#000000;fontColor=#000000;fillColor=#FFE4B5;" vertex="1" parent="1">
+          <mxGeometry x="280" y="80" width="260" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="engine_attrs" value="- _spam: SpamSchutz&#xa;- _notifier: list[Notifier]&#xa;- _dashboard: DashboardNotifier" style="shape=partialRectangle;collapsible=0;left=0;right=0;top=0;bottom=0;fillColor=none;align=left;spacingLeft=10;fontSize=10;fontColor=#000000;" vertex="1" parent="engine_class">
+          <mxGeometry y="30" width="260" height="60" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="engine_methods" value="+ __init__()&#xa;+ initialisiere_gpio()&#xa;+ pruefe_alarm(sensor_id, sensor_typ, wert): Alarm | None&#xa;+ alarm_ausloesen(alarm: Alarm)&#xa;+ hole_aktive_alarme(): list&#xa;+ alarm_bestaetigen(sensor_id, alarm_typ)&#xa;+ cleanup()" style="shape=partialRectangle;collapsible=0;left=0;right=0;top=0;bottom=0;fillColor=none;align=left;spacingLeft=10;fontSize=10;fontColor=#000000;" vertex="1" parent="engine_class">
+          <mxGeometry y="80" width="260" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ========== MQTT CLIENT ========== -->
+        <mxCell id="mqtt_class" value="MqttClient" style="shape=class;verticalAlign=top;align=center;spacing=10;tabWidth=120;tabHeight=30;fontStyle=1;strokeColor=#000000;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="840" y="80" width="200" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="mqtt_attrs" value="- client: mqtt.Client&#xa;- _verbunden: bool&#xa;- alarm_callback: Callable&#xa;- _reconnect_thread: Thread&#xa;- _retry_count: int" style="shape=partialRectangle;collapsible=0;left=0;right=0;top=0;bottom=0;fillColor=none;align=left;spacingLeft=10;fontSize=10;fontColor=#000000;" vertex="1" parent="mqtt_class">
+          <mxGeometry y="30" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="mqtt_methods" value="+ verbinden(): bool&#xa;+ trennen()&#xa;+ set_alarm_callback(callback)&#xa;+ _on_connect()&#xa;+ _on_disconnect()&#xa;+ _on_message()&#xa;+ _verarbeite_daten()&#xa;+ _verarbeite_alarm()&#xa;+ _reconnect()" style="shape=partialRectangle;collapsible=0;left=0;right=0;top=0;bottom=0;fillColor=none;align=left;spacingLeft=10;fontSize=10;fontColor=#000000;" vertex="1" parent="mqtt_class">
+          <mxGeometry y="100" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ========== DATENBANK ========== -->
+        <mxCell id="db_class" value="Datenbank" style="shape=class;verticalAlign=top;align=center;spacing=10;tabWidth=120;tabHeight=30;fontStyle=1;strokeColor=#000000;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="840" y="300" width="200" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="db_attrs" value="- connection: Connection&#xa;- cursor: Cursor" style="shape=partialRectangle;collapsible=0;left=0;right=0;top=0;bottom=0;fillColor=none;align=left;spacingLeft=10;fontSize=10;fontColor=#000000;" vertex="1" parent="db_class">
+          <mxGeometry y="30" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="db_methods" value="+ verbinden(): bool&#xa;+ trennen()&#xa;+ sensor_speichern(): int&#xa;+ alle_sensoren_abrufen(): list&#xa;+ messung_speichern(): bool&#xa;+ alarm_speichern(): int&#xa;+ aktive_alarme_abrufen(): list&#xa;+ ...weitere Methoden..." style="shape=partialRectangle;collapsible=0;left=0;right=0;top=0;bottom=0;fillColor=none;align=left;spacingLeft=10;fontSize=10;fontColor=#000000;" vertex="1" parent="db_class">
+          <mxGeometry y="70" width="200" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- ========== BEZIEHUNGEN ========== -->
+
+        <!-- AlarmEngine nutzt SpamSchutz -->
+        <mxCell id="rel1" value="nutzt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;endFill=0;strokeColor=#000000;fontSize=10;dashed=1;" edge="1" parent="1" source="engine_class" target="spam_class">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- AlarmEngine nutzt EmailNotifier -->
+        <mxCell id="rel2" value="nutzt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;endFill=0;strokeColor=#000000;fontSize=10;dashed=1;" edge="1" parent="1" source="engine_class" target="email_class">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- AlarmEngine nutzt GPIODeviceNotifier -->
+        <mxCell id="rel3" value="nutzt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;endFill=0;strokeColor=#000000;fontSize=10;dashed=1;" edge="1" parent="1" source="engine_class" target="gpio_class">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- AlarmEngine nutzt DashboardNotifier -->
+        <mxCell id="rel4" value="nutzt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;endFill=0;strokeColor=#000000;fontSize=10;dashed=1;" edge="1" parent="1" source="engine_class" target="dash_class">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- AlarmEngine erstellt Alarm -->
+        <mxCell id="rel5" value="erstellt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="engine_class" target="alarm_class">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- AlarmEngine nutzt Datenbank -->
+        <mxCell id="rel6" value="nutzt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;endFill=0;strokeColor=#000000;fontSize=10;dashed=1;" edge="1" parent="1" source="engine_class" target="db_class">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- MqttClient nutzt Datenbank -->
+        <mxCell id="rel7" value="nutzt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;endFill=0;strokeColor=#000000;fontSize=10;dashed=1;" edge="1" parent="1" source="mqtt_class" target="db_class">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- MqttClient callback zu AlarmEngine -->
+        <mxCell id="rel8" value="callback" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;strokeColor=#008800;fontSize=10;" edge="1" parent="1" source="mqtt_class" target="engine_class">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend" value="Legende:&#xa;───── erstellt/Callback&#xa;- - - - - nutzt" style="text;html=1;strokeColor=#000000;fillColor=#F5F5F5;align=left;verticalAlign=top;spacing=5;fontSize=10;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="80" width="120" height="50" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
