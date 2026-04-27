@@ -102,7 +102,16 @@ def _insert_and_get_id(sql: str, params: tuple) -> int:
 
 
 class Datenbank:
-    """Datenbank-Operationen"""
+    """
+    Datenbank-Operationen für Serverraum-Überwachung.
+
+    Wrapper für MariaDB-Zugriffe mit Connection Pooling.
+    Alle Methoden sind für einen spezifischen Datenbank-Endpoint.
+
+    Attributes:
+        connection: Aktive Datenbankverbindung
+        cursor:    Aktiver DB-Cursor
+    """
 
     def __init__(self):
         self.connection = None

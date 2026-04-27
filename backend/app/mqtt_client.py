@@ -7,7 +7,7 @@ Verbindet zum Mosquitto-Broker und leitet Daten an DB + AlarmEngine weiter.
 Auto-Reconnect mit exponential Backoff.
 
 @author Marc-Dennis Haberland
-@date 04.03.2026
+@date 20.04.2026
 """
 
 import json
@@ -25,7 +25,17 @@ logger = logging.getLogger(__name__)
 
 
 class MqttClient:
-    """MQTT-Client mit Auto-Reconnect"""
+    """
+    MQTT-Client mit Auto-Reconnect.
+
+    Verbindet zum Mosquitto-Broker auf dem Raspberry Pi und verarbeitet
+    eingehende Sensor-Daten. Implementiert exponential Backoff für Reconnects.
+
+    Attributes:
+        client:           Paho MQTT Client-Instanz
+        alarm_callback:    Callback für Alarm-Verarbeitung (siehe main.py)
+        ist_verbunden:     Property das Verbindungsstatus zurückgibt
+    """
 
     MAX_RETRIES = 10
 
@@ -47,7 +57,15 @@ class MqttClient:
         return self._verbunden
 
     def verbinden(self) -> bool:
-        """Verbindet zum Broker"""
+        """
+        Verbindet zum konfigurierten MQTT-Broker.
+
+        Startet den MQTT-Client-Loop in einem separaten Thread.
+        Bei Verbindungsfehler wird automatisch ein Reconnect mit Backoff gestartet.
+
+        Returns:
+            True wenn Verbindung erfolgreich hergestellt wurde
+        """
         try:
             logger.info(f"Verbinde zu {config.mqtt.broker}:{config.mqtt.port}")
             self.client.connect(config.mqtt.broker, config.mqtt.port, keepalive=60)
@@ -69,6 +87,15 @@ class MqttClient:
         self.alarm_callback = callback
 
     def _on_connect(self, client, userdata, flags, rc):
+        """
+        MQTT Connection Callback - wird bei erfolgreicher/trennender Verbindung aufgerufen.
+
+        Args:
+            client:     Paho Client-Instanz
+            userdata:   Benutzerdefinierte Daten
+            flags:      Response-Flags vom Broker
+            rc:         Return-Code (0 = erfolgreich)
+        """
         if rc == 0:
             self._verbunden = True
             self._retry_count = 0
@@ -80,6 +107,17 @@ class MqttClient:
             logger.error(f"MQTT RC={rc}")
 
     def _on_disconnect(self, client, userdata, rc):
+        """
+        MQTT Disconnect Callback - wird bei Verbindungsverlust aufgerufen.
+
+        Bei unerwarteter Trennung (rc != 0) wird automatisch der Reconnect-Prozess
+        mit exponential Backoff gestartet.
+
+        Args:
+            client:     Paho Client-Instanz
+            userdata:   Benutzerdefinierte Daten
+            rc:         Return-Code (0 = normal, sonst Fehler)
+        """
         self._verbunden = False
         if rc != 0:
             logger.warning(f"MQTT getrennt (RC={rc}), starte Reconnect...")
@@ -117,7 +155,22 @@ class MqttClient:
                 logger.error(f"Reconnect Fehler: {e}")
 
     def _on_message(self, client, userdata, msg):
-        """Verarbeitet eingehende MQTT-Nachrichten"""
+        """
+        Verarbeitet eingehende MQTT-Nachrichten vom ESP32-S3 Sensor.
+
+        Erwartetes Topic-Format: {topic_basis}/{sensor_id}/{msg_typ}
+        Beispiel: sensors/sensor_01/data
+
+        Msg-Typen:
+            - "data":   Sensor-Messdaten (Temperatur, Feuchtigkeit, etc.)
+            - "alarm":  Alarmmeldung vom ESP32-S3
+            - "status": ESP32-S3 Statusmeldung
+
+        Args:
+            client:     Paho Client-Instanz
+            userdata:   Benutzerdefinierte Daten
+            msg:        MQTT-Nachricht mit topic und payload
+        """
         try:
             topic = msg.topic
             if not topic.startswith(config.mqtt.topic_basis):
@@ -140,7 +193,7 @@ class MqttClient:
             if msg_typ == "alarm":
                 self._verarbeite_alarm(sensor_id, daten)
             elif msg_typ == "status":
-                logger.info(f"ESP32 Status: {daten.get('status')}")
+                logger.info(f"ESP32-S3 Status: {daten.get('status')}")
             else:
                 self._verarbeite_daten(sensor_id, daten)
 
@@ -148,7 +201,21 @@ class MqttClient:
             logger.error(f"Message Fehler: {e}")
 
     def _verarbeite_daten(self, sensor_id: str, daten: dict):
-        """Sensor-Daten verarbeiten"""
+        """
+        Verarbeitet Sensor-Messdaten und speichert in Datenbank.
+
+        1. Sensor in DB registrieren/aktualisieren
+        2. Messwert in DB speichern
+        3. Alarm-Callback aufrufen (prüft Schwellwerte)
+
+        Args:
+            sensor_id: Eindeutige Sensor-ID (z.B. "sensor_01")
+            daten:    Dictionary mit:
+                - sensor_typ: Typ (DS18B20, SHT31, MQ2, MQ135)
+                - wert:      Messwert (float)
+                - status:    Status (OK, WARN, ALARM)
+                - einheit:   Einheit (°C, %, ppm)
+        """
         try:
             sensor_typ = daten.get("sensor_typ", "UNBEKANNT")
             wert = float(daten.get("wert", 0))
@@ -165,7 +232,19 @@ class MqttClient:
             logger.error(f"Datenverarbeitung Fehler: {e}")
 
     def _verarbeite_alarm(self, sensor_id: str, daten: dict):
-        """Alarm vom ESP32 verarbeiten"""
+        """
+        Verarbeitet Alarmmeldungen vom ESP32.
+
+        Speichert den Alarm direkt in der Datenbank und löst den
+        Alarm-Callback aus für zusätzliche Benachrichtigungen (Email, LED, etc.)
+
+        Args:
+            sensor_id: Eindeutige Sensor-ID
+            daten:    Dictionary mit:
+                - nachricht:  Alarmtext
+                - wert:      gemessener Wert
+                - sensor_typ: Alarmtyp
+        """
         try:
             nachricht = daten.get("nachricht", "Alarm")
             wert = float(daten.get("wert", 0))
