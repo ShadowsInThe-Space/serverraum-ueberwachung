@@ -1,0 +1,184 @@
+<mxfile host="draw.io" modified="2026-04-27T04:30:00.000Z" agent="Claude" version="24.0.0">
+  <diagram name="Serverraum-Datenbank" id="db">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Serverraum-Überwachung - ER-Diagramm" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="500" y="20" width="400" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ========== DATENBANK TABELLEN ========== -->
+
+        <!-- sensoren -->
+        <mxCell id="t1" value="sensoren" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;strokeColor=default;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="50" y="80" width="220" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="t1c1" value="id (PK)&#xa;INT AUTO_INCREMENT" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t1">
+          <mxGeometry y="30" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t1c2" value="sensor_id&#xa;VARCHAR(50) UNIQUE" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t1">
+          <mxGeometry y="60" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t1c3" value="sensor_typ&#xa;VARCHAR(20)" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t1">
+          <mxGeometry y="90" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t1c4" value="name&#xa;VARCHAR(100)" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t1">
+          <mxGeometry y="120" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t1c5" value="gpio_pin&#xa;INT" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t1">
+          <mxGeometry y="150" width="220" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- messungen -->
+        <mxCell id="t2" value="messungen" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;strokeColor=default;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="50" y="300" width="220" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="t2c1" value="id (PK)&#xa;INT AUTO_INCREMENT" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t2">
+          <mxGeometry y="30" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t2c2" value="sensor_id (FK)&#xa;INT REFERENCES sensoren.id" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t2">
+          <mxGeometry y="60" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t2c3" value="wert&#xa;DECIMAL(10,2)" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t2">
+          <mxGeometry y="90" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t2c4" value="einheit&#xa;VARCHAR(10)" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t2">
+          <mxGeometry y="120" width="220" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- alarme -->
+        <mxCell id="t3" value="alarme" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;strokeColor=default;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="320" y="80" width="220" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="t3c1" value="id (PK)&#xa;INT AUTO_INCREMENT" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t3">
+          <mxGeometry y="30" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t3c2" value="sensor_id (FK)&#xa;INT REFERENCES sensoren.id" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t3">
+          <mxGeometry y="60" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t3c3" value="alarm_typ&#xa;VARCHAR(50)" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t3">
+          <mxGeometry y="90" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t3c4" value="nachricht&#xa;TEXT" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t3">
+          <mxGeometry y="120" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t3c5" value="wert&#xa;DECIMAL(10,2)" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t3">
+          <mxGeometry y="150" width="220" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- alarm_konfiguration -->
+        <mxCell id="t4" value="alarm_konfiguration" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;strokeColor=default;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="590" y="80" width="220" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="t4c1" value="id (PK)&#xa;INT AUTO_INCREMENT" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t4">
+          <mxGeometry y="30" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t4c2" value="sensor_id (FK)&#xa;INT REFERENCES sensoren.id" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t4">
+          <mxGeometry y="60" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t4c3" value="alarm_typ&#xa;VARCHAR(50)" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t4">
+          <mxGeometry y="90" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t4c4" value="schwellwert_min&#xa;DECIMAL(10,2)" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t4">
+          <mxGeometry y="120" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t4c5" value="schwellwert_max&#xa;DECIMAL(10,2)" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t4">
+          <mxGeometry y="150" width="220" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- alarm_emails -->
+        <mxCell id="t5" value="alarm_emails" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;strokeColor=default;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="590" y="300" width="220" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="t5c1" value="id (PK)&#xa;INT AUTO_INCREMENT" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t5">
+          <mxGeometry y="30" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t5c2" value="alarm_id (FK)&#xa;INT REFERENCES alarme.id" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t5">
+          <mxGeometry y="60" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t5c3" value="empfaenger&#xa;VARCHAR(100)" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t5">
+          <mxGeometry y="90" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t5c4" value="sende_status&#xa;ENUM('ausstehend','erfolgreich','fehlgeschlagen')" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t5">
+          <mxGeometry y="120" width="220" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- alarm_email_antworten -->
+        <mxCell id="t6" value="alarm_email_antworten" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;strokeColor=default;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="860" y="300" width="220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="t6c1" value="id (PK)&#xa;INT AUTO_INCREMENT" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t6">
+          <mxGeometry y="30" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t6c2" value="alarm_email_id (FK)&#xa;INT REFERENCES alarm_emails.id" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t6">
+          <mxGeometry y="60" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t6c3" value="empfaenger_email&#xa;VARCHAR(100)" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t6">
+          <mxGeometry y="90" width="220" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- system_konfiguration -->
+        <mxCell id="t7" value="system_konfiguration" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;strokeColor=default;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="320" y="300" width="220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="t7c1" value="id (PK)&#xa;INT AUTO_INCREMENT" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t7">
+          <mxGeometry y="30" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7c2" value="konfiguration_schluessel&#xa;VARCHAR(50) UNIQUE" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t7">
+          <mxGeometry y="60" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7c3" value="wert&#xa;TEXT" style="shape=tableRow;horizontal=0;leftSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=default;fontSize=10;verticalAlign=top;spacing=2;stack=1;expand=0;" vertex="1" parent="t7">
+          <mxGeometry y="90" width="220" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ========== BEZIEHUNGEN (LINIEN) ========== -->
+
+        <!-- sensoren -> messungen -->
+        <mxCell id="rel1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;endArrow=ERmany;endFill=1;strokeColor=#000000;" edge="1" parent="1" source="t1" target="t2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- sensoren -> alarme -->
+        <mxCell id="rel2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;endArrow=ERmany;endFill=1;strokeColor=#000000;" edge="1" parent="1" source="t1" target="t3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- sensoren -> alarm_konfiguration -->
+        <mxCell id="rel3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;endArrow=ERmany;endFill=1;strokeColor=#000000;" edge="1" parent="1" source="t1" target="t4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- alarme -> alarm_emails -->
+        <mxCell id="rel4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;endArrow=ERmany;endFill=1;strokeColor=#000000;" edge="1" parent="1" source="t3" target="t5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- alarm_emails -> alarm_email_antworten -->
+        <mxCell id="rel5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;endArrow=ERmany;endFill=1;strokeColor=#000000;" edge="1" parent="1" source="t5" target="t6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Beschriftungen -->
+        <mxCell id="l1" value="1 Sensor hat&#xa;N Messungen" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=9;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="120" y="270" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="l2" value="1 Sensor hat&#xa;N Alarme" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=9;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="240" y="170" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="l3" value="1 Sensor hat&#xa;N Konfigurationen" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=9;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="480" y="170" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="l4" value="1 Alarm hat&#xa;N Emails" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=9;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="500" y="260" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="l5" value="1 Email hat&#xa;N Antworten" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=9;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="760" y="330" width="80" height="30" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
