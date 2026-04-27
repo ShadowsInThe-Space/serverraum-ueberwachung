@@ -37,6 +37,20 @@ STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.pat
 
 @dataclass
 class SensorResponse:
+    """
+    Response-Modell für Sensor-Daten.
+
+    Repräsentiert einen Sensor mit seinen aktuellen Messwerten
+    und Konfigurationsdaten für die API-Responses.
+
+    Attributes:
+        sensor_id:     Eindeutige Sensor-ID (z.B. "sensor_01")
+        sensor_typ:   Sensortyp (z.B. "DS18B20", "MQ2")
+        name:         Anzeigename des Sensors
+        aktiviert:    Ob Sensor aktiv ist
+        letzte_messung: Letzter Messwert
+        letzte_zeit:   Zeitstempel der letzten Messung
+    """
     sensor_id: str
     sensor_typ: str
     name: Optional[str] = None
@@ -50,6 +64,17 @@ class SensorResponse:
 # =============================================================================
 
 def error_response(error: str, detail: str, status_code: int) -> JSONResponse:
+    """
+    Erstellt eine standardisierte Fehler-Response.
+
+    Args:
+        error:      Fehler-Typ (z.B. "not_found", "internal_error")
+        detail:     Detaillierte Fehlermeldung
+        status_code: HTTP Status-Code
+
+    Returns:
+        JSONResponse mit strukturiertem Fehler-Objekt
+    """
     return JSONResponse(
         status_code=status_code,
         content={"error": error, "detail": detail, "status_code": status_code},
@@ -69,10 +94,23 @@ async def lifespan(app: FastAPI):
     alarm_engine.initialisiere_gpio()
 
     def on_sensor_data(sensor_id: str, sensor_typ: str, wert: float):
+        """
+        Callback-Funktion für eingehende Sensor-Daten vom MQTT-Client.
+        Wird für jede neue Messung aufgerufen und prüft ob ein Alarm ausgelöst werden soll.
+
+        Args:
+            sensor_id:  eindeutige ID des Sensors (z.B. "sensor_01")
+            sensor_typ: Typ des Sensors (z.B. "temperatur", "humidity")
+            wert:       gemessener Wert (z.B. 25.3)
+        """
+        # AlarmEngine prüft ob der Wert gegen konfigurierte Schwellwerte verstößt
         alarm = alarm_engine.pruefe_alarm(sensor_id, sensor_typ, wert)
         if alarm:
+            # Alarm gefunden → AlarmEngine führt Aktionen aus (LED, Buzzer, Email, Dashboard)
             alarm_engine.alarm_ausloesen(alarm)
 
+    # Registriere Callback beim MQTT-Client
+    # Bei jeder neuen MQTT-Nachricht vom Typ "data" wird this.on_sensor_data aufgerufen
     mqtt_client.set_alarm_callback(on_sensor_data)
 
     yield
@@ -87,8 +125,15 @@ async def lifespan(app: FastAPI):
 # FastAPI App
 # =============================================================================
 
-app = FastAPI(title="Serverraum-Überwachung API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(
+    title="Serverraum-Überwachung API",
+    version="1.0.0",
+    lifespan=lifespan,
+    description="REST-API für Serverraum-Sensorüberwachung mit MQTT-Anbindung"
+)
 
+# CORS-Middleware für Frontend-Zugriff
+# Erlaubt alle Origins, Methoden und Header für Entwicklung
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -104,6 +149,19 @@ app.add_middleware(
 
 @app.exception_handler(Exception)
 async def exception_handler(request, exc):
+    """
+    Globaler Exception-Handler für alle unbehandelten Fehler.
+
+    Fängt alle Exceptions ab und gibt eine standardisierte JSON-Response zurück.
+    In Debug-Modus wird die originale Fehlermeldung zurückgegeben.
+
+    Args:
+        request: FastAPI Request-Objekt
+        exc:      Exception die aufgetreten ist
+
+    Returns:
+        JSONResponse mit Fehlerdetails
+    """
     logger.error(f"Exception: {exc}")
     return error_response(
         "internal_error", str(exc) if config.api.debug else "Interner Fehler", 500
@@ -116,7 +174,9 @@ async def exception_handler(request, exc):
 
 if os.path.exists(STATIC_DIR):
     from fastapi.staticfiles import StaticFiles
-    # Mount /static for JS/CSS and /js directly for compatibility
+    # Statische Dateien für Frontend bereitstellen
+    # /static -> Frontend Root (JS, CSS, Bilder)
+    # /js     -> Direkter Zugriff auf JS-Dateien für Kompatibilität
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
     app.mount("/js", StaticFiles(directory=os.path.join(STATIC_DIR, "js")), name="js")
 
@@ -127,6 +187,15 @@ if os.path.exists(STATIC_DIR):
 
 @app.get("/")
 async def root():
+    """
+    Root-Endpoint der API.
+
+    Gibt entweder die index.html des Frontends zurück
+    oder API-Metadaten als JSON.
+
+    Returns:
+        FileResponse mit index.html oder JSON mit API-Info
+    """
     index_path = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(index_path):
         from fastapi.responses import FileResponse
@@ -136,6 +205,19 @@ async def root():
 
 @app.get("/status")
 async def status():
+    """
+    System-Status-Endpunkt.
+
+    Gibt den aktuellen Verbindungsstatus von MQTT und Datenbank zurück
+    sowie die Anzahl der aktiven Alarme.
+
+    Returns:
+        Dictionary mit Status-Informationen:
+        - status: "online"
+        - mqtt_verbunden: MQTT Verbindung aktiv
+        - datenbank_verbunden: DB Verbindung aktiv
+        - aktive_alarme: Anzahl aktiver Alarme
+    """
     aktive_alarme = datenbank.aktive_alarme_abrufen()
     return {
         "status": "online",
@@ -147,6 +229,21 @@ async def status():
 
 @app.get("/sensoren")
 async def sensoren_liste():
+    """
+    Liste aller registrierten Sensoren.
+
+    Ruft alle Sensoren aus der Datenbank ab und fügt
+    die letzte Messung für jeden Sensor hinzu.
+
+    Returns:
+        Liste von Sensor-Objekten mit:
+        - sensor_id, sensor_typ, name, gpio_pin, beschreibung
+        - aktiviert: boolean
+        - letzte_messung, letzte_zeit, einheit
+
+    Raises:
+        HTTPException: Bei Datenbankfehler (500)
+    """
     try:
         sensoren = datenbank.alle_sensoren_abrufen()
         ergebnis = []
@@ -171,18 +268,56 @@ async def sensoren_liste():
 
 @app.get("/sensoren/{sensor_id}/messungen")
 async def messungen(sensor_id: str, limit: int = Query(default=100, ge=1, le=1000)):
+    """
+    Messungen für einen spezifischen Sensor abrufen.
+
+    Gibt die letzten N Messungen zurück (standard: 100, max: 1000).
+
+    Args:
+        sensor_id: ID des Sensors
+        limit:    Anzahl der Messungen (1-1000)
+
+    Returns:
+        Liste von Messungen mit wert und timestamp
+    """
     messungen = datenbank.letzte_messungen_abrufen(sensor_id, limit)
     return [{"wert": m["wert"], "timestamp": str(m["timestamp"])} for m in messungen]
 
 
 @app.get("/sensoren/{sensor_id}/statistik")
 async def statistik(sensor_id: str, stunden: int = Query(default=24, ge=1, le=168)):
+    """
+    Statistiken für einen Sensor über einen Zeitraum.
+
+    Berechnet Min, Max, Durchschnitt und Anzahl der Messungen
+    für den angegebenen Zeitraum (standard: 24 Stunden, max: 168 = 1 Woche).
+
+    Args:
+        sensor_id: ID des Sensors
+        stunden:   Zeitraum in Stunden (1-168)
+
+    Returns:
+        Dictionary mit sensor_id, min, max, durchschnitt, anzahl, einheit
+    """
     stat = datenbank.statistik_abrufen(sensor_id, stunden)
     return {"sensor_id": sensor_id, **stat}
 
 
 @app.get("/alarme")
 async def alarme(status: Optional[str] = None, limit: int = Query(default=100, ge=1, le=1000)):
+    """
+    Alarme abrufen mit optionalem Status-Filter.
+
+    Gibt entweder alle Alarme oder nur aktive Alarme zurück.
+
+    Args:
+        status: Filter "aktiv" für nur aktive Alarme, sonst alle
+        limit:  Maximale Anzahl (1-1000, standard: 100)
+
+    Returns:
+        Liste von Alarmen mit id, sensor_id, alarm_typ, nachricht,
+        wert, schwellwert, status, created_at, quittiert_at, letzte_aktion
+    """
     if status == "aktiv":
         alarme = datenbank.aktive_alarme_abrufen()
     else:
@@ -203,6 +338,21 @@ async def alarme(status: Optional[str] = None, limit: int = Query(default=100, g
 
 @app.post("/alarme/{alarm_id}/quittieren")
 async def alarm_quittieren(alarm_id: int):
+    """
+    Alarm als quittiert markieren.
+
+    Setzt den Status des Alarms auf "quittiert" und
+    speichert den Zeitstempel.
+
+    Args:
+        alarm_id: ID des zu quittierenden Alarms
+
+    Returns:
+        {"status": "erfolgreich", "alarm_id": alarm_id}
+
+    Raises:
+        HTTPException: Bei Fehler (500)
+    """
     if datenbank.alarm_quittieren(alarm_id):
         return {"status": "erfolgreich", "alarm_id": alarm_id}
     raise HTTPException(status_code=500, detail="Quittieren fehlgeschlagen")
@@ -210,7 +360,20 @@ async def alarm_quittieren(alarm_id: int):
 
 @app.delete("/alarme/{alarm_id}")
 async def alarm_loeschen(alarm_id: int):
-    """Löscht einen Alarm vollständig"""
+    """
+    Alarm vollständig aus Datenbank löschen.
+
+    Löscht den Alarm dauerhaft aus der Datenbank.
+
+    Args:
+        alarm_id: ID des zu löschenden Alarms
+
+    Returns:
+        {"status": "erfolgreich", "alarm_id": alarm_id}
+
+    Raises:
+        HTTPException: Bei Fehler (500)
+    """
     if datenbank.alarm_loeschen(alarm_id):
         return {"status": "erfolgreich", "alarm_id": alarm_id}
     raise HTTPException(status_code=500, detail="Löschen fehlgeschlagen")
@@ -218,7 +381,22 @@ async def alarm_loeschen(alarm_id: int):
 
 @app.post("/alarme/{alarm_id}/email")
 async def alarm_email_senden(alarm_id: int):
-    """Sendet eine Erinnerungs-Email für einen Alarm"""
+    """
+    Erinnerungs-Email für einen Alarm senden.
+
+    Ruft den Alarm aus der Datenbank, erstellt ein Alarm-Objekt
+    und leitet es an den EmailNotifier weiter.
+
+    Args:
+        alarm_id: ID des Alarms
+
+    Returns:
+        {"status": "erfolgreich", "alarm_id": alarm_id, "hinweis": "Email wurde gespeichert"}
+
+    Raises:
+        HTTPException: 404 wenn Alarm nicht gefunden
+        HTTPException: 500 bei Email-Fehler
+    """
     try:
         # Alarm aus DB holen
         alarme = datenbank.alle_alarme_abrufen(1000)
@@ -253,7 +431,24 @@ async def alarm_email_senden(alarm_id: int):
 
 @app.get("/alarm-emails")
 async def alarm_emails_liste(limit: int = Query(default=100, ge=1, le=1000)):
-    """Alle gesendeten Alarm-Emails abrufen mit Antwort-Status"""
+    """
+    Alle gesendeten Alarm-Emails abrufen.
+
+    Gibt Emails mit Status und Antwort-Information zurück.
+
+    Args:
+        limit: Maximale Anzahl (1-1000, standard: 100)
+
+    Returns:
+        Liste von Emails mit:
+        - id, alarm_id, sensor_id, alarm_typ, nachricht
+        - empfaenger, subject, sende_status, error_message
+        - hat_geantwortet, anzahl_antworten
+        - created_at, alarm_zeitstempel
+
+    Raises:
+        HTTPException: Bei Datenbankfehler (500)
+    """
     try:
         emails = datenbank.alle_alarm_emails_abrufen(limit)
         ergebnis = []
@@ -288,7 +483,17 @@ async def alarm_emails_liste(limit: int = Query(default=100, ge=1, le=1000)):
 
 @app.get("/konfiguration")
 async def konfiguration_liste():
-    """Alle System-Konfigurationen abrufen"""
+    """
+    Alle System-Konfigurationen abrufen.
+
+    Gibt alle Schlüssel-Wert-Paare der Systemkonfiguration zurück.
+
+    Returns:
+        Liste von Konfigurationen mit schluessel, wert, beschreibung
+
+    Raises:
+        HTTPException: Bei Datenbankfehler (500)
+    """
     try:
         configs = datenbank.alle_system_konfiguration_abrufen()
         return [{
@@ -303,7 +508,23 @@ async def konfiguration_liste():
 
 @app.put("/konfiguration")
 async def konfiguration_aendern(schluessel: str, wert: str, beschreibung: str = None):
-    """System-Konfiguration ändern"""
+    """
+    System-Konfiguration erstellen oder aktualisieren.
+
+    Verwendet INSERT ... ON DUPLICATE KEY UPDATE für automatisches
+    Update bei existierendem Schlüssel.
+
+    Args:
+        schluessel:   Konfigurationsschlüssel
+        wert:         Neuer Wert
+        beschreibung: Optionalle Beschreibung
+
+    Returns:
+        {"status": "erfolgreich", "schluessel": schluessel}
+
+    Raises:
+        HTTPException: Bei Speicherfehler (500)
+    """
     if datenbank.system_konfiguration_speichern(schluessel, wert, beschreibung):
         return {"status": "erfolgreich", "schluessel": schluessel}
     raise HTTPException(status_code=500, detail="Speichern fehlgeschlagen")
@@ -311,7 +532,20 @@ async def konfiguration_aendern(schluessel: str, wert: str, beschreibung: str = 
 
 @app.get("/alarm_konfiguration")
 async def alarm_konfiguration_liste():
-    """Alle Alarm-Konfigurationen abrufen"""
+    """
+    Alle Alarm-Konfigurationen abrufen.
+
+    Gibt Schwellwerte und aktivierte Alarmierungen für alle Sensoren zurück.
+
+    Returns:
+        Liste von Alarm-Konfigurationen mit:
+        - sensor_id, sensor_name, alarm_typ
+        - schwellwert_min, schwellwert_max
+        - alarmierung_email, alarmierung_led, alarmierung_buzzer, alarmierung_dashboard
+
+    Raises:
+        HTTPException: Bei Datenbankfehler (500)
+    """
     try:
         configs = datenbank.alle_alarm_konfigurationen_abrufen()
         return [{

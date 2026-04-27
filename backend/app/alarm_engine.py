@@ -208,7 +208,19 @@ class DashboardNotifier:
 
 
 class AlarmEngine:
-    """Hauptklasse - jetzt mit klarer Struktur"""
+    """
+    Hauptklasse für Alarmverarbeitung und -benachrichtigung.
+
+    Koordiniert die Alarm-Prüfung, DB-Speicherung und Benachrichtigung
+    über mehrere Kanäle (Email, GPIO-Geräte, Dashboard).
+
+    Verwendet Spam-Schutz um wiederholte Alarme zu unterdrücken.
+
+    Attributes:
+        _spam:         SpamSchutz-Instanz für Alarm-Unterdrückung
+        _notifier:     Liste aller Notifier (Email, LED, Buzzer, Dashboard)
+        _dashboard:    Referenz auf DashboardNotifier
+    """
 
     def __init__(self):
         self._spam = SpamSchutz(abstand_sekunden=60)
@@ -233,7 +245,22 @@ class AlarmEngine:
     def pruefe_alarm(
         self, sensor_id: str, sensor_typ: str, wert: float
     ) -> Optional[Alarm]:
-        """Prüft Schwellwerte und erstellt Alarm-Objekt"""
+        """
+        Prüft Schwellwerte und erstellt Alarm-Objekt wenn überschritten.
+
+        Unterstützte Sensor-Typen:
+            - DS18B20 / SHT31: Temperatur (min/max Schwellwerte)
+            - MQ2:  Rauchgas (max Schwellwert)
+            - MQ135: Luftqualität (max Schwellwert)
+
+        Args:
+            sensor_id:  Eindeutige Sensor-ID
+            sensor_typ: Sensortyp (z.B. "DS18B20", "MQ2")
+            wert:      Gemessener Wert
+
+        Returns:
+            Alarm-Objekt wenn Schwellwert überschritten, sonst None
+        """
 
         # Temperatur
         if sensor_typ in ["DS18B20", "SHT31"]:
@@ -277,7 +304,17 @@ class AlarmEngine:
         return None
 
     def alarm_ausloesen(self, alarm: Alarm):
-        """Löst Alarm aus - prüft Spam, speichert DB, benachrichtigt"""
+        """
+        Löst einen Alarm aus - prüft Spam, speichert DB, benachrichtigt.
+
+        Ablauf:
+            1. Spam-Schutz prüfen (verhindert Flooding)
+            2. Alarm in Datenbank speichern
+            3. Alle Notifier aufrufen (Email, LED, Buzzer, Dashboard)
+
+        Args:
+            alarm: Alarm-Objekt mit Sensor-Daten und Schwellwert
+        """
 
         alarm_key = f"{alarm.sensor_id}_{alarm.alarm_typ}"
 
