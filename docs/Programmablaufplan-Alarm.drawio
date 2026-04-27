@@ -1,0 +1,293 @@
+<mxfile host="draw.io" modified="2026-04-27T04:50:00.000Z" agent="Claude" version="24.0.0">
+  <diagram name="Programmablaufplan" id="pap">
+    <mxGraphModel dx="1200" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Serverraum-Überwachung - Programmablaufplan Alarmierung" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="450" y="20" width="500" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ========== START ========== -->
+        <mxCell id="start" value="START" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#90EE90;strokeColor=#228B22;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="650" y="60" width="100" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Backend startet -->
+        <mxCell id="step1" value="Backend startet&#xa;(FastAPI Lifespan)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#87CEEB;strokeColor=#4682B4;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="600" y="130" width="200" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Verbindungen herstellen -->
+        <mxCell id="step2" value="Verbindungen herstellen&#xa;• MQTT Client verbinden&#xa;• Datenbank verbinden&#xa;• GPIO initialisieren" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#87CEEB;strokeColor=#4682B4;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="600" y="200" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- MQTT Callback registrieren -->
+        <mxCell id="step3" value="MQTT Callback&#xa;registrieren" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#87CEEB;strokeColor=#4682B4;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="600" y="290" width="200" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- WARTEN -->
+        <mxCell id="wait1" value="WARTEN&#xa;auf MQTT Nachricht" style="shape=uml2;whiteSpace=wrap;html=1;fillColor=#FFFACD;strokeColor=#DAA520;fontSize=12;verticalAlign=top" vertex="1" parent="1">
+          <mxGeometry x="600" y="360" width="200" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- MQTT Topic parsen -->
+        <mxCell id="step4" value="MQTT Topic parsen&#xa;sensors/{sensor_id}/data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D3D3D3;strokeColor=#696969;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="600" y="430" width="200" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- JSON parsen -->
+        <mxCell id="step5" value="JSON Payload&#xa;parsen" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D3D3D3;strokeColor=#696969;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="600" y="500" width="200" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Sensor speichern -->
+        <mxCell id="step6" value="Sensor in DB&#xa;speichern/aktualisieren" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D3D3D3;strokeColor=#696969;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="600" y="570" width="200" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Messung speichern -->
+        <mxCell id="step7" value="Messung in DB&#xa;speichern" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D3D3D3;strokeColor=#696969;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="600" y="640" width="200" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Alarmprüfung -->
+        <mxCell id="decision1" value="Alarm&#xa;prüfen?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFB6C1;strokeColor=#DC143C;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="600" y="710" width="100" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Schwellwerte laden -->
+        <mxCell id="step8" value="Schwellwerte aus DB&#xa;laden" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DDA0DD;strokeColor=#8B008B;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="850" y="725" width="180" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Wert vergleichen -->
+        <mxCell id="decision2" value="Wert&#xa;OK?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFB6C1;strokeColor=#DC143C;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="870" y="795" width="80" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Spam-Schutz -->
+        <mxCell id="decision3" value="Spam&#xa;Schutz?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFB6C1;strokeColor=#DC143C;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="600" y="820" width="100" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- NEIN von Alarm prüfen -->
+        <mxCell id="no_alarm" value="Nein&#xa;(OK)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#228B22" vertex="1" parent="1">
+          <mxGeometry x="720" y="730" width="60" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- NEIN von Spam -->
+        <mxCell id="no_spam" value="Nein&#xa;(Geblockt)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#DC143C" vertex="1" parent="1">
+          <mxGeometry x="500" y="850" width="70" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- JA - Alarm erstellen -->
+        <mxCell id="step9" value="Alarm&#xa;erstellen" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FF6347;strokeColor=#DC143C;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="600" y="930" width="200" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Alarm speichern -->
+        <mxCell id="step10" value="Alarm in DB&#xa;speichern" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FF6347;strokeColor=#DC143C;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="600" y="1000" width="200" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Parallel Aktionen -->
+        <mxCell id="parallel" value="Parallele&#xa;Benachrichtigungen" style="shape=uml2;whiteSpace=wrap;html=1;fillColor=#FFFACD;strokeColor=#DAA520;fontSize=12;verticalAlign=top" vertex="1" parent="1">
+          <mxGeometry x="600" y="1070" width="200" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Email -->
+        <mxCell id="email_step" value="Email&#xa;senden" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#98FB98;strokeColor=#228B22;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="400" y="1140" width="120" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- GPIO -->
+        <mxCell id="gpio_step" value="GPIO&#xa;schalten" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#98FB98;strokeColor=#228B22;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="580" y="1140" width="120" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Dashboard -->
+        <mxCell id="dash_step" value="Dashboard&#xa;aktualisieren" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#98FB98;strokeColor=#228B22;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="760" y="1140" width="120" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Zurück zu WARTEN -->
+        <mxCell id="back" value="Zurück zu&#xa;WARTEN" style="shape=uml2;whiteSpace=wrap;html=1;fillColor=#FFFACD;strokeColor=#DAA520;fontSize=12;verticalAlign=top" vertex="1" parent="1">
+          <mxGeometry x="600" y="1220" width="200" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- SHUTDOWN -->
+        <mxCell id="shutdown" value="SHUTDOWN&#xa;(Backend stoppt)" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#FFB6C1;strokeColor=#DC143C;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="650" y="1290" width="100" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Connections -->
+        <mxCell id="c1" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="start" target="step1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="step1" target="step2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="step2" target="step3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="step3" target="wait1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="wait1" target="step4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="step4" target="step5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="step5" target="step6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c8" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="step6" target="step7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c9" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="step7" target="decision1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Decision 1 to Schwellwerte -->
+        <mxCell id="c10" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="decision1" target="step8">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="750" y="750" as="sourcePoint" />
+            <mxPoint x="850" y="750" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Step 8 to Decision 2 -->
+        <mxCell id="c11" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="step8" target="decision2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Decision 2 JA to Decision 3 -->
+        <mxCell id="c12" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="decision2" target="decision3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="870" y="825" as="sourcePoint" />
+            <mxPoint x="700" y="860" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- JA Label -->
+        <mxCell id="ja1" value="Ja" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#228B22" vertex="1" parent="1">
+          <mxGeometry x="850" y="815" width="30" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Decision 1 NEIN back to WARTEN -->
+        <mxCell id="c13" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="decision1" target="wait1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="700" y="780" as="sourcePoint" />
+            <mxPoint x="700" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Loop Label -->
+        <mxCell id="loop1" value="Schleife" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#4682B4;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="730" y="550" width="60" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Decision 2 NEIN -->
+        <mxCell id="c14" style="endArrow=classic;endFill=1;strokeColor=#000000;dashed=1" edge="1" parent="1" source="decision2" target="wait1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="950" y="825" as="sourcePoint" />
+            <mxPoint x="850" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Decision 3 JA to Alarm erstellen -->
+        <mxCell id="c15" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="decision3" target="step9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Decision 3 NEIN back to WARTEN -->
+        <mxCell id="c16" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="decision3" target="wait1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="860" as="sourcePoint" />
+            <mxPoint x="500" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Step 9 to Step 10 -->
+        <mxCell id="c17" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="step9" target="step10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Step 10 to Parallel -->
+        <mxCell id="c18" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="step10" target="parallel">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Parallel to Email -->
+        <mxCell id="c19" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="parallel" target="email_step">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="1090" as="sourcePoint" />
+            <mxPoint x="460" y="1165" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Parallel to GPIO -->
+        <mxCell id="c20" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="parallel" target="gpio_step">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Parallel to Dashboard -->
+        <mxCell id="c21" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="parallel" target="dash_step">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="1090" as="sourcePoint" />
+            <mxPoint x="820" y="1165" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Email/GPIO/Dashboard to Back -->
+        <mxCell id="c22" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="email_step" target="back">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c23" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="gpio_step" target="back">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c24" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="dash_step" target="back">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Back to WARTEN -->
+        <mxCell id="c25" style="endArrow=classic;endFill=1;strokeColor=#000000" edge="1" parent="1" source="back" target="wait1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="700" y="1240" as="sourcePoint" />
+            <mxPoint x="700" y="400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Shutdown path (edge from back) -->
+        <mxCell id="shutdown_edge" value="" style="endArrow=classic;endFill=1;strokeColor=#DC143C;dashed=1" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="700" y="1260" as="sourcePoint" />
+            <mxPoint x="700" y="1290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Shutdown Label -->
+        <mxCell id="shutdown_label" value="Shutdown&#xa;(SIGTERM)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=9;fontColor=#DC143C" vertex="1" parent="1">
+          <mxGeometry x="710" y="1270" width="60" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend" value="Legende:&#xa;&#xa;● Ellipse = Start/Ende&#xa;&#xa;■ Rechteck = Prozess&#xa;&#xa;◆ Raute = Entscheidung&#xa;&#xa;▣ Parallele Aktionen&#xa;&#xa;→ Pfeil = Ablauf" style="text;html=1;strokeColor=#000000;fillColor=#F5F5F5;align=left;verticalAlign=top;spacing=5;fontSize=10;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="100" y="130" width="120" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- Farben Legende -->
+        <mxCell id="legend_colors" value="Farben:&#xa;&#xa;■ Hellblau = Initialisierung&#xa;&#xa;■ Grau = Datenverarbeitung&#xa;&#xa;■ Lila = Alarmprüfung&#xa;&#xa;■ Rot = Alarm erkannt&#xa;&#xa;■ Grün = Benachrichtigungen" style="text;html=1;strokeColor=#000000;fillColor=#F5F5F5;align=left;verticalAlign=top;spacing=5;fontSize=10;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="100" y="300" width="150" height="130" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
