@@ -123,7 +123,6 @@ ON DUPLICATE KEY UPDATE wert = VALUES(wert);
 INSERT INTO sensoren (sensor_typ, name, beschreibung, gpio_pin, einheit) VALUES
     ('sht31', 'Temperatur & Feuchte', 'SHT31 Sensor für Temperatur und Luftfeuchtigkeit', 9, '°C/%'),
     ('mq2', 'Rauchgas', 'MQ-2 Rauchgassensor', 1, 'ppm'),
-    ('mq135', 'Luftqualität', 'MQ-135 Luftqualitätssensor', 2, 'ppm'),
     ('pir', 'Bewegung', 'PIR-Bewegungsmelder', 6, 'bool')
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 
@@ -135,13 +134,12 @@ INSERT INTO alarm_konfiguration (sensor_id, alarm_typ, schwellwert_min, schwellw
 SELECT
     id,
     CASE
-        WHEN sensor_typ = 'dht22' THEN 'temperatur'
+        WHEN sensor_typ = 'sht31' THEN 'temperatur'
         WHEN sensor_typ = 'mq2' THEN 'gas'
-        WHEN sensor_typ = 'mq135' THEN 'luftqualitaet'
         WHEN sensor_typ = 'pir' THEN 'bewegung'
     END,
     CASE
-        WHEN sensor_typ = 'dht22' THEN 15.00
+        WHEN sensor_typ = 'sht31' THEN 15.00
         ELSE NULL
     END,
     CASE
@@ -152,7 +150,7 @@ SELECT
     END,
     TRUE, TRUE, FALSE, TRUE
 FROM sensoren
-WHERE sensor_typ IN ('dht22', 'mq2', 'mq135', 'pir')
+WHERE sensor_typ IN ('sht31', 'mq2', 'pir')
 ON DUPLICATE KEY UPDATE alarm_typ = VALUES(alarm_typ);
 
 -- =====================================================
