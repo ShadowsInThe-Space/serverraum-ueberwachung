@@ -1,260 +1,207 @@
 # Code-Snippets – Serverraum-Überwachung
 
-> Kurze, fokussierte Code-Abschnitte für die Projektdokumentation.
+> Kurze, fokussierte Code-Abschnitte für die Projektdokumentation. Hier wurden die 4 aussagekräftigsten Snippets ausgewählt, um die Systemarchitektur (Sensor-Erfassung, MQTT-Kommunikation, Geschäftslogik und Fehlerbehandlung) ideal für die Prüfer zu demonstrieren.
 
 ---
 
-## 1. Polymorphie: Sensor-Hierarchie
+## 1. Datenstrukturen der Firmware (C++)
 
-**Datei:** `firmware/include/sensors/Sensor.h`
+**Datei (Auszug):** `firmware/include/sensors/SensorData.h`
+
+<!-- *Begründung für die Auswahl: Zeigt den strukturierten Ansatz in der Firmware 
+mit typensicheren Enums und klaren Structs für Messwerte. Dies belegt 
+fundierte C++-Kenntnisse und eine saubere Kapselung der Sensordaten.* -->
 
 ```cpp
-// Abstrakte Basisklasse – Polymorphie in Aktion
-class Sensor
+enum class SensorTyp
 {
-public:
-    Sensor(int gpioPin, String sensorId, SensorTyp typ, 
-           unsigned long intervall, bool aktiviert)
-        : letzterMessZeitpunkt(0)
-    {
-        konfiguration = {gpioPin, sensorId, typ, intervall, aktiviert};
-        messwert = {sensorId, typ, 0.0f, SensorStatus::NICHT_VERFUEGBAR, 0};
-    }
-
-    virtual ~Sensor() = default;          // Wichtig für Vererbung!
-    virtual bool init() = 0;             // = 0 macht sie "rein virtuell"
-    virtual bool messen() = 0;           // Jeder Sensor anders
-    SensorMesswert getMesswert() const { return messwert; }
-
-protected:
-    void aktualisiereMesswert(float wert, SensorStatus status)
-    {
-        messwert.wert = wert;
-        messwert.status = status;
-        messwert.timestamp = millis();
-    }
-
-    SensorKonfiguration konfiguration;
-    SensorMesswert messwert;
-    unsigned long letzterMessZeitpunkt;
+    DS18B20,     ///< Digitaler 1-Wire Temperatursensor
+    SHT31,       ///< I2C Temperatursensor und Feuchtigkeitssensor
+    MQ2,         ///< Analoger Sensor für Rauchgas und brennbare Gase
+    PIR          ///< Passiver Infrarot-Bewegungsmelder
 };
-```
 
-**Konkrete Implementierung (z.B. DS18B20):**
-```cpp
-class DS18B20Sensor : public Sensor {  // Vererbung
-public:
-    DS18B20Sensor(int pin, const String& name, unsigned long intervall)
-        : Sensor(pin, name, SensorTyp::DS18B20, intervall, true),
-          oneWire(pin), sensors(&oneWire) {}
-
-    bool init() override {
-        sensors.begin();
-        return sensors.getDeviceCount() > 0;
-    }
-
-    bool messen() override {                          // Override = Polymorphie
-        sensors.requestTemperatures();
-        aktualisiereMesswert(sensors.getTempCByIndex(0), SensorStatus::OK);
-        return true;
-    }
-
-private:
-    OneWire oneWire;
-    DallasTemperature sensors;
+enum class SensorStatus
+{
+    OK,              ///< Sensor funktioniert normal
+    FEHLER,          ///< Allgemeiner Sensorfehler
+    TIMEOUT,         ///< Kommunikationstimeout (bei digitalen Sensoren)
+    NICHT_VERFUEGBAR ///< Sensor nicht angeschlossen oder defekt
 };
-```
 
-**Verwendung im SensorManager:**
-```cpp
-std::vector<Sensor*> sensoren;  // Alle Sensoren in einer Liste!
-
-// Polymorphie: Verschiedene Typen, gleiche Behandlung
-for (auto& s : sensoren) {
-    s->init();   // Jeder initialisiert sich selbst
-    s->messen(); // Jeder misst anders
-}
+struct SensorMesswert
+{
+    String sensorId;           ///< Eindeutige Sensor-ID
+    SensorTyp sensorTyp;       ///< Sensor-Typ
+    float wert;                ///< Messwert (Temperatur in °C, Feuchte in %, etc.)
+    SensorStatus status;       ///< Sensor-Status
+    unsigned long timestamp;   ///< Zeitstempel in Millisekunden
+};
 ```
 
 ---
 
-## 2. Business-Logik: Alarm-System
+## 2. Kommunikationsschnittstelle: MQTT-Listener & Routing (Python)
 
-**Datei:** `backend/app/alarm_engine.py`
+**Datei:** `backend/app/mqtt_client.py`
+
+**Sprechtext (Folie):**
+"Unser MQTT-Basis-Topic ist zweistufig: `serverraum/sensor`. Deshalb liegt die `sensor_id` nach `split('/')` an Index 2; Index 3 ist optional der Nachrichtentyp wie `data`, `alarm` oder `status`. Das Mapping ist also: `[0]=serverraum`, `[1]=sensor`, `[2]=sensor_id`, `[3]=msg_typ`."
+
+<!-- *Begründung für die Auswahl: Bildet die Brücke zwischen Hardware und Backend ab. 
+Zeigt Event-Driven-Architecture, dynamisches Routing der Topics, JSON-Parsing mit 
+Exception-Handling und die saubere Weiterleitung an die Datenbank sowie die Alarmierungs-Logik.* -->
 
 ```python
-from dataclasses import dataclass
-from typing import Optional
+    def _on_message(self, client, userdata, msg):
+        try:
+            topic = msg.topic
+            if not topic.startswith(config.mqtt.topic_basis):
+                return
 
-@dataclass
-class Alarm:
-    sensor_id: str
-    alarm_typ: str
-    nachricht: str
-    wert: float
-    schwellwert: float
+            teile = topic.split("/")
+            if len(teile) < 3: return
 
-class SpamSchutz:
-    """Verhindert Alarm-Flut bei dauerhaftem Problem."""
-    def __init__(self, abstand: int = 60):
-        self.abstand = abstand
-        self._letzte = {}
+            sensor_id = teile[2]
+            msg_typ = teile[3] if len(teile) > 3 else "data"
 
-    def ist_erlaubt(self, key: str) -> bool:
-        jetzt = time.time()
-        if key in self._letzte and jetzt - self._letzte[key] < self.abstand:
-            return False  # Zu früh!
-        self._letzte[key] = jetzt
-        return True
+            try:
+                daten = json.loads(msg.payload.decode("utf-8"))
+            except json.JSONDecodeError:
+                logger.error(f"JSON Fehler: {msg.payload}")
+                return
 
+            # Routing je nach Nachrichtentyp
+            if msg_typ == "alarm":
+                self._verarbeite_alarm(sensor_id, daten)
+            elif msg_typ == "status":
+                logger.info(f"ESP32-S3 Status: {daten.get('status')}")
+            else:
+                self._verarbeite_daten(sensor_id, daten)
+
+        except Exception as e:
+            logger.error(f"Message Fehler: {e}")
+
+    def _verarbeite_daten(self, sensor_id: str, daten: dict):
+        try:
+            sensor_typ = daten.get("sensor_typ", "UNBEKANNT")
+            wert = float(daten.get("wert", 0))
+            status = daten.get("status", "OK")
+            einheit = daten.get("einheit")
+
+            # 1. Daten via DAO in MariaDB persistieren
+            datenbank.sensor_speichern(sensor_id, sensor_typ)
+            datenbank.messung_speichern(sensor_id, wert, status, einheit)
+
+            # 2. Alarm-Engine via Callback triggern
+            if self.alarm_callback:
+                self.alarm_callback(sensor_id, sensor_typ, wert)
+
+        except Exception as e:
+            logger.error(f"Datenverarbeitung Fehler: {e}")
+```
+
+---
+
+## 3. Haupt-Geschäftslogik: Alarm-Engine (Python)
+
+**Datei (Auszug):** `backend/app/alarm_engine.py`
+
+> Hinweis: Für die Projektdokumentation ist dieser Ausschnitt bewusst auf die im Fließtext beschriebenen Kernfälle (Temperatur + MQ2) fokussiert.
+
+<!-- *Begründung für die Auswahl: Bildet das Herzstück des Systems ab. 
+Zeigt saubere Objektorientierung (OOP), Entkopplung durch Delegation 
+an Notifier-Klassen und eine nachvollziehbare Business-Logik zur Schwellwertprüfung.*
+ -->
+```python
 class AlarmEngine:
     def __init__(self):
-        self._spam = SpamSchutz(60)
-        self._notifier = [EmailNotifier(), GPIODeviceNotifier(...), DashboardNotifier()]
+        self._spam = SpamSchutz(abstand_sekunden=60)
+        
+        # Liste aller aktiven Notifier (Multi-Channel Alarmierung)
+        self._notifier = [
+            EmailNotifier(),
+            GPIODeviceNotifier(config.alarm.led_pin, "LED", 5.0),
+            GPIODeviceNotifier(config.alarm.buzzer_pin, "BUZZER", 2.0),
+            DashboardNotifier(),
+        ]
 
     def pruefe_alarm(self, sensor_id: str, sensor_typ: str, wert: float) -> Optional[Alarm]:
-        # Grenzwert-Prüfung
-        if sensor_typ == "DS18B20":
-            if wert > 30.0:
-                return Alarm(sensor_id, "TEMPERATUR_HOCH", f"Zu hoch: {wert}°C", wert, 30.0)
-        elif sensor_typ == "MQ2" and wert > 200.0:
-            return Alarm(sensor_id, "RAUCHGAS", f"Rauchgas: {wert} ppm", wert, 200.0)
+        # Temperatur Schwellwertprüfung
+        if sensor_typ in ["DS18B20", "SHT31"]:
+            if wert > config.alarm.temperatur_max:
+                return Alarm(sensor_id, "TEMPERATUR_HOCH", f"Temperatur zu hoch: {wert:.1f}°C", wert, config.alarm.temperatur_max)
+        
+        # Rauchgas Schwellwertprüfung
+        elif sensor_typ == "MQ2" and wert > config.alarm.rauchgas_max:
+            return Alarm(sensor_id, "RAUCHGAS", f"Rauchgas: {wert:.0f} ppm", wert, config.alarm.rauchgas_max)
+            
         return None
 
     def alarm_ausloesen(self, alarm: Alarm):
-        key = f"{alarm.sensor_id}_{alarm.alarm_typ}"
-        if not self._spam.ist_erlaubt(key):
-            return  # Spam-Schutz!
+        alarm_key = f"{alarm.sensor_id}_{alarm.alarm_typ}"
         
-        datenbank.alarm_speichern(...)  # In DB speichern
+        # Spam-Schutz zur Vermeidung von Floodings (Entprellen)
+        if not self._spam.ist_erlaubt(alarm_key):
+            return
+
+        logger.warning(f"ALARM: {alarm.nachricht}")
         
-        for n in self._notifier:         # Alle Benachrichtigungskanäle
-            n.senden(alarm)
+        # In Datenbank persistieren
+        alarm.id = datenbank.alarm_speichern(
+            sensor_id=alarm.sensor_id, alarm_typ=alarm.alarm_typ,
+            nachricht=alarm.nachricht, wert=alarm.wert, schwellwert=alarm.schwellwert
+        )
+
+        # Alle konfigurierten Notifier auslösen
+        for n in self._notifier:
+            try:
+                n.senden(alarm)
+            except Exception as e:
+                logger.error(f"{type(n).__name__} Fehler: {e}")
 ```
 
 ---
 
-## 3. Datenbank: Connection Pooling
+## 4. Fehlerbehandlung & Retries: EmailNotifier (Python)
 
-**Datei:** `backend/app/db.py`
+**Datei (Auszug):** `backend/app/alarm_engine.py`
+
+<!-- *Begründung für die Auswahl: Zeigt fortgeschrittene Programmierkonzepte 
+wie saubere Fehlerbehandlung (Try-Catch), Retry-Mechanismen bei fehlschlagenden 
+Netzwerkanfragen und die exakte Datenbank-Protokollierung von Sendestatus.* -->
 
 ```python
-from mysql.connector import pooling
+class EmailNotifier:
+    def senden(self, alarm: Alarm) -> bool:
+        if not self.enabled:
+            return True
 
-_pool = None
-
-def _get_pool():
-    """Connection Pool – wird einmal erstellt, dann wiederverwendet."""
-    global _pool
-    if _pool is None:
-        _pool = pooling.MySQLConnectionPool(
-            pool_name="serverraum_pool",
-            pool_size=5,                    # 5 parallele Verbindungen
-            host=config.datenbank.host,
-            user=config.datenbank.benutzer,
-            password=config.datenbank.passwort,
-            database=config.datenbank.datenbank,
-        )
-    return _pool
-
-def _query(sql: str, params: tuple = ()):
-    """SELECT mit Parameter-Escaping (Schutz vor SQL-Injection!)."""
-    conn = _get_pool().get_connection()
-    try:
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute(sql, params)           # %s wird sicher ersetzt!
-        return cursor.fetchall()
-    finally:
-        conn.close()                        # Immer schließen!
-
-class Datenbank:
-    def messung_speichern(self, sensor_id: str, wert: float, status: str) -> bool:
-        result = _query("SELECT id FROM sensoren WHERE sensor_id = %s", (sensor_id,))
-        if not result:
-            return False
-        return _execute(
-            "INSERT INTO messungen (sensor_id, wert, status, timestamp) VALUES (%s, %s, %s, NOW())",
-            (result[0]["id"], wert, status)
+        # Email in DB speichern (Status: ausstehend)
+        email_id = datenbank.alarm_email_speichern(
+            alarm_id=alarm.id,
+            empfaenger=self.empfaenger,
+            subject=f"⚠️ Serverraum Alarm: {alarm.alarm_typ}",
+            body=f"{alarm.nachricht}\nSensor: {alarm.sensor_id}\nWert: {alarm.wert}",
+            sende_status='ausstehend'
         )
 
-    def statistik_abrufen(self, sensor_id: str, stunden: int = 24) -> dict:
-        """SQL mit AVG, MIN, MAX Aggregation."""
-        result = _query("""
-            SELECT MIN(wert) as min, MAX(wert) as max,
-                   AVG(wert) as durchschnitt, COUNT(*) as anzahl
-            FROM messungen m
-            JOIN sensoren s ON m.sensor_id = s.id
-            WHERE s.sensor_id = %s 
-              AND m.timestamp >= DATE_SUB(NOW(), INTERVAL %s HOUR)
-        """, (sensor_id, stunden))
-        
-        if result and result[0]["min"]:
-            r = result[0]
-            return {"min": float(r["min"]), "max": float(r["max"]),
-                    "durchschnitt": float(r["durchschnitt"]), "anzahl": int(r["anzahl"])}
-        return {"min": 0, "max": 0, "durchschnitt": 0, "anzahl": 0}
+        fehler = None
+        for versuch in range(3):
+            try:
+                success = self._sende(alarm)
+                if success:
+                    # Erfolgreich versendet -> DB Update
+                    datenbank.alarm_email_aktualisieren(email_id, 'erfolgreich')
+                    return True
+            except Exception as e:
+                fehler = e
+                logger.warning(f"E-Mail Fehler (Versuch {versuch + 1}): {e}")
+                if versuch < 2:
+                    time.sleep(2) # Backoff vor nächstem Versuch
+
+        # Final fehlgeschlagen -> Fehlerlog in DB speichern
+        datenbank.alarm_email_aktualisieren(email_id, 'fehlgeschlagen', str(fehler))
+        logger.error("E-Mail Alarm fehlgeschlagen")
+        return False
 ```
-
----
-
-## 4. ESP32: Sensor-Initialisierung
-
-**Datei:** `firmware/src/main.cpp`
-
-```cpp
-// Hardware-Pins
-#define PIN_DS18B20 4
-#define PIN_PIR 21
-#define PIN_MQ2 1
-#define PIN_SHT31_SCL 9
-#define PIN_SHT31_SDA 6
-
-// Globale Instanzen
-WiFiClient wifiClient;
-PubSubClient mqttClient(wifiClient);
-SensorManager* sensorManager = nullptr;
-
-void initSensoren() {
-    Serial.println("Sensoren initialisieren...");
-    
-    // SensorManager erstellen
-    sensorManager = new SensorManager(mqttClient, MQTT_TOPIC_BASE);
-
-    // Sensoren hinzufügen – Polymorphie in Aktion!
-    // Alle werden als Sensor* behandelt, obwohl sie verschieden sind.
-    auto ds18b20 = new DS18B20Sensor(PIN_DS18B20, "temp_serverraum", 10000);
-    sensorManager->sensorHinzufuegen(ds18b20);
-
-    auto pir = new PIRSensor(PIN_PIR, "bewegung", 10000);
-    sensorManager->sensorHinzufuegen(pir);
-
-    auto mq2 = new MQ2Sensor(PIN_MQ2, "rauchgas", 10000);
-    mq2->setzeSchwellwert(200.0f);
-    sensorManager->sensorHinzufuegen(mq2);
-
-    // Alle auf einmal initialisieren
-    sensorManager->init();
-}
-
-void loop() {
-    if (!mqttClient.connected()) {
-        verbindeMQTT();
-    }
-    mqttClient.loop();
-    
-    // Automatisch alle Sensoren auslesen + per MQTT senden
-    sensorManager->messenUndPublishen();
-}
-```
-
----
-
-## Zusammenfassung
-
-| Konzept | Snippet | Zeigt |
-|---------|---------|-------|
-| **OOP / Polymorphie** | 1, 4 | Abstrakte Klasse, Vererbung, virtuellen Methoden |
-| **Connection Pooling** | 3 | DB-Verbindungen wiederverwenden |
-| **SQL** | 3 | Parameter-Escaping, Aggregation |
-| **Business-Logik** | 2 | Spam-Schutz, Trennung Prüfung/Benachrichtigung |
-| **IoT / Embedded** | 4 | Sensor-Ansteuerung, MQTT |

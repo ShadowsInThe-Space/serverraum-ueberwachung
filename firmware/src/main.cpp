@@ -37,6 +37,8 @@
 
 // Timing
 #define HEARTBEAT_INTERVAL 60000UL
+#define WLAN_RECONNECT_DELAY 5000UL    // 5 Sekunden zwischen Reconnect-Versuchen
+#define MQTT_RECONNECT_DELAY 5000UL     // 5 Sekunden zwischen MQTT-Reconnect-Versuchen
 
 // Globale Variablen
 WiFiClient wifiClient;
@@ -44,6 +46,12 @@ PubSubClient mqttClient(wifiClient);
 SensorManager* sensorManager = nullptr;
 DS18B20Sensor* ds18b20Sensor = nullptr;
 SHT31Sensor* sht31Sensor = nullptr;
+
+// WLAN Status-Flags (non-blocking)
+bool wlanVerbunden = false;
+bool mqttVerbunden = false;
+unsigned long letzterWlanReconnect = 0;
+unsigned long letzterMqttReconnect = 0;
 
 // =============================================================================
 // HILFSFUNKTIONEN
@@ -77,25 +85,61 @@ void initGPIO() {
     digitalWrite(PIN_BUZZER, LOW);
 }
 
-void verbindeWLAN() {
-    Serial.printf("\nVerbinde mit WLAN: %s\n", WIFI_SSID);
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(WIFI_SSID, WIFI_PASS);
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
+// =============================================================================
+// WLAN EVENT HANDLER (Non-Blocking)
+// =============================================================================
+
+void onWiFiEvent(WiFiEvent_t event, WiFiEventInfo_t info) {
+    switch (event) {
+        case ARDUINO_EVENT_WIFI_STA_CONNECTED:
+            Serial.println("[WLAN] Verbunden, warte auf IP...");
+            break;
+        case ARDUINO_EVENT_WIFI_STA_GOT_IP:
+            wlanVerbunden = true;
+            Serial.printf("[WLAN] Verbunden! IP: %s\n",
+                WiFi.localIP().toString().c_str());
+            // Nach WLAN-Verbindung MQTT verbinden
+            if (!mqttVerbunden) {
+                letzterMqttReconnect = 0;  // Sofort verbinden
+            }
+            break;
+        case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
+            wlanVerbunden = false;
+            Serial.println("[WLAN] Getrennt!");
+            break;
+        default:
+            break;
     }
-    Serial.printf("\nWLAN verbunden! IP: %s\n", WiFi.localIP().toString().c_str());
 }
 
-void verbindeMQTT() {
-    Serial.printf("Verbinde MQTT: %s:%d\n", MQTT_BROKER, MQTT_PORT);
+void verbindeWLANNichtBlockierend() {
+    if (wlanVerbunden) return;
+    if (millis() - letzterWlanReconnect < WLAN_RECONNECT_DELAY) return;
+
+    Serial.printf("[WLAN] Verbinde mit %s...\n", WIFI_SSID);
+    WiFi.disconnect();
+    WiFi.mode(WIFI_STA);
+    WiFi.onEvent(onWiFiEvent);  // Event-Handler registrieren
+    WiFi.begin(WIFI_SSID, WIFI_PASS);
+    letzterWlanReconnect = millis();
+}
+
+void verbindeMQTTNichtBlockierend() {
+    if (!wlanVerbunden) return;  // Nur wenn WLAN aktiv
+    if (mqttVerbunden) return;
+    if (millis() - letzterMqttReconnect < MQTT_RECONNECT_DELAY) return;
+
+    Serial.printf("[MQTT] Verbinde mit %s:%d...\n", MQTT_BROKER, MQTT_PORT);
     mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
-    while (!mqttClient.connect(MQTT_CLIENT_ID)) {
-        Serial.printf("MQTT Fehler (rc=%d), retry in 5s...\n", mqttClient.state());
-        delay(5000);
+
+    if (mqttClient.connect(MQTT_CLIENT_ID)) {
+        mqttVerbunden = true;
+        Serial.println("[MQTT] Verbunden!");
+    } else {
+        Serial.printf("[MQTT] Fehler (rc=%d), retry in %lus\n",
+            mqttClient.state(), MQTT_RECONNECT_DELAY / 1000);
     }
-    Serial.println("MQTT verbunden!");
+    letzterMqttReconnect = millis();
 }
 
 void initSensoren() {
@@ -165,8 +209,11 @@ void setup() {
     Serial.println("╚════════════════════════════════════════╝\n");
 
     initGPIO();
-    verbindeWLAN();
-    verbindeMQTT();
+
+    // WLAN non-blocking starten
+    Serial.println("[WLAN] Starte Verbindung (non-blocking)...");
+    letzterWlanReconnect = 0;  // Sofort verbinden
+
     scanneI2C();
     initSensoren();
 
@@ -183,16 +230,14 @@ unsigned long letzterFeuchteSenden = 0;
 unsigned long letzterAlarmCheck = 0;
 
 void loop() {
-    // WLAN + MQTT prüfen
-    if (WiFi.status() != WL_CONNECTED) {
-        Serial.println("WLAN verloren!");
-        verbindeWLAN();
+    // Non-blocking WLAN + MQTT Verbindungen
+    verbindeWLANNichtBlockierend();
+    verbindeMQTTNichtBlockierend();
+
+    // MQTT Loop nur wenn verbunden
+    if (mqttVerbunden) {
+        mqttClient.loop();
     }
-    if (!mqttClient.connected()) {
-        Serial.println("MQTT verloren!");
-        verbindeMQTT();
-    }
-    mqttClient.loop();
 
     // Sensoren verarbeiten
     if (sensorManager != nullptr) {

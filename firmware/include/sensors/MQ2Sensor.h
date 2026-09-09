@@ -133,9 +133,12 @@ public:
         // 2. Spannung berechnen (ESP32: 3.3V Referenz)
         float spannung = (adcWert / 4095.0f) * 3.3f;
 
+        // Schutz gegen Division durch 0 bei extrem niedrigem ADC-Wert
+        float sichereSpannung = spannung < 0.001f ? 0.001f : spannung;
+
         // 3. Sensor-Widerstand berechnen (Spannungsteiler mit RL = 10kOhm)
         // Formel: Rs = (Vc - Vout) / Vout * RL
-        float widerstand = (3.3f - spannung) / spannung * 10000.0f;
+        float widerstand = (3.3f - sichereSpannung) / sichereSpannung * 10000.0f;
 
         // 4. ppm berechnen (vereinfachte Kalibrierungskurve)
         // Genaue Kurve muss empirisch bestimmt werden!
@@ -167,7 +170,8 @@ public:
         {
             int adcWert = analogRead(konfiguration.gpioPin);
             float spannung = (adcWert / 4095.0f) * 3.3f;
-            float widerstand = (3.3f - spannung) / spannung * 10000.0f;
+            float sichereSpannung = spannung < 0.001f ? 0.001f : spannung;
+            float widerstand = (3.3f - sichereSpannung) / sichereSpannung * 10000.0f;
             summe += widerstand;
             delay(100);
         }
@@ -229,15 +233,17 @@ private:
     {
         // Vereinfachte Berechnung basierend auf typischer Kennlinie
         // Verhältnis Rs/Ro bestimmt die Gaskonzentration
+        float referenzWiderstand = luftwert;
 
-        if (luftwert <= 0)
+        if (referenzWiderstand <= 0.0f)
         {
             // Keine Kalibrierung - verwende Standardkurve
-            // Typischer Bereich: 100-10000 Ohm in sauberer Luft
-            widerstand = 10000.0f;
+            // Typischer Referenzwert in sauberer Luft
+            referenzWiderstand = 10000.0f;
         }
 
-        float verhaeltnis = widerstand / luftwert;
+        float verhaeltnis = widerstand / referenzWiderstand;
+        verhaeltnis = constrain(verhaeltnis, 0.01f, 1000.0f);
 
         // Vereinfachte Umrechnung (Polynomial approximation)
         // MQ-2 Kennlinie: ppm = 613.9 * (Rs/Ro)^-2.074
