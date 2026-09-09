@@ -1,0 +1,786 @@
+<!--
+Serverraum-Überwachung Dashboard
+=============================
+Haupt-Frontend für das Serverraum-Monitoring-System
+
+@author Marc-Dennis Haberland
+@date 04.03.2026
+Projekt: Serverraum-Überwachung (IHK-Abschlussprojekt)
+
+Technologie:
+- Tailwind CSS (lokal)
+- Chart.js (lokal)
+- FastAPI Backend via REST API
+-->
+<html lang="de" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+    <title>Serverraum-Überwachung</title>
+
+    <!-- Tailwind CSS lokal -->
+    <script src="/js/vendor/tailwind.js"></script>
+
+    <!-- Chart.js lokal -->
+    <script src="/js/vendor/chart.umd.min.js"></script>
+
+    <!-- Tailwind Konfiguration mit WCAG 2.1 AA konformen Farben -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Status-Farben mit 4.5:1 Kontrast
+                        status: {
+                            normal: { DEFAULT: '#22c55e', light: '#86efac', dark: '#166534' },
+                            warning: { DEFAULT: '#eab308', light: '#fef08a', dark: '#854d0e' },
+                            alarm: { DEFAULT: '#ef4444', light: '#fca5a5', dark: '#991b1b' },
+                            inactive: { DEFAULT: '#6b7280', light: '#9ca3af', dark: '#374151' }
+                        },
+                        // Textfarben mit Kontrastprüfung
+                        text: {
+                            primary: '#f9fafb',
+                            secondary: '#9ca3af',
+                            muted: '#6b7280'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* CSS Variables für Theme */
+        :root {
+            --bg-primary: #020617;
+            --bg-secondary: #111827;
+            --bg-tertiary: #1f2937;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --border-color: #374151;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f9fafb;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f3f4f6;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+        }
+
+        /* Theme-basierte Styles */
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .bg-theme-primary { background-color: var(--bg-primary); }
+        .bg-theme-secondary { background-color: var(--bg-secondary); }
+        .bg-theme-tertiary { background-color: var(--bg-tertiary); }
+        .text-theme-primary { color: var(--text-primary); }
+        .text-theme-secondary { color: var(--text-secondary); }
+        .text-theme-muted { color: var(--text-muted); }
+        .border-theme { border-color: var(--border-color); }
+
+        /* Fokus-Indikatoren für Tastaturnavigation */
+        :focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        /* Visuell versteckte Region für Screenreader */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Status-Punkt */
+        .status-punkt {
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 9999px;
+            display: inline-block;
+        }
+
+        /* Tab-Navigation */
+        .tab-button {
+            color: #374151;
+        }
+        .tab-button[aria-selected="true"] {
+            border-bottom-width: 2px;
+            border-bottom-color: #3b82f6;
+            color: #1f2937;
+            background-color: var(--bg-tertiary);
+        }
+        .tab-button:hover {
+            color: #1f2937;
+        }
+
+        /* Sensor-Karten */
+        .sensor-card {
+            transition: all 0.3s ease;
+        }
+        .sensor-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Theme-Buttons */
+        .btn-theme {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        .btn-theme:hover {
+            background-color: var(--border-color);
+        }
+
+        /* Alarm Collapsible */
+        .alarm-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .alarm-content.expanded {
+            max-height: 500px;
+        }
+
+        /* Trend-Indikatoren */
+        .trend-up {
+            color: #ef4444;
+        }
+        .trend-down {
+            color: #3b82f6;
+        }
+        .trend-stable {
+            color: #6b7280;
+        }
+
+        /* Pulsierender Alarm */
+        @keyframes pulsieren {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .alarm-puls {
+            animation: pulsieren 1s infinite;
+        }
+
+        /* Alarm Overlay */
+        .alarm-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.85) 0%, rgba(185, 28, 28, 0.9) 100%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .alarm-quittieren-btn {
+            background: white;
+            color: #dc2626;
+            font-size: 1.25rem;
+            font-weight: bold;
+            padding: 1rem 3rem;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        /* Alarm-Karten */
+        .alarm-card {
+            background-color: var(--bg-tertiary);
+            border-left: 4px solid #ef4444;
+        }
+    </style>
+</head>
+<body class="min-h-screen" style="background-color: var(--bg-primary); color: var(--text-primary);">
+
+    <!-- Screenreader-Ankündigungen -->
+    <div id="screenreader-announcements" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 border-b" role="banner" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <img src="/static/logo.svg" alt="deCode Logo" class="h-10 w-auto">
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight">Serverraum-Überwachung</h1>
+                    <p class="text-sm text-gray-500 mt-1">Echtzeit-Monitoring aller Sensoren</p>
+                </div>
+                <div class="flex items-center gap-6">
+                    <!-- Verbindungsstatus -->
+                    <div id="verbindungs-status" class="flex items-center gap-3" role="status" aria-live="polite">
+                        <span class="relative flex h-3 w-3">
+                            <span id="status-punkt" class="absolute inline-flex h-full w-full rounded-full bg-gray-500"></span>
+                        </span>
+                        <div>
+                            <div id="status-text" class="text-sm font-medium">Verbindung wird hergestellt...</div>
+                            <div id="status-subtext" class="text-xs text-gray-500">Letzte Aktualisierung: <span id="letzte-aktualisierung">--:--:--</span></div>
+                        </div>
+                    </div>
+                    <!-- Theme Toggle Button -->
+                    <button
+                        onclick="toggleTheme()"
+                        id="theme-toggle"
+                        class="p-2 rounded-lg btn-theme focus-visible:ring-2 focus-visible:ring-blue-500"
+                        aria-label="Theme wechseln"
+                        title="Theme wechseln"
+                    >
+                        <svg id="theme-icon-dark" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <svg id="theme-icon-light" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                        </svg>
+                    </button>
+                    <!-- Einstellungen Button -->
+                    <button
+                        onclick="zeigeEinstellungen()"
+                        class="px-4 py-2 btn-theme rounded-lg text-sm font-medium transition focus-visible:ring-2 focus-visible:ring-blue-500"
+                        aria-label="Einstellungen öffnen"
+                    >
+                        Einstellungen
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hauptinhalt -->
+    <main class="container mx-auto px-4 py-6" id="main-content">
+
+        <!-- System-Status-Leiste -->
+        <section class="mb-6 rounded-xl p-4" aria-labelledby="system-status-heading" style="background-color: var(--bg-secondary);">
+            <h2 id="system-status-heading" class="sr-only">Systemstatus</h2>
+            <div class="flex flex-wrap gap-6 text-sm">
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-500">ESP32:</span>
+                    <span id="esp32-name" class="font-medium">ESP32-001</span>
+                    <span id="esp32-status" class="text-status-normal text-xs">(Verbunden)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-500">WLAN Signal:</span>
+                    <span id="wifi-signal" class="font-medium">N/A</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-500">Sensoren:</span>
+                    <span id="sensoren-count" class="font-medium">5</span>
+                    <span class="text-gray-500">aktiv</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Collapsible Alarm-Bereich -->
+        <section class="mb-6" id="alarme-section" style="display: none;" aria-labelledby="alarme-heading">
+            <div class="rounded-xl overflow-hidden" style="background-color: var(--bg-secondary);">
+                <button
+                    onclick="toggleAlarme()"
+                    class="w-full px-6 py-4 flex justify-between items-center transition focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
+                    style="background-color: var(--bg-secondary);"
+                    aria-expanded="true"
+                    aria-controls="alarm-content"
+                    id="alarme-toggle"
+                >
+                    <div class="flex items-center gap-3">
+                        <span class="status-punkt bg-status-alarm alarm-puls" aria-hidden="true"></span>
+                        <span id="alarme-heading" class="font-semibold text-status-alarm">
+                            Aktive Alarme (<span id="alarm-count-badge">0</span>)
+                        </span>
+                    </div>
+                    <svg id="alarm-chevron" class="w-5 h-5 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="alarm-content" class="alarm-content expanded">
+                    <div id="aktive-alarme" class="px-6 pb-4 space-y-3">
+                        <!-- Wird durch JavaScript gefüllt -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sensor-Karten Grid -->
+        <section class="mb-8" aria-labelledby="sensoren-heading">
+            <h2 id="sensoren-heading" class="text-lg font-semibold mb-4 text-gray-400 uppercase text-xs tracking-wider">
+                Aktuelle Messwerte
+            </h2>
+
+            <!-- Grid für Sensor-Karten - 5 Spalten für alle Sensoren -->
+            <div
+                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"
+                id="sensor-karten"
+                role="list"
+                aria-label="Sensoren"
+            >
+                <!-- Wird durch JavaScript gefüllt -->
+            </div>
+        </section>
+
+        <!-- Navigation Tabs -->
+        <section aria-label="Navigation">
+            <div
+                class="flex gap-1 mb-6 rounded-xl p-2"
+                role="tablist"
+                aria-label="Dashboard Bereiche"
+                style="background-color: var(--bg-secondary);"
+            >
+                <button
+                    onclick="wechselTab('dashboard')"
+                    id="tab-dashboard"
+                    class="tab-button flex-1 px-4 py-3 rounded-lg text-sm font-medium transition focus-visible:ring-2 focus-visible:ring-blue-500"
+                    role="tab"
+                    aria-selected="true"
+                    aria-controls="inhalt-dashboard"
+                    tabindex="0"
+                >
+                    Übersicht
+                </button>
+                <button
+                    onclick="wechselTab('verlauf')"
+                    id="tab-verlauf"
+                    class="tab-button flex-1 px-4 py-3 rounded-lg text-sm font-medium transition focus-visible:ring-2 focus-visible:ring-blue-500"
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="inhalt-verlauf"
+                    tabindex="-1"
+                >
+                    Verlauf
+                </button>
+                <button
+                    onclick="wechselTab('alarme')"
+                    id="tab-alarme"
+                    class="tab-button flex-1 px-4 py-3 rounded-lg text-sm font-medium transition focus-visible:ring-2 focus-visible:ring-blue-500"
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="inhalt-alarme"
+                    tabindex="-1"
+                >
+                    Alarme
+                </button>
+                <button
+                    onclick="wechselTab('einstellungen')"
+                    id="tab-einstellungen"
+                    class="tab-button flex-1 px-4 py-3 rounded-lg text-sm font-medium transition focus-visible:ring-2 focus-visible:ring-blue-500"
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="inhalt-einstellungen"
+                    tabindex="-1"
+                >
+                    Einstellungen
+                </button>
+            </div>
+
+            <!-- Tab-Inhalt: Dashboard -->
+            <div id="inhalt-dashboard" role="tabpanel" aria-labelledby="tab-dashboard">
+                <div class="rounded-xl p-6" style="background-color: var(--bg-secondary);">
+                    <h3 class="text-lg font-semibold mb-4">System-Übersicht</h3>
+                    <p class="text-gray-400 mb-6">Alle Sensoren werden automatisch alle 5 Sekunden aktualisiert.</p>
+
+                    <!-- Info-Karten -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="rounded-lg p-4" style="background-color: var(--bg-tertiary);">
+                            <div class="text-sm mb-1" style="color: var(--text-muted);">Temperatur-Sensoren</div>
+                            <div class="text-2xl font-bold" id="info-temp-count">2</div>
+                            <div class="text-xs mt-1" style="color: var(--text-muted);">DS18B20, SHT31</div>
+                        </div>
+                        <div class="rounded-lg p-4" style="background-color: var(--bg-tertiary);">
+                            <div class="text-sm mb-1" style="color: var(--text-muted);">Feuchtigkeit</div>
+                            <div class="text-2xl font-bold" id="info-feuchte-count">1</div>
+                            <div class="text-xs mt-1" style="color: var(--text-muted);">SHT31</div>
+                        </div>
+                        <div class="rounded-lg p-4" style="background-color: var(--bg-tertiary);">
+                            <div class="text-sm mb-1" style="color: var(--text-muted);">Sicherheit</div>
+                            <div class="text-2xl font-bold" id="info-sicherheit-count">2</div>
+                            <div class="text-xs mt-1" style="color: var(--text-muted);">MQ2, PIR</div>
+                        </div>
+                    </div>
+
+                    <!-- Legende -->
+                    <div class="rounded-lg p-4" style="background-color: var(--bg-tertiary);">
+                        <h4 class="text-sm font-medium mb-3">Status-Legende</h4>
+                        <div class="flex flex-wrap gap-4 text-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="status-punkt bg-status-normal" aria-hidden="true"></span>
+                                <span>Normal - Wert im sicheren Bereich</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="status-punkt bg-status-warning" aria-hidden="true"></span>
+                                <span>Warnung - Wert nähert sich dem Grenzwert</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="status-punkt bg-status-alarm" aria-hidden="true"></span>
+                                <span>Alarm - Wert überschreitet den Grenzwert</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="status-punkt bg-status-inactive" aria-hidden="true"></span>
+                                <span>Inaktiv - Keine Daten verfügbar</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab-Inhalt: Verlauf -->
+            <div id="inhalt-verlauf" class="hidden" role="tabpanel" aria-labelledby="tab-verlauf">
+                <div class="rounded-xl p-6" style="background-color: var(--bg-secondary);">
+                    <div class="flex flex-wrap gap-4 mb-6">
+                        <div>
+                            <label for="verlauf-sensor" class="block text-sm mb-2" style="color: var(--text-secondary);">Sensor auswählen</label>
+                            <select id="verlauf-sensor" class="rounded-lg px-4 py-2 focus-visible:ring-2 focus-visible:ring-blue-500" style="background-color: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary);">
+                                <!-- Dynamisch gefüllt via JavaScript -->
+                            </select>
+                        </div>
+                        <div>
+                            <label for="verlauf-zeitraum" class="block text-sm mb-2" style="color: var(--text-secondary);">Zeitraum</label>
+                            <select id="verlauf-zeitraum" class="rounded-lg px-4 py-2 focus-visible:ring-2 focus-visible:ring-blue-500" style="background-color: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary);">
+                                <option value="1">1 Stunde</option>
+                                <option value="6">6 Stunden</option>
+                                <option value="24" selected>24 Stunden</option>
+                                <option value="168">7 Tage</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button
+                                onclick="ladeVerlauf()"
+                                class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-medium transition focus-visible:ring-2 focus-visible:ring-blue-500"
+                            >
+                                Anzeigen
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Chart -->
+                    <div class="h-80 mb-6" role="img" aria-label="Verlaufsdiagramm">
+                        <canvas id="verlauf-chart" aria-label="Sensorverlauf als Liniendiagramm"></canvas>
+                    </div>
+
+                    <!-- Statistik -->
+                    <div class="grid grid-cols-3 gap-4" role="region" aria-label="Statistik">
+                        <div class="rounded-lg p-4 text-center" style="background-color: var(--bg-tertiary);">
+                            <div class="text-sm mb-1" style="color: var(--text-muted);">Durchschnitt</div>
+                            <div class="text-2xl font-bold" id="stat-avg">--</div>
+                        </div>
+                        <div class="rounded-lg p-4 text-center" style="background-color: var(--bg-tertiary);">
+                            <div class="text-sm mb-1" style="color: var(--text-muted);">Minimum</div>
+                            <div class="text-2xl font-bold" id="stat-min">--</div>
+                        </div>
+                        <div class="rounded-lg p-4 text-center" style="background-color: var(--bg-tertiary);">
+                            <div class="text-sm mb-1" style="color: var(--text-muted);">Maximum</div>
+                            <div class="text-2xl font-bold" id="stat-max">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab-Inhalt: Alarme -->
+            <div id="inhalt-alarme" class="hidden" role="tabpanel" aria-labelledby="tab-alarme">
+                <div class="rounded-xl p-6" style="background-color: var(--bg-secondary);">
+                    <div class="flex gap-4 mb-6">
+                        <label for="alarm-filter" class="sr-only">Alarm-Filter</label>
+                        <select
+                            id="alarm-filter"
+                            onchange="ladeAlarme()"
+                            class="border rounded-lg px-4 py-2 focus-visible:ring-2 focus-visible:ring-blue-500"
+                            style="background-color: var(--bg-tertiary); border-color: var(--border-color); color: var(--text-primary);"
+                        >
+                            <option value="alle">Alle Alarme</option>
+                            <option value="aktiv">Nur aktive</option>
+                            <option value="quittiert">Nur quittierte</option>
+                        </select>
+                    </div>
+
+                    <!-- Alarm-Liste -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full" aria-label="Alarmliste">
+                            <thead>
+                                <tr class="border-b text-left text-sm" style="border-color: var(--border-color); color: var(--text-muted);">
+                                    <th scope="col" class="pb-3 pr-4">Status</th>
+                                    <th scope="col" class="pb-3 pr-4">Sensor</th>
+                                    <th scope="col" class="pb-3 pr-4">Typ</th>
+                                    <th scope="col" class="pb-3 pr-4">Wert</th>
+                                    <th scope="col" class="pb-3 pr-4">Zeit</th>
+                                    <th scope="col" class="pb-3">Aktion</th>
+                                </tr>
+                            </thead>
+                            <tbody id="alarm-tabelle">
+                                <!-- Wird durch JavaScript gefüllt -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Alarm-Emails Section -->
+                    <div class="mt-8 pt-6 border-t" style="border-color: var(--border-color);">
+                        <h4 class="text-md font-semibold mb-4" style="color: var(--text-primary);">
+                            Gesendete Alarm-Emails
+                        </h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full" aria-label="Alarm-Email Liste">
+                                <thead>
+                                    <tr class="border-b text-left text-sm" style="border-color: var(--border-color); color: var(--text-muted);">
+                                        <th scope="col" class="pb-3 pr-4">Zeit</th>
+                                        <th scope="col" class="pb-3 pr-4">Sensor</th>
+                                        <th scope="col" class="pb-3 pr-4">Alarm-Typ</th>
+                                        <th scope="col" class="pb-3 pr-4">Empfänger</th>
+                                        <th scope="col" class="pb-3 pr-4">Status</th>
+                                        <th scope="col" class="pb-3">Antwort</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="alarm-email-tabelle">
+                                    <!-- Wird durch JavaScript gefüllt -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab-Inhalt: Einstellungen -->
+            <div id="inhalt-einstellungen" class="hidden" role="tabpanel" aria-labelledby="tab-einstellungen">
+                <div class="rounded-xl p-6" style="background-color: var(--bg-secondary);">
+                    <h3 class="text-lg font-semibold mb-6">System-Einstellungen</h3>
+
+                    <div class="max-w-2xl">
+                        <!-- API-Endpunkt -->
+                        <div class="mb-6">
+                            <label for="api-endpunkt" class="block text-sm font-medium mb-2">API-Endpunkt</label>
+                            <input
+                                type="text"
+                                id="api-endpunkt"
+                                value="http://localhost:8080"
+                                class="w-full rounded-lg px-4 py-3 focus-visible:ring-2 focus-visible:ring-blue-500"
+                                style="background-color: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary);"
+                                aria-describedby="api-endpunkt-help"
+                            >
+                            <p id="api-endpunkt-help" class="text-xs mt-1" style="color: var(--text-muted);">URL des Backend-Servers für die Datenverbindung</p>
+                        </div>
+
+                        <!-- Aktualisierungsintervall -->
+                        <div class="mb-6">
+                            <label for="refresh-intervall" class="block text-sm font-medium mb-2">Aktualisierungsintervall</label>
+                            <div class="flex items-center gap-3">
+                                <input
+                                    type="number"
+                                    id="refresh-intervall"
+                                    value="5"
+                                    min="1"
+                                    max="60"
+                                    class="w-24 rounded-lg px-4 py-3 focus-visible:ring-2 focus-visible:ring-blue-500"
+                                    style="background-color: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary);"
+                                >
+                                <span style="color: var(--text-secondary);">Sekunden</span>
+                            </div>
+                            <p class="text-xs mt-1" style="color: var(--text-muted);">Wie oft die Sensordaten aktualisiert werden (1-60 Sekunden)</p>
+                        </div>
+
+                        <!-- Schwellwerte -->
+                        <div class="mb-6">
+                            <h4 class="text-sm font-medium mb-4">Alarm-Schwellwerte</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="schwelle-temp" class="block text-sm mb-2" style="color: var(--text-secondary);">Temperatur max (°C)</label>
+                                    <input
+                                        type="number"
+                                        id="schwelle-temp"
+                                        value="30"
+                                        step="0.5"
+                                        class="w-full rounded-lg px-4 py-3 focus-visible:ring-2 focus-visible:ring-blue-500"
+                                        style="background-color: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary);"
+                                    >
+                                </div>
+                                <div>
+                                    <label for="schwelle-rauch" class="block text-sm mb-2" style="color: var(--text-secondary);">Rauchgas max (ppm)</label>
+                                    <input
+                                        type="number"
+                                        id="schwelle-rauch"
+                                        value="200"
+                                        class="w-full rounded-lg px-4 py-3 focus-visible:ring-2 focus-visible:ring-blue-500"
+                                        style="background-color: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary);"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <button
+                            onclick="speichereEinstellungen()"
+                            class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-medium transition focus-visible:ring-2 focus-visible:ring-blue-500"
+                        >
+                            Einstellungen speichern
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Alarm Overlay -->
+    <div id="alarm-overlay" class="alarm-overlay" style="display: none;" role="alertdialog" aria-modal="true" aria-labelledby="alarm-title" aria-describedby="alarm-description">
+        <button onclick="versteckeAlarmOverlay()" class="absolute top-4 right-4 text-white text-3xl font-bold hover:text-gray-200" aria-label="Overlay schließen">&times;</button>
+        <div class="text-center">
+            <h2 id="alarm-title" class="text-5xl font-bold text-white mb-4">ALARM</h2>
+            <p id="alarm-description" class="text-xl text-white mb-8">Es sind aktive Alarme vorhanden!</p>
+            <div class="text-8xl font-bold text-white mb-8" id="alarm-count" aria-live="polite">0</div>
+            <p class="text-lg text-white mb-8">Aktive Alarme</p>
+            <button onclick="quittiereAlleAlarme()" class="alarm-quittieren-btn mr-4">
+                Alle Alarme Quittieren
+            </button>
+            <button onclick="wechselTab('alarme'); versteckeAlarmOverlay();" class="bg-white text-red-600 font-bold py-4 px-8 rounded-lg cursor-pointer">
+                Details anzeigen
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-8 py-6 border-t" role="contentinfo" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
+        <div class="container mx-auto px-4 text-center text-sm" style="color: var(--text-muted);">
+            <p>Serverraum-Überwachung | IHK-Abschlussprojekt Marc-Dennis Haberland</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="./js/api.js?v=2"></script>
+    <script src="./js/dashboard.js?v=2"></script>
+    <script src="./js/charts.js"></script>
+
+    <!-- App Initialisierung -->
+    <script>
+        const APP_CONFIG = {
+            apiBaseUrl: localStorage.getItem('apiEndpoint') || 'http://localhost:8080',
+            refreshInterval: (parseInt(localStorage.getItem('refreshInterval')) || 5) * 1000
+        };
+
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+            announceToScreenreader('Theme gewechselt zu ' + (newTheme === 'dark' ? 'Dunkel' : 'Hell'));
+        }
+
+        function updateThemeIcon(theme) {
+            const darkIcon = document.getElementById('theme-icon-dark');
+            const lightIcon = document.getElementById('theme-icon-light');
+            if (theme === 'dark') {
+                darkIcon.classList.remove('hidden');
+                lightIcon.classList.add('hidden');
+            } else {
+                darkIcon.classList.add('hidden');
+                lightIcon.classList.remove('hidden');
+            }
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Serverraum-Überwachung Dashboard gestartet');
+
+            // Theme laden
+            loadTheme();
+
+            // API-Endpunkt aus Einstellungen laden
+            const gespeicherterEndpoint = localStorage.getItem('apiEndpoint');
+            if (gespeicherterEndpoint) {
+                document.getElementById('api-endpunkt').value = gespeicherterEndpoint;
+            }
+
+            // Tab-Styles initialisieren
+            updateTabStyles();
+
+            // Keyboard-Navigation für Tabs
+            initTabKeyboardNavigation();
+
+            // Daten laden
+            initDashboard();
+
+            // Periodisch aktualisieren
+            setInterval(aktualisiereDaten, APP_CONFIG.refreshInterval);
+        });
+
+        function updateTabStyles() {
+            // Tab-Styles werden jetzt über CSS gesteuert
+            // Keine explizite Aktualisierung nötig
+        }
+
+        function initTabKeyboardNavigation() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach((button, index) => {
+                button.addEventListener('keydown', (e) => {
+                    let targetIndex = index;
+                    switch (e.key) {
+                        case 'ArrowRight':
+                        case 'ArrowDown':
+                            targetIndex = (index + 1) % tabButtons.length;
+                            e.preventDefault();
+                            break;
+                        case 'ArrowLeft':
+                        case 'ArrowUp':
+                            targetIndex = (index - 1 + tabButtons.length) % tabButtons.length;
+                            e.preventDefault();
+                            break;
+                        case 'Home':
+                            targetIndex = 0;
+                            e.preventDefault();
+                            break;
+                        case 'End':
+                            targetIndex = tabButtons.length - 1;
+                            e.preventDefault();
+                            break;
+                        default:
+                            return;
+                    }
+                    tabButtons[targetIndex].focus();
+                    wechselTab(tabButtons[targetIndex].id.replace('tab-', ''));
+                });
+            });
+        }
+
+        function toggleAlarme() {
+            const content = document.getElementById('alarm-content');
+            const toggle = document.getElementById('alarme-toggle');
+            const chevron = document.getElementById('alarm-chevron');
+            const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+
+            toggle.setAttribute('aria-expanded', !isExpanded);
+            content.classList.toggle('expanded');
+
+            if (!isExpanded) {
+                chevron.classList.remove('rotate-180');
+            } else {
+                chevron.classList.add('rotate-180');
+            }
+        }
+
+        function announceToScreenreader(message) {
+            const announcement = document.getElementById('screenreader-announcements');
+            if (announcement) {
+                announcement.textContent = message;
+                setTimeout(() => { announcement.textContent = ''; }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>
