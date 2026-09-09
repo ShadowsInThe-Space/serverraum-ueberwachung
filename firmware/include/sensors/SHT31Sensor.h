@@ -189,15 +189,20 @@ public:
         Wire.beginTransmission(i2cAdresse);
         Wire.write(0x24);  // High repeatability measurement
         Wire.write(0x00);
-        Wire.endTransmission();
+        if (Wire.endTransmission() != 0)
+        {
+            Serial.println("[SHT31] Fehler: I2C-Schreibzugriff fehlgeschlagen!");
+            aktualisiereMesswert(0.0f, SensorStatus::FEHLER);
+            return false;
+        }
 
         // Warten auf Messung (mindestens 10ms für high repeatability)
         delay(15);
 
         // Daten lesen (6 Bytes: Temp MSB, Temp LSB, Temp CRC, Hum MSB, Hum LSB, Hum CRC)
-        Wire.requestFrom(i2cAdresse, (uint8_t)6);
+        uint8_t empfangeneBytes = Wire.requestFrom(i2cAdresse, (uint8_t)6);
 
-        if (Wire.available() == 6)
+        if (empfangeneBytes == 6 && Wire.available() == 6)
         {
             uint8_t tempMSB = Wire.read();
             uint8_t tempLSB = Wire.read();
@@ -206,13 +211,23 @@ public:
             uint8_t humLSB = Wire.read();
             uint8_t humCRC = Wire.read();
 
+            uint8_t temperaturBytes[2] = {tempMSB, tempLSB};
+            uint8_t feuchteBytes[2] = {humMSB, humLSB};
+
+            if (!pruefeCrc8(temperaturBytes, tempCRC) || !pruefeCrc8(feuchteBytes, humCRC))
+            {
+                Serial.println("[SHT31] Fehler: CRC-Pruefung fehlgeschlagen!");
+                aktualisiereMesswert(0.0f, SensorStatus::FEHLER);
+                return false;
+            }
+
             // Temperatur berechnen: -45 + 175 * (raw / 65536)
             uint16_t tempRaw = (tempMSB << 8) | tempLSB;
             float temperatur = -45.0f + 175.0f * ((float)tempRaw / 65536.0f);
 
             // Luftfeuchtigkeit berechnen: 100 * (raw / 65536)
             uint16_t humRaw = (humMSB << 8) | humLSB;
-            float luftfeuchtigkeit = 100.0f * ((float)humRaw / 65536.0f);
+            luftfeuchtigkeit = 100.0f * ((float)humRaw / 65536.0f);
 
             // Wir speichern die Temperatur als Hauptwert
             // Die Luftfeuchtigkeit könnte separat abgerufen werden
@@ -241,6 +256,32 @@ public:
     }
 
 private:
+    /**
+     * @brief Prueft SHT31 CRC-8 (Polynom 0x31, Init 0xFF)
+     */
+    bool pruefeCrc8(const uint8_t* daten, uint8_t crcEmpfangen) const
+    {
+        uint8_t crc = 0xFF;
+
+        for (uint8_t i = 0; i < 2; i++)
+        {
+            crc ^= daten[i];
+            for (uint8_t bit = 0; bit < 8; bit++)
+            {
+                if (crc & 0x80)
+                {
+                    crc = (crc << 1) ^ 0x31;
+                }
+                else
+                {
+                    crc <<= 1;
+                }
+            }
+        }
+
+        return crc == crcEmpfangen;
+    }
+
     /** @brief SCL Pin */
     int sclPin;
     
