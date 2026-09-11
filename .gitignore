@@ -47,3 +47,6 @@ Thumbs.db
 # AI-Tooling-Artefakte
 .serena/
 .playwright-mcp/
+
+# Tooling-Configs mit Credentials nie committen
+kilo.json
