@@ -1,5 +1,7 @@
 # Serverraum-Überwachung
 
+> **English TL;DR:** End-to-end server-room monitoring — ESP32 sensor nodes (DS18B20/SHT31/MQ-2/PIR) send telemetry over MQTT to a FastAPI backend with an alarm engine; vanilla-JS dashboard visualizes everything. Full IoT stack, runnable without hardware via the bundled simulator.
+
 Selbst gebaute **Serverraum-Überwachung** mit Raspberry-Pi-/ESP32-Hardware: Sensorknoten messen Temperatur, Luftfeuchte, Bewegung und Rauchgas, funken per MQTT an ein FastAPI-Backend, das Alarme auswertet und alles in einer Web-Dashboard-Oberfläche visualisiert.
 
 ![Dashboard](frontend/dashboard.png)
