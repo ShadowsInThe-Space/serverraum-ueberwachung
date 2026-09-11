@@ -44,3 +44,6 @@ Thumbs.db
 
 # AGENTS.md und .github behalten (wichtig für das Projekt)
 # AGENTS.md
+# AI-Tooling-Artefakte
+.serena/
+.playwright-mcp/
